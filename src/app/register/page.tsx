@@ -86,6 +86,11 @@ export default function RegisterPage() {
             Already have an account?{" "}
             <Link href="/login" className="text-gold-bright underline underline-offset-4">Sign in</Link>
           </p>
+          <p className="text-xs text-cream-dim text-center mt-4">
+            By creating an account you agree to our{" "}
+            <Link href="/datenschutz" className="underline underline-offset-4">privacy policy</Link>.{" "}
+            <Link href="/impressum" className="underline underline-offset-4">Impressum</Link>
+          </p>
         </div>
       </main>
     </div>

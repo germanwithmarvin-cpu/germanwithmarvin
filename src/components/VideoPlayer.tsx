@@ -28,7 +28,7 @@ export default function VideoPlayer({ videoId, title }: { videoId: string; title
       <div className="aspect-video bg-black">
         <iframe
           className="w-full h-full"
-          src={`https://www.youtube.com/embed/${id}`}
+          src={`https://www.youtube-nocookie.com/embed/${id}`}
           title={title}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen

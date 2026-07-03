@@ -85,8 +85,9 @@ export default function ImpressumPage() {
             </section>
           </div>
 
-          <div className="mt-12">
-            <Link href="/" className="btn-outline px-5 py-2.5 inline-block">← Zurück zur Startseite</Link>
+          <div className="mt-12 flex gap-3">
+            <Link href="/datenschutz" className="btn-outline px-5 py-2.5 inline-block">Datenschutz</Link>
+            <Link href="/" className="btn-outline px-5 py-2.5 inline-block">← Startseite</Link>
           </div>
         </div>
       </main>

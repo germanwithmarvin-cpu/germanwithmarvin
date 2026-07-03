@@ -79,8 +79,9 @@ export default function Home() {
 
       <footer className="border-t border-gold/15 py-8 text-center text-sm text-cream-dim">
         <div>© {new Date().getFullYear()} German with Marvin LLC · German Simplified</div>
-        <div className="mt-2">
+        <div className="mt-2 flex items-center justify-center gap-4">
           <Link href="/impressum" className="hover:text-cream underline underline-offset-4">Impressum</Link>
+          <Link href="/datenschutz" className="hover:text-cream underline underline-offset-4">Datenschutz</Link>
         </div>
       </footer>
     </div>
