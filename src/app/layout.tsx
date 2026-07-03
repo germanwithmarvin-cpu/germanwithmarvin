@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import LegalFooter from "@/components/LegalFooter";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +30,10 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col relative">
         <div className="app-bg" aria-hidden="true" />
-        <div className="relative z-10 flex-1 flex flex-col">{children}</div>
+        <div className="relative z-10 flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col">{children}</div>
+          <LegalFooter />
+        </div>
       </body>
     </html>
   );
