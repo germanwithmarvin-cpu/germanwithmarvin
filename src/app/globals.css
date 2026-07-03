@@ -1,26 +1,144 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Farbschema aus dem Logo "Marvin Graf — German Simplified" (etwas heller) */
+  --bordeaux: #7a2727;
+  --bordeaux-deep: #5c1a1a;
+  --bordeaux-soft: #93373a;
+  --gold: #e0902a;
+  --gold-bright: #f4a836;
+  --cream: #faf1e6;
+  --cream-dim: #e0cfb6;
+  --red-accent: #c0392b;
+  --green-accent: #2e7d4f;
+
+  --background: var(--bordeaux-deep);
+  --foreground: var(--cream);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-bordeaux: var(--bordeaux);
+  --color-bordeaux-deep: var(--bordeaux-deep);
+  --color-bordeaux-soft: var(--bordeaux-soft);
+  --color-gold: var(--gold);
+  --color-gold-bright: var(--gold-bright);
+  --color-cream: var(--cream);
+  --color-cream-dim: var(--cream-dim);
+  --color-red-accent: var(--red-accent);
+  --color-green-accent: var(--green-accent);
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bordeaux-deep);
+  color: var(--cream);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.011em;
 }
+
+/* Modernere, ruhigere Typografie. */
+h1, h2, h3, h4 { letter-spacing: -0.025em; }
+h1 { line-height: 1.08; }
+
+/* Lebhafter, animierter Projekt-Hintergrund (liegt hinter allen Inhalten). */
+.app-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% -10%, var(--bordeaux) 0%, var(--bordeaux-deep) 70%);
+}
+.app-bg::before,
+.app-bg::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+}
+.app-bg::before {
+  width: 55vw; height: 55vw; left: -12vw; top: -12vw;
+  background: color-mix(in srgb, var(--gold) 18%, transparent);
+  opacity: 0.5;
+  animation: drift 18s ease-in-out infinite;
+}
+.app-bg::after {
+  width: 60vw; height: 60vw; right: -18vw; bottom: -15vw;
+  background: color-mix(in srgb, var(--bordeaux-soft) 60%, transparent);
+  opacity: 0.6;
+  animation: drift 24s ease-in-out infinite reverse;
+}
+
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(26px, -18px); }
+}
+@keyframes nodePop {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes pulseRing {
+  0% { transform: scale(0.85); opacity: 0.6; }
+  70% { transform: scale(1.5); opacity: 0; }
+  100% { opacity: 0; }
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.8; }
+}
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.node-pop { animation: nodePop 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.pulse-ring { animation: pulseRing 1.8s ease-out infinite; }
+.twinkle { animation: twinkle 3.5s ease-in-out infinite; }
+.bob { animation: bob 2.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .app-bg::before, .app-bg::after, .node-pop, .pulse-ring, .twinkle, .bob { animation: none !important; }
+}
+
+.card {
+  background: color-mix(in srgb, var(--bordeaux) 78%, #000);
+  border: 1px solid color-mix(in srgb, var(--cream) 11%, transparent);
+  border-radius: 1.25rem;
+  box-shadow: 0 14px 36px -16px rgba(0, 0, 0, 0.5);
+}
+
+.btn-gold {
+  background: var(--gold);
+  color: #2a0808;
+  font-weight: 600;
+  border-radius: 0.85rem;
+  box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--gold) 85%, transparent);
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+.btn-gold:hover { background: var(--gold-bright); }
+.btn-gold:active { transform: translateY(1px); }
+
+.btn-outline {
+  border: 1px solid color-mix(in srgb, var(--cream) 20%, transparent);
+  color: var(--cream);
+  border-radius: 0.85rem;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.btn-outline:hover {
+  background: color-mix(in srgb, var(--cream) 7%, transparent);
+  border-color: color-mix(in srgb, var(--gold) 55%, transparent);
+}
+
+/* Die vier Bewertungs-Knöpfe der Lern-Session (wie Anki). */
+.btn-again  { background: color-mix(in srgb, var(--red-accent) 85%, black); color: #fff; }
+.btn-hard   { background: color-mix(in srgb, var(--gold) 30%, var(--bordeaux)); color: var(--cream); }
+.btn-good   { background: linear-gradient(180deg, var(--gold-bright), var(--gold)); color: #3a0a0a; }
+.btn-easy   { background: color-mix(in srgb, var(--green-accent) 85%, black); color: #fff; }
+.btn-again, .btn-hard, .btn-good, .btn-easy {
+  border-radius: 0.85rem;
+  font-weight: 600;
+  transition: filter 0.15s ease, transform 0.05s ease;
+}
+.btn-again:hover, .btn-hard:hover, .btn-good:hover, .btn-easy:hover { filter: brightness(1.1); }
+.btn-again:active, .btn-hard:active, .btn-good:active, .btn-easy:active { transform: translateY(1px); }

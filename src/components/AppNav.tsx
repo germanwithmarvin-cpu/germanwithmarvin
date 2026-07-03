@@ -1,0 +1,77 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import Logo from "./Logo";
+import { createClient } from "@/lib/supabase/client";
+
+const links = [
+  { href: "/dashboard", label: "Overview", icon: "🏠" },
+  { href: "/lessons", label: "Lessons", icon: "🎬" },
+  { href: "/decks", label: "Flashcards", icon: "🗂️" },
+  { href: "/review", label: "Review", icon: "🔁" },
+  { href: "/exam", label: "Placement test", icon: "🎓" },
+  { href: "/stats", label: "Statistics", icon: "📊" },
+  { href: "/writing", label: "Writing tasks", icon: "✍️" },
+  { href: "/messages", label: "Messages", icon: "💬" },
+  { href: "/booking", label: "Book a lesson", icon: "📅" },
+];
+
+// Nur für Lehrer sichtbar:
+const teacherLink = { href: "/admin", label: "Teacher area", icon: "🛠️" };
+
+export default function AppNav() {
+  const path = usePathname();
+  const router = useRouter();
+  const [isTeacher, setIsTeacher] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      const { data } = await supabase.from("profiles").select("is_teacher").eq("id", user.id).single();
+      setIsTeacher(Boolean(data?.is_teacher));
+    });
+  }, []);
+
+  const visibleLinks = isTeacher ? [...links, teacherLink] : links;
+
+  async function signOut() {
+    await createClient().auth.signOut();
+    router.push("/");
+    router.refresh();
+  }
+
+  return (
+    <aside className="w-full md:w-72 shrink-0 md:min-h-screen border-b md:border-b-0 md:border-r border-gold/15 p-5">
+      <div className="mb-8">
+        <Logo href="/dashboard" size={52} />
+      </div>
+      <nav className="flex md:flex-col gap-1.5 overflow-x-auto">
+        {visibleLinks.map((l) => {
+          const active = path === l.href || path.startsWith(l.href + "/");
+          return (
+            <Link
+              key={l.href}
+              href={l.href}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-base whitespace-nowrap transition ${
+                active
+                  ? "bg-gold/20 text-cream font-medium"
+                  : "text-cream-dim hover:bg-gold/10"
+              }`}
+            >
+              <span className="text-xl">{l.icon}</span>
+              <span>{l.label}</span>
+            </Link>
+          );
+        })}
+      </nav>
+      <div className="hidden md:block mt-8 pt-4 border-t border-gold/15">
+        <button onClick={signOut} className="text-sm text-cream-dim hover:text-cream">
+          ← Sign out
+        </button>
+      </div>
+    </aside>
+  );
+}
