@@ -14,8 +14,6 @@ const links = [
   { href: "/exam", label: "Placement test", icon: "🎓" },
   { href: "/stats", label: "Statistics", icon: "📊" },
   { href: "/writing", label: "Writing tasks", icon: "✍️" },
-  { href: "/messages", label: "Messages", icon: "💬" },
-  { href: "/booking", label: "Book a lesson", icon: "📅" },
 ];
 
 // Nur für Lehrer sichtbar:

@@ -77,10 +77,10 @@ export default function RegisterPage() {
           </form>
 
           <p className="text-xs text-cream-dim text-center mt-4">
-            After the trial, A1 stays free. Unlock everything with a code from my Preply or Skool course.
+            After the trial, A1 stays free. Unlock everything with a code from my Skool community (or Preply).
           </p>
           <p className="text-xs text-cream-dim text-center mt-3">
-            Got a code from Preply or Skool? Create your account, then go to <span className="text-gold-bright">Redeem code</span>.
+            Got a code from Skool or Preply? Create your account, then go to <span className="text-gold-bright">Redeem code</span>.
           </p>
           <p className="text-sm text-cream-dim text-center mt-4">
             Already have an account?{" "}

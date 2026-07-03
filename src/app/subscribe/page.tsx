@@ -16,19 +16,19 @@ export default function GetAccessPage() {
           <h1 className="text-3xl font-bold">Get full access</h1>
           <p className="text-cream-dim mt-2">
             A1 is free for everyone. Full access to all levels, videos and the vocabulary trainer comes
-            with your membership on Preply or Skool.
+            with your membership in my Skool community.
           </p>
 
           <ul className="text-sm text-cream-dim space-y-2 mt-6 text-left max-w-xs mx-auto">
             <li>✓ All video lessons (A1–B2)</li>
             <li>✓ Full flashcard path with spaced repetition</li>
             <li>✓ Statistics, placement test & progress</li>
-            <li>✓ Writing feedback & direct messages</li>
+            <li>✓ Writing feedback & a learning community</li>
           </ul>
 
           <div className="flex flex-col gap-3 mt-6">
-            <a href={SITE.preplyUrl} target="_blank" rel="noopener noreferrer" className="btn-gold py-3">Learn with me on Preply</a>
-            <a href={SITE.skoolUrl} target="_blank" rel="noopener noreferrer" className="btn-outline py-2.5">Join my Skool community</a>
+            <a href={SITE.skoolUrl} target="_blank" rel="noopener noreferrer" className="btn-gold py-3 text-lg">⭐ Join my Skool community</a>
+            <a href={SITE.preplyUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-cream-dim underline underline-offset-4 mt-1">Prefer 1-on-1 lessons? Find me on Preply →</a>
           </div>
 
           <p className="text-sm text-cream-dim mt-5">

@@ -43,7 +43,7 @@ export default function Dashboard() {
               🎁 Free trial: <span className="text-gold-bright font-medium">{access.trialDaysLeft} day{access.trialDaysLeft === 1 ? "" : "s"} left</span> of full access. A1 stays free forever.
             </span>
           ) : (
-            <span className="text-sm">A1 is free for you. Got a code from Preply or Skool? Redeem it for full access.</span>
+            <span className="text-sm">A1 is free for you. Got a code from Skool or Preply? Redeem it for full access.</span>
           )}
           {access.tier !== "subscribed" && access.tier !== "vocab" && (
             <Link href="/redeem" className="btn-gold px-4 py-2 text-sm whitespace-nowrap shrink-0">

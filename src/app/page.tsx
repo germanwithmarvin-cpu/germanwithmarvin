@@ -8,7 +8,7 @@ const benefits = [
   { icon: "🎬", title: "Clear video lessons", text: "Every topic explained simply in short, focused videos you can watch anytime." },
   { icon: "🧭", title: "One guided path", text: "No guessing what to learn next. Follow a step-by-step path from start to fluency." },
   { icon: "⚡", title: "Practice that sticks", text: "Interactive quizzes and downloadable PDFs after every lesson, with instant feedback." },
-  { icon: "💬", title: "Direct contact with me", text: "Send me your writing, ask questions and book 1-on-1 lessons whenever you need." },
+  { icon: "🤝", title: "A real community", text: "Learn alongside other students in my Skool community — with me guiding the way." },
 ];
 
 export default function Home() {
@@ -54,19 +54,19 @@ export default function Home() {
       {/* 3. Zugang über Preply / Skool */}
       <section className="max-w-2xl mx-auto px-6 pb-24">
         <div className="card p-10 text-center">
-          <h2 className="text-2xl font-bold">Get full access through my courses</h2>
+          <h2 className="text-2xl font-bold">Join my Skool community</h2>
           <p className="text-cream-dim mt-2">
             A1 is free for everyone. Full access (all levels, videos + flashcards) comes with your
-            membership on Preply or Skool — you get an access code to unlock everything here.
+            membership in my Skool community — you get an access code to unlock everything here.
           </p>
           <ul className="text-sm text-cream-dim space-y-2 my-6 inline-block text-left">
             <li>✓ All video lessons & the full flashcard path (A1–B2)</li>
             <li>✓ Spaced-repetition review, statistics & placement test</li>
-            <li>✓ Writing feedback & direct messages</li>
+            <li>✓ Writing feedback & a supportive learning community</li>
           </ul>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <a href={SITE.preplyUrl} target="_blank" rel="noopener noreferrer" className="btn-gold px-6 py-3">Learn with me on Preply</a>
-            <a href={SITE.skoolUrl} target="_blank" rel="noopener noreferrer" className="btn-outline px-6 py-3">Join my Skool community</a>
+          <div className="flex flex-col gap-3 justify-center items-center">
+            <a href={SITE.skoolUrl} target="_blank" rel="noopener noreferrer" className="btn-gold px-8 py-3.5 text-lg w-full max-w-sm">⭐ Join my Skool community</a>
+            <a href={SITE.preplyUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-cream-dim underline underline-offset-4">Prefer 1-on-1? Learn with me on Preply →</a>
           </div>
           <p className="text-sm text-cream-dim mt-5">
             Already have a code?{" "}
@@ -78,7 +78,10 @@ export default function Home() {
       </section>
 
       <footer className="border-t border-gold/15 py-8 text-center text-sm text-cream-dim">
-        © {new Date().getFullYear()} Marvin Graf · German Simplified
+        <div>© {new Date().getFullYear()} German with Marvin LLC · German Simplified</div>
+        <div className="mt-2">
+          <Link href="/impressum" className="hover:text-cream underline underline-offset-4">Impressum</Link>
+        </div>
       </footer>
     </div>
   );

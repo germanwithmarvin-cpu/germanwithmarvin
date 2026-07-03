@@ -4,13 +4,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import SubmissionsAdmin from "@/components/SubmissionsAdmin";
 import LessonsAdmin from "@/components/LessonsAdmin";
-import MessagesAdmin from "@/components/MessagesAdmin";
-import BookingsAdmin from "@/components/BookingsAdmin";
 import DecksAdmin from "@/components/admin/DecksAdmin";
 import CodesAdmin from "@/components/admin/CodesAdmin";
 import { createClient } from "@/lib/supabase/client";
 
-const tabs = ["Lessons", "Vocabulary", "Codes", "Submissions", "Messages", "Lessons booked"] as const;
+const tabs = ["Lessons", "Vocabulary", "Codes", "Submissions"] as const;
 type Tab = (typeof tabs)[number];
 
 export default function AdminPage() {
@@ -37,7 +35,7 @@ export default function AdminPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Teacher area</h1>
-        <p className="text-cream-dim text-sm">Manage your content, student submissions and booked lessons.</p>
+        <p className="text-cream-dim text-sm">Manage your content, access codes and student submissions.</p>
       </div>
 
       <div className="flex gap-2 border-b border-gold/15">
@@ -61,10 +59,6 @@ export default function AdminPage() {
       {tab === "Codes" && <CodesAdmin />}
 
       {tab === "Submissions" && <SubmissionsAdmin />}
-
-      {tab === "Messages" && <MessagesAdmin />}
-
-      {tab === "Lessons booked" && <BookingsAdmin />}
     </div>
   );
 }

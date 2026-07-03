@@ -32,7 +32,8 @@ export default function StudyPage() {
   const [revealed, setRevealed] = useState(false);
   const [reviewedCount, setReviewedCount] = useState(0);
   const [saving, setSaving] = useState(false);
-  const [direction, setDirection] = useState<Direction>("de-en");
+  // Standard: Englisch als Frage (Vorderseite), Deutsch als Antwort (Rückseite).
+  const [direction, setDirection] = useState<Direction>("en-de");
   const [blocked, setBlocked] = useState(false);
 
   useEffect(() => {
