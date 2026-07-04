@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
-import VideoPlayer from "@/components/VideoPlayer";
-import { SITE } from "@/lib/config";
 import { getLessons } from "@/lib/lessons";
 
 // Multiple-Choice-Einstufung (zunehmender Schwierigkeitsgrad A1 → B1).
@@ -46,7 +44,7 @@ type AiFeedback = {
 
 export default function WelcomePage() {
   const router = useRouter();
-  const [step, setStep] = useState(0); // 0 Danke-Video, 1 MC-Test, 2 Schreibaufgabe, 3 Empfehlung
+  const [step, setStep] = useState(0); // 0 Begrüßung, 1 MC-Test, 2 Schreibaufgabe, 3 Empfehlung
   const [answers, setAnswers] = useState<(number | null)[]>(Array(assessment.length).fill(null));
   const [writing, setWriting] = useState("");
   const [feedback, setFeedback] = useState<string[] | null>(null);
@@ -98,13 +96,16 @@ export default function WelcomePage() {
       <main className="flex-1 grid place-items-center px-6 py-8">
         <div className="w-full max-w-2xl">
 
-          {/* Schritt 1: Danke-Video */}
+          {/* Schritt 1: Begrüßung */}
           {step === 0 && (
             <div className="space-y-6 text-center">
-              <h1 className="text-3xl font-bold">Welcome aboard! 🎉</h1>
-              <p className="text-cream-dim">Thank you for joining. Here&apos;s a short message from me to get you started.</p>
-              <VideoPlayer videoId={SITE.thankYouVideoId} title="Thank you – Marvin Graf" />
-              <button onClick={() => setStep(1)} className="btn-gold px-8 py-3.5 text-lg">Continue</button>
+              <div className="text-5xl">🎉</div>
+              <h1 className="text-3xl font-bold">Welcome aboard!</h1>
+              <p className="text-cream-dim max-w-md mx-auto">
+                Thank you for joining. Let&apos;s find the perfect starting point for you — it only takes two
+                short steps.
+              </p>
+              <button onClick={() => setStep(1)} className="btn-gold px-8 py-3.5 text-lg">Let&apos;s go</button>
             </div>
           )}
 

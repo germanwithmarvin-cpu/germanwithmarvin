@@ -4,9 +4,8 @@
 // Aus dem Link https://www.youtube.com/watch?v=ABC123  ist die Video-ID = "ABC123".
 
 export const SITE = {
-  // Platzhalter-Videos – ersetze die IDs durch deine eigenen YouTube-Video-IDs.
-  introVideoId: "dQw4w9WgXcQ", // Intro-Video auf der Startseite
-  thankYouVideoId: "dQw4w9WgXcQ", // Danke-Video nach dem Abo-Abschluss
+  // Verkaufsvideo auf der Startseite (YouTube). Kann Link oder reine ID sein.
+  introVideoId: "1U2sTcL5BBA",
   contactEmail: "hallo@marvingraf.de",
   // Für "Nur Vokabel"-Nutzer (Skool): Link zu deinem Skool-Kurs mit den Videos.
   skoolUrl: "https://www.skool.com/german-with-marvin-5887/about",

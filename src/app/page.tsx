@@ -30,8 +30,8 @@ export default function Home() {
         <h1 className="text-3xl sm:text-5xl font-bold leading-tight mb-8">
           Learn German with me — <span className="text-gold-bright">the simple way.</span>
         </h1>
-        <VideoPlayer videoId={SITE.introVideoId} title="Intro – Marvin Graf" />
-        <p className="mt-4 text-sm text-cream-dim">▶ Watch my 2-minute intro to see how it works.</p>
+        <VideoPlayer videoId={SITE.introVideoId} title="German Simplified — Marvin Graf" />
+        <p className="mt-4 text-sm text-cream-dim">▶ Watch this short video — then join my Skool community below.</p>
       </section>
 
       {/* 1b. Bewertungen (echt, von Preply) direkt unter dem Video */}
