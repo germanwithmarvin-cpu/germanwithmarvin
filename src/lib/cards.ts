@@ -76,22 +76,44 @@ export async function getCardsByIds(ids: string[]): Promise<Card[]> {
   return (data ?? []).map(fromRow);
 }
 
-// ALLE sichtbaren Karten in EINER Abfrage (für schnelle Übersichten/Statistik).
+// Supabase/PostgREST liefert pro Abfrage max. 1000 Zeilen. Bei > 1000 Karten
+// müssen wir seitenweise (paginiert) laden, sonst fehlen Karten.
+const PAGE_SIZE = 1000;
+
+// ALLE sichtbaren Karten (paginiert, damit auch > 1000 Karten vollständig geladen werden).
 export async function getAllCards(): Promise<Card[]> {
   const supabase = createClient();
-  const { data } = await supabase
-    .from("fc_cards")
-    .select("*")
-    .order("deck_id", { ascending: true })
-    .order("sort_order", { ascending: true });
-  return (data ?? []).map(fromRow);
+  const all: Card[] = [];
+  for (let from = 0; ; from += PAGE_SIZE) {
+    const { data, error } = await supabase
+      .from("fc_cards")
+      .select("*")
+      .order("deck_id", { ascending: true })
+      .order("sort_order", { ascending: true })
+      .order("id", { ascending: true })
+      .range(from, from + PAGE_SIZE - 1);
+    if (error || !data || data.length === 0) break;
+    all.push(...data.map(fromRow));
+    if (data.length < PAGE_SIZE) break;
+  }
+  return all;
 }
 
-// Nur Karten-Referenzen (id + deck_id) in EINER Abfrage – leichtgewichtig zum Zählen.
+// Nur Karten-Referenzen (id + deck_id) – leichtgewichtig zum Zählen, ebenfalls paginiert.
 export async function getAllCardRefs(): Promise<{ id: string; deckId: string }[]> {
   const supabase = createClient();
-  const { data } = await supabase.from("fc_cards").select("id, deck_id");
-  return (data ?? []).map((r) => ({ id: r.id as string, deckId: r.deck_id as string }));
+  const all: { id: string; deckId: string }[] = [];
+  for (let from = 0; ; from += PAGE_SIZE) {
+    const { data, error } = await supabase
+      .from("fc_cards")
+      .select("id, deck_id")
+      .order("id", { ascending: true })
+      .range(from, from + PAGE_SIZE - 1);
+    if (error || !data || data.length === 0) break;
+    all.push(...data.map((r) => ({ id: r.id as string, deckId: r.deck_id as string })));
+    if (data.length < PAGE_SIZE) break;
+  }
+  return all;
 }
 
 // Anzahl Karten pro Stapel (für Fortschrittsanzeige).

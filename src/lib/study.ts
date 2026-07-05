@@ -124,6 +124,26 @@ export async function countDue(deckId: string): Promise<number> {
   return items.length;
 }
 
+// Alle Lernstände eines Nutzers – paginiert, damit auch > 1000 Zustände
+// vollständig geladen werden (Supabase liefert sonst max. 1000 Zeilen).
+async function getAllUserStates(userId: string): Promise<Record<string, unknown>[]> {
+  const supabase = createClient();
+  const PAGE = 1000;
+  const all: Record<string, unknown>[] = [];
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await supabase
+      .from("fc_card_states")
+      .select("*")
+      .eq("user_id", userId)
+      .order("card_id", { ascending: true })
+      .range(from, from + PAGE - 1);
+    if (error || !data || data.length === 0) break;
+    all.push(...(data as Record<string, unknown>[]));
+    if (data.length < PAGE) break;
+  }
+  return all;
+}
+
 // "Heute fällig" über ALLE Decks: fällige Wiederholungen + bis zu
 // DAILY_NEW_LIMIT neue Karten (abzüglich der heute schon begonnenen neuen).
 export async function getDueToday(): Promise<StudyItem[]> {
@@ -136,18 +156,15 @@ export async function getDueToday(): Promise<StudyItem[]> {
   if (cards.length === 0) return [];
   const deckLevel = new Map(decks.map((d) => [d.id, d.level]));
 
-  // Nur die Lernzustände des Nutzers laden (klein) — KEIN großer card_id-IN-Filter.
-  const { data: states } = await supabase
-    .from("fc_card_states")
-    .select("*")
-    .eq("user_id", user.id);
+  // Alle Lernzustände des Nutzers laden (paginiert, damit nichts abgeschnitten wird).
+  const states = await getAllUserStates(user.id);
 
   const byCard = new Map<string, Record<string, unknown>>();
-  for (const s of states ?? []) byCard.set(s.card_id as string, s);
+  for (const s of states) byCard.set(s.card_id as string, s);
 
   // Wie viele neue Karten wurden heute schon eingeführt?
   const today = startOfTodayISO();
-  const newDoneToday = (states ?? []).filter((s) => ((s.created_at as string) ?? "") >= today).length;
+  const newDoneToday = states.filter((s) => ((s.created_at as string) ?? "") >= today).length;
   const remainingNew = Math.max(0, DAILY_NEW_LIMIT - newDoneToday);
 
   const now = Date.now();
@@ -196,12 +213,9 @@ export async function getDeckProgress(): Promise<Record<string, DeckProgress>> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return result;
 
-  const { data: states } = await supabase
-    .from("fc_card_states")
-    .select("card_id, repetitions")
-    .eq("user_id", user.id);
+  const states = await getAllUserStates(user.id);
 
-  for (const s of states ?? []) {
+  for (const s of states) {
     if (Number(s.repetitions) >= 1) {
       const deckId = cardToDeck.get(s.card_id as string);
       if (deckId && result[deckId]) result[deckId].known += 1;
@@ -269,9 +283,9 @@ export async function getLearnedItems(level?: string): Promise<StudyItem[]> {
   const [decks, cards, access] = await Promise.all([getDecks(), getAllCards(), getAccess()]);
   const deckLevel = new Map(decks.map((d) => [d.id, d.level]));
 
-  const { data: states } = await supabase.from("fc_card_states").select("*").eq("user_id", user.id);
+  const states = await getAllUserStates(user.id);
   const byCard = new Map<string, Record<string, unknown>>();
-  for (const s of states ?? []) byCard.set(s.card_id as string, s);
+  for (const s of states) byCard.set(s.card_id as string, s);
 
   const items: StudyItem[] = [];
   for (const card of cards) {
@@ -301,9 +315,9 @@ async function getLearnedItemsWithLevel(): Promise<(StudyItem & { level: string 
   if (!user) return [];
   const [decks, cards, access] = await Promise.all([getDecks(), getAllCards(), getAccess()]);
   const deckLevel = new Map(decks.map((d) => [d.id, d.level]));
-  const { data: states } = await supabase.from("fc_card_states").select("*").eq("user_id", user.id);
+  const states = await getAllUserStates(user.id);
   const byCard = new Map<string, Record<string, unknown>>();
-  for (const s of states ?? []) byCard.set(s.card_id as string, s);
+  for (const s of states) byCard.set(s.card_id as string, s);
   const out: (StudyItem & { level: string })[] = [];
   for (const card of cards) {
     const lvl = deckLevel.get(card.deckId);

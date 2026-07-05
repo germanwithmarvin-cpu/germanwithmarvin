@@ -45,20 +45,39 @@ export async function getStats(): Promise<Stats> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return empty;
 
+  // Supabase liefert pro Abfrage max. 1000 Zeilen – daher seitenweise laden,
+  // sonst werden Verlauf/Statistik bei viel Übung abgeschnitten.
+  const PAGE = 1000;
+
   // Wiederholungs-Verlauf (für Diagramm, Genauigkeit, Strähne).
-  const { data: logs } = await supabase
-    .from("fc_review_log")
-    .select("rating, reviewed_at")
-    .eq("user_id", user.id)
-    .order("reviewed_at", { ascending: true });
+  const logs: { rating: string; reviewed_at: string }[] = [];
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await supabase
+      .from("fc_review_log")
+      .select("rating, reviewed_at")
+      .eq("user_id", user.id)
+      .order("reviewed_at", { ascending: true })
+      .range(from, from + PAGE - 1);
+    if (error || !data || data.length === 0) break;
+    logs.push(...(data as { rating: string; reviewed_at: string }[]));
+    if (data.length < PAGE) break;
+  }
 
   // Lernzustände (für gelernt/reif/lernend).
-  const { data: states } = await supabase
-    .from("fc_card_states")
-    .select("interval_days, repetitions")
-    .eq("user_id", user.id);
+  const states: { interval_days: number; repetitions: number }[] = [];
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await supabase
+      .from("fc_card_states")
+      .select("interval_days, repetitions")
+      .eq("user_id", user.id)
+      .order("card_id", { ascending: true })
+      .range(from, from + PAGE - 1);
+    if (error || !data || data.length === 0) break;
+    states.push(...(data as { interval_days: number; repetitions: number }[]));
+    if (data.length < PAGE) break;
+  }
 
-  const rows = logs ?? [];
+  const rows = logs;
   const totalReviews = rows.length;
   const correct = rows.filter((r) => r.rating !== "again").length;
   const accuracy = totalReviews > 0 ? Math.round((correct / totalReviews) * 100) : 0;
