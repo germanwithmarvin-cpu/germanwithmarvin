@@ -17,6 +17,7 @@ function emptyLesson(): Lesson {
     videoId: "",
     durationMin: 0,
     xp: 100,
+    body: "",
     materials: [],
     quizEnabled: false, // Quiz ist standardmäßig AUS – erst aktivieren, dann Fragen anlegen.
     quiz: [],
@@ -208,6 +209,17 @@ export default function LessonsAdmin() {
           <label className="block text-sm mb-1 text-cream-dim">YouTube video ID</label>
           <input className={inputClass} value={editing.videoId} onChange={(e) => setField("videoId", e.target.value)} placeholder="From youtube.com/watch?v=ABC123 → ABC123" />
           <p className="text-xs text-cream-dim mt-1">Upload your video to YouTube as “Unlisted”, then paste only the ID here.</p>
+        </div>
+        <div>
+          <label className="block text-sm mb-1 text-cream-dim">Text below the video (Skool-style)</label>
+          <textarea
+            rows={6}
+            className={inputClass}
+            value={editing.body}
+            onChange={(e) => setField("body", e.target.value)}
+            placeholder={"Write anything to show under the video:\n\n• explanations & examples\n• homework or tasks\n• links\n\nLine breaks are kept."}
+          />
+          <p className="text-xs text-cream-dim mt-1">Shown to students right below the video. Leave empty to hide.</p>
         </div>
       </div>
 

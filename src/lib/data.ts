@@ -22,12 +22,25 @@ export type Lesson = {
   // YouTube-Video-ID (nicht gelistete Videos). Aus dem Link …watch?v=ABC123 → "ABC123".
   videoId: string;
   durationMin: number;
+  // Freitext unter dem Video (Skool-Stil): Erklärungen, Links, Aufgaben. Zeilenumbrüche bleiben erhalten.
+  body: string;
   // Wenn false, wird das Quiz für diese Lektion ausgeblendet (auch wenn Fragen hinterlegt sind).
   quizEnabled: boolean;
   quiz: QuizQuestion[];
   // PDF-Lernmaterial zum Herunterladen. Lege die PDFs in den Ordner public/materials/.
   materials: Material[];
   xp: number;
+};
+
+// Geschichten (Lesetexte) – eigener Bereich neben Videos & Flashcards.
+export type Story = {
+  id: string;
+  title: string;
+  level: "A1" | "A2" | "B1" | "B2" | "C1";
+  // Optionale kurze Einleitung in der Liste.
+  intro: string;
+  // Der eigentliche Text der Geschichte (Zeilenumbrüche bleiben erhalten).
+  body: string;
 };
 
 export type Trophy = {

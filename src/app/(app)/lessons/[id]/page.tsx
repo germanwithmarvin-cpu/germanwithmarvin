@@ -112,6 +112,11 @@ export default function LessonPage() {
       {/* Video */}
       {!finished && <VideoPlayer videoId={lesson.videoId} title={lesson.title} />}
 
+      {/* Freitext unter dem Video (Skool-Stil) */}
+      {!finished && lesson.body.trim() && (
+        <div className="card p-5 whitespace-pre-wrap text-cream leading-relaxed">{lesson.body}</div>
+      )}
+
       {/* PDF-Lernmaterial */}
       {!finished && lesson.materials.length > 0 && (
         <div className="card p-4">

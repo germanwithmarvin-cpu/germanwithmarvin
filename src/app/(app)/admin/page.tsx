@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import SubmissionsAdmin from "@/components/SubmissionsAdmin";
 import LessonsAdmin from "@/components/LessonsAdmin";
+import StoriesAdmin from "@/components/StoriesAdmin";
 import DecksAdmin from "@/components/admin/DecksAdmin";
 import CodesAdmin from "@/components/admin/CodesAdmin";
 import { createClient } from "@/lib/supabase/client";
 
-const tabs = ["Lessons", "Vocabulary", "Codes", "Submissions"] as const;
+const tabs = ["Lessons", "Stories", "Vocabulary", "Codes", "Submissions"] as const;
 type Tab = (typeof tabs)[number];
 
 export default function AdminPage() {
@@ -53,6 +54,8 @@ export default function AdminPage() {
       </div>
 
       {tab === "Lessons" && <LessonsAdmin />}
+
+      {tab === "Stories" && <StoriesAdmin />}
 
       {tab === "Vocabulary" && <DecksAdmin />}
 

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { getDecks } from "@/lib/decks";
-import { countFlagged, getDeckProgress, type DeckProgress } from "@/lib/study";
+import { countFlagged, getDeckProgress, getLearnedSummary, type DeckProgress } from "@/lib/study";
 import { LEVELS, type Deck } from "@/lib/types";
 import { getAccess, canAccessVocabLevel, type AccessTier } from "@/lib/access";
 
@@ -63,6 +63,7 @@ export default function DecksPage() {
   const [decks, setDecks] = useState<Deck[]>([]);
   const [progress, setProgress] = useState<Record<string, DeckProgress>>({});
   const [flagged, setFlagged] = useState(0);
+  const [learnedTotal, setLearnedTotal] = useState(0);
   const [tier, setTier] = useState<AccessTier>("free");
   const [loading, setLoading] = useState(true);
   const [width, setWidth] = useState(0);
@@ -81,6 +82,7 @@ export default function DecksPage() {
 
   useEffect(() => {
     countFlagged().then(setFlagged);
+    getLearnedSummary().then((s) => setLearnedTotal(s.total));
     getAccess().then((a) => setTier(a.tier));
     Promise.all([getDecks(), getDeckProgress()]).then(([d, p]) => {
       setDecks(d);
@@ -211,17 +213,19 @@ export default function DecksPage() {
           </div>
         </div>
 
-        <Link href="/review" className="card p-4 flex items-center justify-between hover:border-gold/40 transition">
-          <span className="flex items-center gap-2 text-base"><span>🔁</span> Review learned</span>
-          <span className="text-gold-bright">→</span>
-        </Link>
-
-        {flagged > 0 && (
-          <Link href="/study/marked" className="card p-4 flex items-center justify-between hover:border-gold/40 transition">
-            <span className="flex items-center gap-2 text-base"><span>🔖</span> Marked <span className="text-cream-dim">({flagged})</span></span>
+        {/* Review – gehört zu den Flashcards (keine eigene Navigations-Kategorie) */}
+        <div className="card p-4">
+          <div className="flex items-center gap-2 text-base mb-2"><span>🔁</span> Review</div>
+          <p className="text-xs text-cream-dim mb-2">Freshen up cards you already know — all of them, by level, or just your marked ones.</p>
+          <Link href="/review" className="flex items-center justify-between gap-2 px-2 py-1.5 rounded-lg text-sm text-cream-dim hover:bg-gold/10 transition">
+            <span>📚 Learned cards {learnedTotal > 0 && <span className="text-cream-dim">({learnedTotal})</span>}</span>
             <span className="text-gold-bright">→</span>
           </Link>
-        )}
+          <Link href="/study/marked" className="flex items-center justify-between gap-2 px-2 py-1.5 rounded-lg text-sm text-cream-dim hover:bg-gold/10 transition">
+            <span>🔖 Marked cards {flagged > 0 && <span className="text-cream-dim">({flagged})</span>}</span>
+            <span className="text-gold-bright">→</span>
+          </Link>
+        </div>
 
         {/* Grammatik-Extra-Decks – neben dem Pfad auswählbar */}
         {grammarDecks.length > 0 && (

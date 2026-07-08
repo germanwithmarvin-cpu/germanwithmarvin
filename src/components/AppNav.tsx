@@ -10,8 +10,7 @@ const links = [
   { href: "/dashboard", label: "Overview", icon: "🏠" },
   { href: "/lessons", label: "Lessons", icon: "🎬" },
   { href: "/decks", label: "Flashcards", icon: "🗂️" },
-  { href: "/review", label: "Review", icon: "🔁" },
-  { href: "/exam", label: "Placement test", icon: "🎓" },
+  { href: "/stories", label: "Stories", icon: "📖" },
   { href: "/stats", label: "Statistics", icon: "📊" },
   { href: "/writing", label: "Writing tasks", icon: "✍️" },
 ];
