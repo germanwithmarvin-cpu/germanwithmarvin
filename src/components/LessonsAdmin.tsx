@@ -18,7 +18,7 @@ function emptyLesson(): Lesson {
     durationMin: 0,
     xp: 100,
     materials: [],
-    quizEnabled: true,
+    quizEnabled: false, // Quiz ist standardmäßig AUS – erst aktivieren, dann Fragen anlegen.
     quiz: [],
   };
 }

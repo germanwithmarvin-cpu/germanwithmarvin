@@ -14,7 +14,7 @@ function fromRow(r: Record<string, unknown>): Lesson {
     videoId: (r.video_id as string) ?? "",
     durationMin: (r.duration_min as number) ?? 0,
     xp: (r.xp as number) ?? 0,
-    quizEnabled: (r.quiz_enabled as boolean) ?? true,
+    quizEnabled: (r.quiz_enabled as boolean) ?? false,
     quiz: (r.quiz as Lesson["quiz"]) ?? [],
     materials: (r.materials as Lesson["materials"]) ?? [],
   };
