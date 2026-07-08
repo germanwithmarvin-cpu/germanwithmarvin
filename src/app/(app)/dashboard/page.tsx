@@ -7,6 +7,7 @@ import { getLessons } from "@/lib/lessons";
 import { loadProgress, type Progress } from "@/lib/progress";
 import { countDueToday } from "@/lib/study";
 import { getAccess, type Access } from "@/lib/access";
+import { createClient } from "@/lib/supabase/client";
 
 // Schnellzugriff-Kacheln zu den Hauptbereichen.
 const TILES = [
@@ -16,17 +17,51 @@ const TILES = [
   { href: "/writing", icon: "✍️", label: "Writing", sub: "Get feedback" },
 ];
 
+// Rotierende Lern-Tipps – bei jedem Laden erscheint ein zufälliger.
+const TIPS = [
+  "Study a little every day — 15 focused minutes beat a two-hour cram session.",
+  "Say new words out loud. Hearing yourself helps them stick.",
+  "Learn whole phrases, not just single words — you’ll sound natural faster.",
+  "Review right before bed; your brain consolidates language while you sleep.",
+  "Mistakes are progress. Every error you fix is a word you’ll never forget.",
+  "Label things around your home in German — fridge, door, mirror, table.",
+  "Change your phone’s language to German for a free daily workout.",
+  "Don’t translate word-for-word — try to think directly in German.",
+  "Listen to German podcasts or music, even in the background.",
+  "Focus on the most common words first — they cover most conversations.",
+  "Speak from day one. Perfect grammar can wait; communication can’t.",
+  "Keep a small notebook for new words you meet in the wild.",
+  "Re-watch a lesson without subtitles once you’ve understood it.",
+  "Set a tiny daily goal — one lesson or ten flashcards — and keep the streak.",
+  "Learn nouns together with their article (der/die/das). Always.",
+  "Shadowing: repeat a sentence right after you hear it, copying the rhythm.",
+  "Use new words in your own sentences — active use beats passive reading.",
+  "Celebrate small wins. Motivation is the real secret to fluency.",
+];
+
 export default function Dashboard() {
   const [progress, setProgress] = useState<Progress>({ completedLessons: [], xp: 0 });
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [access, setAccess] = useState<Access | null>(null);
   const [due, setDue] = useState<number | null>(null);
+  const [firstName, setFirstName] = useState("");
+  const [tip, setTip] = useState<string | null>(null);
 
   useEffect(() => {
     loadProgress().then(setProgress);
     getLessons().then(setLessons);
     getAccess().then(setAccess);
     countDueToday().then(setDue);
+
+    // Vornamen aus dem Konto holen (aus dem bei der Registrierung gespeicherten Namen).
+    createClient().auth.getUser().then(({ data: { user } }) => {
+      const full = (user?.user_metadata?.full_name as string) || "";
+      const first = full.trim().split(/\s+/)[0];
+      if (first) setFirstName(first);
+    });
+
+    // Zufälligen Tipp erst nach dem Mount setzen (verhindert Hydration-Konflikte).
+    setTip(TIPS[Math.floor(Math.random() * TIPS.length)]);
   }, []);
 
   const done = progress.completedLessons.length;
@@ -37,8 +72,10 @@ export default function Dashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold">Hi there! 👋</h1>
-        <p className="text-cream-dim">Great to see you back. Let&apos;s keep going!</p>
+        <h1 className="text-2xl font-bold">Hi {firstName || "there"}! 👋</h1>
+        <p className="text-cream-dim mt-1">
+          {tip ? <><span className="text-gold-bright">💡 Tip:</span> {tip}</> : "Great to see you back. Let’s keep going!"}
+        </p>
       </div>
 
       {/* Zugangsstatus */}
