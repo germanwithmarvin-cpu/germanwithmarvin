@@ -11,7 +11,19 @@ export const SITE = {
   skoolUrl: "https://www.skool.com/german-with-marvin-5887/about",
   // Verkaufskanäle (Zugang läuft über diese Plattformen – dort gibt es die Codes).
   preplyUrl: "https://preply.com/en/tutor/6416829",
+  // Stripe-Zahlungslink für das Monats-Abo (Managed Payments / Merchant of Record).
+  // TEST-Link – vor dem echten Start durch den Live-Link ersetzen.
+  stripePaymentLink: "https://buy.stripe.com/test_6oU9AT7INcJE505chl7Re00",
 };
+
+// Baut den Checkout-Link und hängt Nutzer-ID + E-Mail an, damit der Webhook
+// nach der Zahlung genau weiß, welches Konto freigeschaltet werden soll.
+export function checkoutUrl(userId?: string, email?: string): string {
+  const url = new URL(SITE.stripePaymentLink);
+  if (userId) url.searchParams.set("client_reference_id", userId);
+  if (email) url.searchParams.set("prefilled_email", email);
+  return url.toString();
+}
 
 // ---- Preis- & Zugangsmodell -------------------------------------------------
 // App-Abo pro Monat (Videos + Flashcards, alle Level A1–B2).

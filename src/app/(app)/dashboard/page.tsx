@@ -8,6 +8,7 @@ import { loadProgress, type Progress } from "@/lib/progress";
 import { countDueToday } from "@/lib/study";
 import { getAccess, type Access } from "@/lib/access";
 import { createClient } from "@/lib/supabase/client";
+import { checkoutUrl, priceLabel, APP_PRICE_EUR } from "@/lib/config";
 
 // Schnellzugriff-Kacheln zu den Hauptbereichen.
 const TILES = [
@@ -46,6 +47,8 @@ export default function Dashboard() {
   const [due, setDue] = useState<number | null>(null);
   const [firstName, setFirstName] = useState("");
   const [tip, setTip] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | undefined>();
+  const [email, setEmail] = useState<string | undefined>();
 
   useEffect(() => {
     loadProgress().then(setProgress);
@@ -53,11 +56,13 @@ export default function Dashboard() {
     getAccess().then(setAccess);
     countDueToday().then(setDue);
 
-    // Vornamen aus dem Konto holen (aus dem bei der Registrierung gespeicherten Namen).
+    // Vornamen + Konto-Infos holen (Name aus der Registrierung; ID/E-Mail für den Checkout).
     createClient().auth.getUser().then(({ data: { user } }) => {
       const full = (user?.user_metadata?.full_name as string) || "";
       const first = full.trim().split(/\s+/)[0];
       if (first) setFirstName(first);
+      setUserId(user?.id);
+      setEmail(user?.email ?? undefined);
     });
 
     // Zufälligen Tipp erst nach dem Mount setzen (verhindert Hydration-Konflikte).
@@ -78,17 +83,28 @@ export default function Dashboard() {
         </p>
       </div>
 
-      {/* Zugangsstatus */}
+      {/* Abo-Banner: für Trial- und Gratis-Konten den Vollzugang anbieten */}
       {access && (access.tier === "trial" || access.tier === "free") && (
-        <div className="card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          {access.tier === "trial" ? (
-            <span className="text-sm">
-              🎁 Free trial: <span className="text-gold-bright font-medium">{access.trialDaysLeft} day{access.trialDaysLeft === 1 ? "" : "s"} left</span> of full access. A1 stays free forever.
-            </span>
-          ) : (
-            <span className="text-sm">A1 is free for you. Got a code from Skool or Preply? Redeem it for full access.</span>
-          )}
-          <Link href="/redeem" className="btn-gold px-4 py-2 text-sm whitespace-nowrap shrink-0">Redeem access code</Link>
+        <div className="card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-gold/30">
+          <div>
+            <div className="font-semibold">
+              {access.tier === "trial"
+                ? `🎁 ${access.trialDaysLeft} day${access.trialDaysLeft === 1 ? "" : "s"} of full access left`
+                : "🔓 Unlock everything"}
+            </div>
+            <div className="text-sm text-cream-dim mt-0.5">
+              Get <span className="text-cream">German Simplified — All-Access</span>: all levels, videos,
+              flashcards & stories for {priceLabel(APP_PRICE_EUR)} €/month. Cancel anytime. A1 stays free.
+            </div>
+          </div>
+          <div className="flex flex-col items-stretch sm:items-end gap-1.5 shrink-0">
+            <a href={checkoutUrl(userId, email)} className="btn-gold px-5 py-2.5 text-sm text-center whitespace-nowrap">
+              Get full access — {priceLabel(APP_PRICE_EUR)} €/mo
+            </a>
+            <Link href="/redeem" className="text-xs text-cream-dim hover:text-cream underline underline-offset-4 text-center">
+              I have a code from Preply / Skool
+            </Link>
+          </div>
         </div>
       )}
 

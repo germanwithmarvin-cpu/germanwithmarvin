@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import { getLessons } from "@/lib/lessons";
+import { createClient } from "@/lib/supabase/client";
+import { checkoutUrl, priceLabel, APP_PRICE_EUR } from "@/lib/config";
 
 // Multiple-Choice-Einstufung (zunehmender Schwierigkeitsgrad A1 → B1).
 const assessment = [
@@ -51,9 +53,15 @@ export default function WelcomePage() {
   const [aiFeedback, setAiFeedback] = useState<AiFeedback | null>(null);
   const [checking, setChecking] = useState(false);
   const [firstLessonId, setFirstLessonId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | undefined>();
+  const [email, setEmail] = useState<string | undefined>();
 
   useEffect(() => {
     getLessons().then((ls) => setFirstLessonId(ls[0]?.id ?? null));
+    createClient().auth.getUser().then(({ data: { user } }) => {
+      setUserId(user?.id);
+      setEmail(user?.email ?? undefined);
+    });
   }, []);
 
   // Holt echte KI-Korrektur; fällt auf die einfache Prüfung zurück, wenn kein Schlüssel da ist.
@@ -221,11 +229,31 @@ export default function WelcomePage() {
                   Everyone follows the path from the beginning — you&apos;ll move quickly through anything you already know.
                 </p>
               </div>
+              {/* Abo-Vorschlag direkt nach der Registrierung */}
+              <div className="card p-6 border-gold/30 text-left">
+                <div className="text-lg font-semibold text-center">🔓 Unlock everything</div>
+                <p className="text-sm text-cream-dim mt-2 text-center">
+                  You start with <span className="text-cream">A1 free</span>. Get <span className="text-cream">German Simplified — All-Access</span> for
+                  all levels, videos, flashcards & stories.
+                </p>
+                <ul className="text-sm text-cream-dim space-y-1.5 mt-4 max-w-xs mx-auto">
+                  <li>✓ All video lessons (A1–B2)</li>
+                  <li>✓ The full flashcard trainer & reading stories</li>
+                  <li>✓ Writing feedback — cancel anytime</li>
+                </ul>
+                <a
+                  href={checkoutUrl(userId, email)}
+                  className="btn-gold px-6 py-3 mt-5 block text-center"
+                >
+                  Get full access — {priceLabel(APP_PRICE_EUR)} €/month
+                </a>
+              </div>
+
               <button
                 onClick={() => router.push(firstLessonId ? `/lessons/${firstLessonId}` : "/lessons")}
-                className="btn-gold px-8 py-3.5 text-lg"
+                className="text-sm text-cream-dim hover:text-cream underline underline-offset-4"
               >
-                Start my first lesson
+                Maybe later — start with free A1
               </button>
             </div>
           )}
