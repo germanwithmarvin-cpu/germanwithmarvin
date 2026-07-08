@@ -2,21 +2,31 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { TROPHIES, type Lesson } from "@/lib/data";
+import { type Lesson } from "@/lib/data";
 import { getLessons } from "@/lib/lessons";
 import { loadProgress, type Progress } from "@/lib/progress";
-import DueToday from "@/components/DueToday";
+import { countDueToday } from "@/lib/study";
 import { getAccess, type Access } from "@/lib/access";
+
+// Schnellzugriff-Kacheln zu den Hauptbereichen.
+const TILES = [
+  { href: "/lessons", icon: "🎬", label: "Lessons", sub: "Watch & practice" },
+  { href: "/decks", icon: "🗂️", label: "Flashcards", sub: "Learn vocabulary" },
+  { href: "/stories", icon: "📖", label: "Stories", sub: "Read at your level" },
+  { href: "/writing", icon: "✍️", label: "Writing", sub: "Get feedback" },
+];
 
 export default function Dashboard() {
   const [progress, setProgress] = useState<Progress>({ completedLessons: [], xp: 0 });
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [access, setAccess] = useState<Access | null>(null);
+  const [due, setDue] = useState<number | null>(null);
 
   useEffect(() => {
     loadProgress().then(setProgress);
     getLessons().then(setLessons);
     getAccess().then(setAccess);
+    countDueToday().then(setDue);
   }, []);
 
   const done = progress.completedLessons.length;
@@ -32,84 +42,85 @@ export default function Dashboard() {
       </div>
 
       {/* Zugangsstatus */}
-      {access && (
+      {access && (access.tier === "trial" || access.tier === "free") && (
         <div className="card p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          {access.tier === "subscribed" ? (
-            <span className="text-sm">✓ Full access active — all levels, videos and vocabulary.</span>
-          ) : access.tier === "vocab" ? (
-            <span className="text-sm">✓ Vocabulary access active. Your video course is on Skool.</span>
-          ) : access.tier === "trial" ? (
+          {access.tier === "trial" ? (
             <span className="text-sm">
               🎁 Free trial: <span className="text-gold-bright font-medium">{access.trialDaysLeft} day{access.trialDaysLeft === 1 ? "" : "s"} left</span> of full access. A1 stays free forever.
             </span>
           ) : (
             <span className="text-sm">A1 is free for you. Got a code from Skool or Preply? Redeem it for full access.</span>
           )}
-          {access.tier !== "subscribed" && access.tier !== "vocab" && (
-            <Link href="/redeem" className="btn-gold px-4 py-2 text-sm whitespace-nowrap shrink-0">
-              Redeem access code
-            </Link>
-          )}
+          <Link href="/redeem" className="btn-gold px-4 py-2 text-sm whitespace-nowrap shrink-0">Redeem access code</Link>
         </div>
       )}
 
-      {/* Heutige Wiederholung (Flashcards) */}
-      <DueToday />
+      {/* HERO: Weitermachen */}
+      <div className="card p-6 md:p-7 relative overflow-hidden">
+        <div className="absolute -right-16 -top-16 w-56 h-56 rounded-full" style={{ background: "radial-gradient(circle, color-mix(in srgb, var(--gold) 22%, transparent), transparent 70%)" }} aria-hidden="true" />
+        <div className="relative">
+          <div className="text-xs uppercase tracking-[0.2em] text-gold-bright">Continue where you left off</div>
 
-      <div className="grid sm:grid-cols-3 gap-4">
-        <div className="card p-5">
-          <div className="text-3xl font-bold text-gold-bright">{progress.xp}</div>
-          <div className="text-sm text-cream-dim">XP earned</div>
-        </div>
-        <div className="card p-5">
-          <div className="text-3xl font-bold text-gold-bright">{done}/{total}</div>
-          <div className="text-sm text-cream-dim">Lessons completed</div>
-        </div>
-        <div className="card p-5">
-          <div className="text-3xl font-bold text-gold-bright">
-            {TROPHIES.filter((t) => progress.xp >= t.unlockedAtXp).length}
-          </div>
-          <div className="text-sm text-cream-dim">Trophies unlocked</div>
-        </div>
-      </div>
+          <div className="grid md:grid-cols-2 gap-4 mt-4">
+            {/* Nächste Lektion */}
+            <div className="rounded-xl bg-bordeaux-deep/40 border border-gold/15 p-5 flex flex-col">
+              <div className="text-sm text-cream-dim">🎬 Next lesson</div>
+              {nextLesson ? (
+                <>
+                  <div className="text-lg font-semibold mt-1 flex-1">{nextLesson.title}</div>
+                  <div className="text-sm text-cream-dim">{nextLesson.level} · {nextLesson.durationMin} min</div>
+                  <Link href={`/lessons/${nextLesson.id}`} className="btn-gold px-5 py-2.5 mt-3 text-center">Start lesson →</Link>
+                </>
+              ) : (
+                <>
+                  <div className="text-lg font-semibold mt-1 flex-1">All lessons done! 🎉</div>
+                  <Link href="/lessons" className="btn-outline px-5 py-2.5 mt-3 text-center">Review lessons</Link>
+                </>
+              )}
+            </div>
 
-      <div className="card p-5">
-        <div className="flex justify-between text-sm mb-2">
-          <span>Your progress</span>
-          <span className="text-gold-bright">{pct}%</span>
-        </div>
-        <div className="h-3 rounded-full bg-bordeaux-deep/70 overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-gold to-gold-bright" style={{ width: `${pct}%` }} />
-        </div>
-      </div>
-
-      {nextLesson && (
-        <div className="card p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="text-xs text-gold-bright uppercase tracking-wider">Continue learning</div>
-            <div className="text-lg font-semibold mt-1">{nextLesson.title}</div>
-            <div className="text-sm text-cream-dim">{nextLesson.level} · {nextLesson.durationMin} min</div>
-          </div>
-          <Link href={`/lessons/${nextLesson.id}`} className="btn-gold px-5 py-2.5 text-center">
-            Start lesson
-          </Link>
-        </div>
-      )}
-
-      <div>
-        <h2 className="text-lg font-semibold mb-3">Trophies</h2>
-        <div className="grid sm:grid-cols-3 gap-4">
-          {TROPHIES.map((t) => {
-            const unlocked = progress.xp >= t.unlockedAtXp;
-            return (
-              <div key={t.id} className={`card p-5 text-center ${unlocked ? "" : "opacity-40"}`}>
-                <div className="text-4xl">{unlocked ? t.icon : "🔒"}</div>
-                <div className="font-medium mt-2">{t.name}</div>
-                <div className="text-xs text-cream-dim mt-1">{t.description}</div>
+            {/* Fällige Karten */}
+            <div className="rounded-xl bg-bordeaux-deep/40 border border-gold/15 p-5 flex flex-col">
+              <div className="text-sm text-cream-dim">🗂️ Flashcards for today</div>
+              <div className="flex items-baseline gap-2 mt-1 flex-1">
+                <span className="text-4xl font-bold text-gold-bright">{due ?? "…"}</span>
+                <span className="text-cream-dim">card{due === 1 ? "" : "s"} due</span>
               </div>
-            );
-          })}
+              {due === 0 ? (
+                <p className="text-sm text-cream-dim mb-3">All caught up — new cards unlock daily. 🎉</p>
+              ) : null}
+              <Link href="/study/today" className="btn-gold px-5 py-2.5 mt-1 text-center">
+                {due === 0 ? "Study anyway" : "Study now →"}
+              </Link>
+            </div>
+          </div>
         </div>
+      </div>
+
+      {/* Schnellzugriff */}
+      <div>
+        <h2 className="text-lg font-semibold mb-3">Jump back in</h2>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {TILES.map((t) => (
+            <Link key={t.href} href={t.href} className="card p-5 hover:border-gold/50 transition group">
+              <div className="text-3xl">{t.icon}</div>
+              <div className="font-semibold mt-2 group-hover:text-cream">{t.label}</div>
+              <div className="text-xs text-cream-dim">{t.sub}</div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Kompakter Fortschritt */}
+      <div className="card p-5">
+        <div className="flex items-center justify-between text-sm mb-2">
+          <span className="text-cream-dim">Your lesson progress</span>
+          <span className="text-gold-bright font-medium">{done} / {total} · {pct}%</span>
+        </div>
+        <div className="h-2.5 rounded-full bg-bordeaux-deep/70 overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-gold to-gold-bright transition-all" style={{ width: `${pct}%` }} />
+        </div>
+        <div className="text-sm text-cream-dim mt-3">⭐ {progress.xp} XP earned</div>
       </div>
     </div>
   );
