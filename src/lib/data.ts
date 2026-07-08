@@ -22,6 +22,8 @@ export type Lesson = {
   // YouTube-Video-ID (nicht gelistete Videos). Aus dem Link …watch?v=ABC123 → "ABC123".
   videoId: string;
   durationMin: number;
+  // Wenn false, wird das Quiz für diese Lektion ausgeblendet (auch wenn Fragen hinterlegt sind).
+  quizEnabled: boolean;
   quiz: QuizQuestion[];
   // PDF-Lernmaterial zum Herunterladen. Lege die PDFs in den Ordner public/materials/.
   materials: Material[];

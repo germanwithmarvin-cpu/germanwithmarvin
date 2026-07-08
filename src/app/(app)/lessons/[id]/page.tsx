@@ -44,6 +44,8 @@ export default function LessonPage() {
     );
   }
 
+  // Quiz nur, wenn der Lehrer es aktiviert hat UND Fragen hinterlegt sind.
+  const quizOn = lesson.quizEnabled && lesson.quiz.length > 0;
   const q = lesson.quiz[step];
   const isCorrect = checked && selected === q?.correctOptionId;
 
@@ -74,8 +76,18 @@ export default function LessonPage() {
     setFinished(false);
   }
 
-  // Aktueller Schritt für die Fortschrittsanzeige
-  const phase = finished ? 3 : watched ? 2 : 1;
+  // Video als angesehen markieren. Ohne Quiz ist die Lektion damit direkt fertig.
+  function markWatched() {
+    setWatched(true);
+    if (!quizOn) {
+      void completeLesson(lesson!.id, lesson!.xp);
+      setFinished(true);
+    }
+  }
+
+  // Schrittanzeige: mit Quiz 3 Schritte, ohne Quiz nur Watch → Done.
+  const steps = quizOn ? ["1 · Watch", "2 · Practice", "3 · Done"] : ["1 · Watch", "2 · Done"];
+  const phase = finished ? steps.length : watched ? 2 : 1;
 
   return (
     <div className="space-y-6">
@@ -87,7 +99,7 @@ export default function LessonPage() {
 
       {/* Geführte Schritt-Anzeige: 1. Watch → 2. Practice → 3. Done */}
       <div className="flex items-center gap-2 text-sm">
-        {["1 · Watch", "2 · Practice", "3 · Done"].map((label, i) => (
+        {steps.map((label, i) => (
           <span
             key={label}
             className={`px-3 py-1 rounded-full ${phase === i + 1 ? "bg-gold/25 text-cream" : "bg-bordeaux-soft text-cream-dim"}`}
@@ -115,8 +127,8 @@ export default function LessonPage() {
       )}
 
       {!watched && (
-        <button onClick={() => setWatched(true)} className="btn-gold px-6 py-3 w-full">
-          I&apos;ve watched it — start the quiz ✅
+        <button onClick={markWatched} className="btn-gold px-6 py-3 w-full">
+          {quizOn ? "I've watched it — start the quiz ✅" : "I've watched it — mark as complete ✅"}
         </button>
       )}
 
@@ -179,7 +191,9 @@ export default function LessonPage() {
           <div className="text-5xl">🏆</div>
           <h2 className="text-xl font-bold">Lesson complete!</h2>
           <p className="text-cream-dim">
-            You got {correctCount} of {lesson.quiz.length} right and earned +{lesson.xp} XP.
+            {quizOn
+              ? `You got ${correctCount} of ${lesson.quiz.length} right and earned +${lesson.xp} XP.`
+              : `Nicely done — you earned +${lesson.xp} XP.`}
           </p>
           {nextLesson ? (
             <button onClick={() => router.push(`/lessons/${nextLesson.id}`)} className="btn-gold px-8 py-3.5 text-lg w-full">

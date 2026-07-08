@@ -18,6 +18,7 @@ function emptyLesson(): Lesson {
     durationMin: 0,
     xp: 100,
     materials: [],
+    quizEnabled: true,
     quiz: [],
   };
 }
@@ -148,7 +149,9 @@ export default function LessonsAdmin() {
               <span className="grid place-items-center w-7 h-7 rounded-full border border-gold/40 text-gold-bright text-xs font-semibold shrink-0">{i + 1}</span>
               <div className="min-w-0">
                 <div className="font-medium truncate">{l.title}</div>
-                <div className="text-xs text-cream-dim">{l.level} · {l.quiz.length} quiz questions · {l.durationMin} min · +{l.xp} XP</div>
+                <div className="text-xs text-cream-dim">
+                  {l.level} · {l.durationMin} min · +{l.xp} XP · {l.quizEnabled && l.quiz.length > 0 ? `⚡ quiz on (${l.quiz.length})` : "quiz off"}
+                </div>
               </div>
             </div>
             <div className="flex gap-2 shrink-0">
@@ -226,11 +229,34 @@ export default function LessonsAdmin() {
 
       {/* Quiz */}
       <div className="card p-5 space-y-4">
-        <div className="flex items-center justify-between">
-          <span className="font-medium text-sm">⚡ Quiz questions</span>
-          <button onClick={addQuestion} className="btn-outline px-3 py-1.5 text-sm">+ Add question</button>
+        <div className="flex items-center justify-between gap-3">
+          <span className="font-medium text-sm">⚡ Quiz</span>
+          <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={editing.quizEnabled}
+              onChange={(e) => setField("quizEnabled", e.target.checked)}
+              className="w-4 h-4 accent-[var(--gold)]"
+            />
+            <span className={editing.quizEnabled ? "text-cream" : "text-cream-dim"}>
+              {editing.quizEnabled ? "Quiz is ON for this lesson" : "Quiz is OFF for this lesson"}
+            </span>
+          </label>
         </div>
-        {editing.quiz.length === 0 && <p className="text-xs text-cream-dim">No questions yet.</p>}
+
+        {!editing.quizEnabled && (
+          <p className="text-xs text-cream-dim">
+            The quiz is switched off — students go straight from the video to “complete”. Your questions
+            below are kept and will reappear when you switch it back on.
+          </p>
+        )}
+
+        <div className={`space-y-4 ${editing.quizEnabled ? "" : "opacity-50 pointer-events-none"}`}>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-cream-dim">Questions</span>
+            <button onClick={addQuestion} className="btn-outline px-3 py-1.5 text-sm">+ Add question</button>
+          </div>
+          {editing.quiz.length === 0 && <p className="text-xs text-cream-dim">No questions yet.</p>}
         {editing.quiz.map((q, qi) => (
           <div key={qi} className="rounded-lg border border-gold/20 p-3 space-y-2">
             <div className="flex items-center justify-between">
@@ -261,6 +287,7 @@ export default function LessonsAdmin() {
             <input className={inputClass} value={q.explanation} onChange={(e) => updateQuestion(qi, { explanation: e.target.value })} placeholder="Explanation (shown after answering)" />
           </div>
         ))}
+        </div>
       </div>
 
       <div className="flex gap-3">

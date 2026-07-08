@@ -8,6 +8,16 @@ import { loadProgress } from "@/lib/progress";
 import { getAccess, canAccessVideoLevel, type AccessTier } from "@/lib/access";
 import { SITE } from "@/lib/config";
 
+// Übergeordnete Kategorien (Level) in fester Reihenfolge.
+const LEVELS: Lesson["level"][] = ["A1", "A2", "B1", "B2", "C1"];
+const LEVEL_LABEL: Record<Lesson["level"], string> = {
+  A1: "Beginner",
+  A2: "Elementary",
+  B1: "Intermediate",
+  B2: "Upper intermediate",
+  C1: "Advanced",
+};
+
 export default function LessonsPage() {
   const [completed, setCompleted] = useState<string[]>([]);
   const [lessons, setLessons] = useState<Lesson[]>([]);
@@ -26,9 +36,9 @@ export default function LessonsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Your learning path</h1>
+        <h1 className="text-2xl font-bold">Video lessons</h1>
         <p className="text-cream-dim text-sm">
-          Follow the path step by step. Finish a lesson to unlock the next one.
+          Browse all lessons by level — jump into any lesson you like, in any order.
         </p>
       </div>
 
@@ -45,53 +55,56 @@ export default function LessonsPage() {
         <p className="text-sm text-cream-dim">No lessons yet. Check back soon!</p>
       )}
 
-      <div className="space-y-4">
-        {lessons.map((l, i) => {
-          const isDone = completed.includes(l.id);
-          // Eine Lektion ist freigeschaltet, wenn es die erste ist
-          // oder die vorherige bereits abgeschlossen wurde.
-          const prevDone = i === 0 || completed.includes(lessons[i - 1].id);
-          const seqLocked = !isDone && !prevDone;
-          // Level-Sperre: A2–B2 nur mit Abo/Trial.
-          const levelLocked = !canAccessVideoLevel(tier, l.level);
-          const locked = seqLocked || levelLocked;
+      {/* Nach Level gruppiert; alle Lektionen sichtbar & anklickbar (A2–B2 hinter Code). */}
+      <div className="space-y-8">
+        {LEVELS.map((lv) => {
+          const items = lessons.filter((l) => l.level === lv);
+          if (items.length === 0) return null;
+          const levelLocked = !canAccessVideoLevel(tier, lv);
 
-          const inner = (
-            <div
-              className={`card p-5 flex items-center justify-between gap-4 transition ${
-                locked ? "opacity-60" : "hover:border-gold/50"
-              }`}
-            >
-              <div className="flex items-center gap-4">
-                <div className="grid place-items-center w-9 h-9 rounded-full border border-gold/40 text-gold-bright text-sm font-semibold shrink-0">
-                  {i + 1}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-gold/20 text-gold-bright">{l.level}</span>
-                    <span className="text-xs text-cream-dim">{l.topic} · {l.durationMin} min</span>
-                    {levelLocked && <span className="text-xs text-gold-bright">· membership</span>}
-                  </div>
-                  <div className="text-lg font-semibold mt-1">{l.title}</div>
-                  <div className="text-sm text-cream-dim">{l.description}</div>
-                </div>
+          return (
+            <section key={lv} className="space-y-3">
+              <div className="flex items-center gap-3 flex-wrap">
+                <h2 className="text-xl font-bold text-gold-bright">{lv}</h2>
+                <span className="text-sm text-cream-dim">{LEVEL_LABEL[lv]}</span>
+                {levelLocked && (
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-gold/15 text-gold-bright">
+                    {tier === "vocab" ? "🎬 on Skool" : "🔒 needs an access code"}
+                  </span>
+                )}
               </div>
-              <div className="text-2xl shrink-0">{isDone ? "✅" : locked ? "🔒" : "▶️"}</div>
-            </div>
-          );
 
-          // Level-gesperrt: Vokabel-Nutzer → Skool; sonst → Code einlösen.
-          if (levelLocked) {
-            return tier === "vocab" ? (
-              <a key={l.id} href={SITE.skoolUrl} target="_blank" rel="noopener noreferrer" title="Watch on Skool">{inner}</a>
-            ) : (
-              <Link key={l.id} href="/redeem" title="Redeem your access code">{inner}</Link>
-            );
-          }
-          return seqLocked ? (
-            <div key={l.id} title="Finish the previous lesson to unlock this one.">{inner}</div>
-          ) : (
-            <Link key={l.id} href={`/lessons/${l.id}`}>{inner}</Link>
+              <div className="space-y-3">
+                {items.map((l) => {
+                  const isDone = completed.includes(l.id);
+                  const hasQuiz = l.quizEnabled && l.quiz.length > 0;
+
+                  const inner = (
+                    <div className={`card p-5 flex items-center justify-between gap-4 transition ${levelLocked ? "opacity-60" : "hover:border-gold/50"}`}>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-xs text-cream-dim">{l.topic} · {l.durationMin} min</span>
+                          {hasQuiz && <span className="text-xs text-gold-bright">· ⚡ quiz</span>}
+                        </div>
+                        <div className="text-lg font-semibold mt-1">{l.title}</div>
+                        <div className="text-sm text-cream-dim">{l.description}</div>
+                      </div>
+                      <div className="text-2xl shrink-0">{isDone ? "✅" : levelLocked ? "🔒" : "▶️"}</div>
+                    </div>
+                  );
+
+                  // A2–B2 ohne Zugang: Vokabel-Nutzer → Skool, sonst → Code einlösen.
+                  if (levelLocked) {
+                    return tier === "vocab" ? (
+                      <a key={l.id} href={SITE.skoolUrl} target="_blank" rel="noopener noreferrer" title="Watch on Skool">{inner}</a>
+                    ) : (
+                      <Link key={l.id} href="/redeem" title="Redeem your access code">{inner}</Link>
+                    );
+                  }
+                  return <Link key={l.id} href={`/lessons/${l.id}`}>{inner}</Link>;
+                })}
+              </div>
+            </section>
           );
         })}
       </div>
