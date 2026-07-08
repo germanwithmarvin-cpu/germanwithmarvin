@@ -26,16 +26,15 @@ export function checkoutUrl(userId?: string, email?: string): string {
 }
 
 // ---- Preis- & Zugangsmodell -------------------------------------------------
-// App-Abo pro Monat (Videos + Flashcards, alle Level A1–B2).
-export const APP_PRICE_EUR = 13.9;
-// Preis für eine einzelne 1:1-Stunde (separat buchbar).
-export const BOOKING_PRICE_EUR = 39;
+// App-Abo pro Monat (Videos + Flashcards + Stories, alle Level A1–B2).
+export const APP_PRICE = 39;
+export const APP_CURRENCY = "USD";
 // Kostenloser Vollzugang (alle Level) für neue Konten – in Tagen.
 export const TRIAL_DAYS = 7;
 // Diese Level sind IMMER kostenlos (auch ohne Abo / nach dem Trial).
 export const FREE_LEVELS = ["A1"] as const;
 
-// Preis hübsch formatiert, z. B. "13,90".
-export function priceLabel(eur: number): string {
-  return eur.toFixed(2).replace(".", ",");
+// Preis hübsch formatiert, z. B. "$39".
+export function priceLabel(): string {
+  return `$${APP_PRICE % 1 === 0 ? APP_PRICE : APP_PRICE.toFixed(2)}`;
 }

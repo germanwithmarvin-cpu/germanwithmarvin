@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { SITE, checkoutUrl, priceLabel, APP_PRICE_EUR } from "@/lib/config";
+import { SITE, checkoutUrl, priceLabel } from "@/lib/config";
 import { createClient } from "@/lib/supabase/client";
 
 // Wird angezeigt, wenn ein gesperrter Inhalt (A2–B2 oder Premium) ohne Zugang
@@ -33,7 +33,7 @@ export default function Paywall({ title = "Unlock everything" }: { title?: strin
       </ul>
 
       <a href={checkoutUrl(userId, email)} className="btn-gold px-6 py-3 mt-6 inline-block">
-        Get full access — {priceLabel(APP_PRICE_EUR)} €/month
+        Get full access — {priceLabel()}/month
       </a>
       <p className="text-xs text-cream-dim mt-2">Cancel anytime.</p>
 

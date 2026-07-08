@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import { getLessons } from "@/lib/lessons";
 import { createClient } from "@/lib/supabase/client";
-import { checkoutUrl, priceLabel, APP_PRICE_EUR } from "@/lib/config";
+import { checkoutUrl, priceLabel } from "@/lib/config";
 
 // Multiple-Choice-Einstufung (zunehmender Schwierigkeitsgrad A1 → B1).
 const assessment = [
@@ -245,7 +245,7 @@ export default function WelcomePage() {
                   href={checkoutUrl(userId, email)}
                   className="btn-gold px-6 py-3 mt-5 block text-center"
                 >
-                  Get full access — {priceLabel(APP_PRICE_EUR)} €/month
+                  Get full access — {priceLabel()}/month
                 </a>
               </div>
 

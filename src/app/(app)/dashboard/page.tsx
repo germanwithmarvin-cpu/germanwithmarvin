@@ -8,7 +8,7 @@ import { loadProgress, type Progress } from "@/lib/progress";
 import { countDueToday } from "@/lib/study";
 import { getAccess, type Access } from "@/lib/access";
 import { createClient } from "@/lib/supabase/client";
-import { checkoutUrl, priceLabel, APP_PRICE_EUR } from "@/lib/config";
+import { checkoutUrl, priceLabel } from "@/lib/config";
 
 // Schnellzugriff-Kacheln zu den Hauptbereichen.
 const TILES = [
@@ -94,12 +94,12 @@ export default function Dashboard() {
             </div>
             <div className="text-sm text-cream-dim mt-0.5">
               Get <span className="text-cream">German Simplified — All-Access</span>: all levels, videos,
-              flashcards & stories for {priceLabel(APP_PRICE_EUR)} €/month. Cancel anytime. A1 stays free.
+              flashcards & stories for {priceLabel()}/month. Cancel anytime. A1 stays free.
             </div>
           </div>
           <div className="flex flex-col items-stretch sm:items-end gap-1.5 shrink-0">
             <a href={checkoutUrl(userId, email)} className="btn-gold px-5 py-2.5 text-sm text-center whitespace-nowrap">
-              Get full access — {priceLabel(APP_PRICE_EUR)} €/mo
+              Get full access — {priceLabel()}/mo
             </a>
             <Link href="/redeem" className="text-xs text-cream-dim hover:text-cream underline underline-offset-4 text-center">
               I have a code from Preply / Skool
