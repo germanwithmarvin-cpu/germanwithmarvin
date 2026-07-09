@@ -126,14 +126,14 @@ export default function StoriesAdmin() {
           <textarea rows={14} className={inputClass} value={editing.body} onChange={(e) => setField("body", e.target.value)} placeholder="Write the story here. Line breaks are kept. Leave empty for a download-only book." />
         </div>
         <div>
-          <label className="block text-sm mb-1 text-cream-dim">Book download (PDF, optional)</label>
+          <label className="block text-sm mb-1 text-cream-dim">Book download (PDF / PNG / JPG, optional)</label>
           {editing.fileUrl ? (
             <div className="flex items-center gap-3 text-sm">
-              <a href={editing.fileUrl} target="_blank" rel="noreferrer" className="text-gold-bright underline underline-offset-4">📕 View uploaded book</a>
+              <a href={editing.fileUrl} target="_blank" rel="noreferrer" className="text-gold-bright underline underline-offset-4">📕 View uploaded file</a>
               <button onClick={() => setField("fileUrl", "")} className="text-red-300 text-xs">Remove</button>
             </div>
           ) : (
-            <PdfUpload folder="story-books" label="⬆ Upload book (PDF)" onUploaded={(url) => setField("fileUrl", url)} />
+            <PdfUpload folder="story-books" label="⬆ Upload book (PDF/PNG/JPG)" onUploaded={(url) => setField("fileUrl", url)} />
           )}
         </div>
       </div>

@@ -1,13 +1,13 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { uploadPdf } from "@/lib/upload";
+import { uploadFile } from "@/lib/upload";
 
-// Kleiner Upload-Button für PDF-Dateien. Ruft nach dem Hochladen onUploaded(url, name) auf.
+// Kleiner Upload-Button für Dateien (PDF/PNG/JPG). Ruft nach dem Hochladen onUploaded(url, name) auf.
 export default function PdfUpload({
   folder,
   onUploaded,
-  label = "⬆ Upload PDF",
+  label = "⬆ Upload file (PDF/PNG/JPG)",
 }: {
   folder: string;
   onUploaded: (url: string, name: string) => void;
@@ -22,7 +22,7 @@ export default function PdfUpload({
     if (!file) return;
     setBusy(true);
     setErr(null);
-    const { url, error } = await uploadPdf(file, folder);
+    const { url, error } = await uploadFile(file, folder);
     setBusy(false);
     if (ref.current) ref.current.value = "";
     if (error || !url) { setErr(error ?? "Upload failed"); return; }
@@ -31,7 +31,7 @@ export default function PdfUpload({
 
   return (
     <span className="inline-flex items-center gap-2">
-      <input ref={ref} type="file" accept="application/pdf" onChange={handle} className="hidden" />
+      <input ref={ref} type="file" accept="application/pdf,image/png,image/jpeg" onChange={handle} className="hidden" />
       <button
         type="button"
         onClick={() => ref.current?.click()}

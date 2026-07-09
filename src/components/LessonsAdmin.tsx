@@ -227,7 +227,7 @@ export default function LessonsAdmin() {
       {/* PDF-Material (Download nach der Stunde) */}
       <div className="card p-5 space-y-3">
         <div className="flex items-center justify-between gap-2 flex-wrap">
-          <span className="font-medium text-sm">📄 Learning material (PDFs to download)</span>
+          <span className="font-medium text-sm">📄 Learning material (PDF / PNG / JPG)</span>
           <div className="flex items-center gap-2">
             <PdfUpload
               folder="lesson-materials"
@@ -238,7 +238,7 @@ export default function LessonsAdmin() {
             <button onClick={addMaterial} className="btn-outline px-3 py-1.5 text-sm">+ Link</button>
           </div>
         </div>
-        <p className="text-xs text-cream-dim">Upload a PDF (it lands here for students to download), or add an external link.</p>
+        <p className="text-xs text-cream-dim">Upload a PDF or image (PNG/JPG) for students to download, or add an external link.</p>
         {editing.materials.length === 0 && <p className="text-xs text-cream-dim">No PDFs yet (optional).</p>}
         {editing.materials.map((m, mi) => (
           <div key={mi} className="flex gap-2 items-center">
