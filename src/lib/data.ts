@@ -42,6 +42,8 @@ export type Story = {
   intro: string;
   // Der eigentliche Text der Geschichte (Zeilenumbrüche bleiben erhalten).
   body: string;
+  // Optionaler Download (Buch als PDF).
+  fileUrl: string;
 };
 
 export type Trophy = {

@@ -48,11 +48,21 @@ export default function StoryPage() {
         {story.intro && <p className="text-cream-dim mt-1">{story.intro}</p>}
       </div>
 
-      <article className="card p-6 whitespace-pre-wrap leading-relaxed text-cream text-lg">
-        {story.body}
-      </article>
+      {story.body.trim() && (
+        <article className="card p-6 whitespace-pre-wrap leading-relaxed text-cream text-lg">
+          {story.body}
+        </article>
+      )}
 
-      <Link href="/stories" className="btn-outline px-5 py-2.5 inline-block">← Back to all stories</Link>
+      {story.fileUrl && (
+        <a href={story.fileUrl} target="_blank" rel="noreferrer" className="btn-gold px-5 py-3 inline-flex items-center gap-2">
+          ⬇ Download the book (PDF)
+        </a>
+      )}
+
+      <div>
+        <Link href="/stories" className="btn-outline px-5 py-2.5 inline-block">← Back to all stories</Link>
+      </div>
     </div>
   );
 }

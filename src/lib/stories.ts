@@ -11,6 +11,7 @@ function fromRow(r: Record<string, unknown>): Story {
     level: (r.level as Story["level"]) ?? "A1",
     intro: (r.intro as string) ?? "",
     body: (r.body as string) ?? "",
+    fileUrl: (r.file_url as string) ?? "",
   };
 }
 
@@ -21,6 +22,7 @@ function toRow(story: Story, sortOrder?: number) {
     level: story.level,
     intro: story.intro,
     body: story.body,
+    file_url: story.fileUrl,
   };
   if (sortOrder !== undefined) row.sort_order = sortOrder;
   return row;

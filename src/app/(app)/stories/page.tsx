@@ -61,23 +61,51 @@ export default function StoriesPage() {
 
                 <div className="space-y-3">
                   {items.map((s) => {
+                    const hasText = s.body.trim().length > 0;
                     const inner = (
-                      <div className={`card p-5 flex items-center justify-between gap-4 transition ${levelLocked ? "opacity-60" : "hover:border-gold/50"}`}>
+                      <div className={`card p-5 h-full flex items-center justify-between gap-4 transition ${levelLocked ? "opacity-60" : "hover:border-gold/50"}`}>
                         <div className="min-w-0">
                           <div className="text-lg font-semibold">{s.title}</div>
                           {s.intro && <div className="text-sm text-cream-dim mt-1">{s.intro}</div>}
                         </div>
-                        <div className="text-2xl shrink-0">{levelLocked ? "🔒" : "📖"}</div>
+                        <div className="text-2xl shrink-0">{levelLocked ? "🔒" : hasText ? "📖" : "📕"}</div>
                       </div>
                     );
+
+                    let main;
                     if (levelLocked) {
-                      return tier === "vocab" ? (
-                        <a key={s.id} href={SITE.skoolUrl} target="_blank" rel="noopener noreferrer" title="Read on Skool">{inner}</a>
+                      main = tier === "vocab" ? (
+                        <a href={SITE.skoolUrl} target="_blank" rel="noopener noreferrer" title="Read on Skool" className="flex-1">{inner}</a>
                       ) : (
-                        <Link key={s.id} href="/redeem" title="Redeem your access code">{inner}</Link>
+                        <Link href="/redeem" title="Redeem your access code" className="flex-1">{inner}</Link>
+                      );
+                    } else if (hasText) {
+                      main = <Link href={`/stories/${s.id}`} className="flex-1">{inner}</Link>;
+                    } else {
+                      // Nur-Download-Buch (kein Lesetext): Karte selbst lädt die PDF.
+                      main = s.fileUrl ? (
+                        <a href={s.fileUrl} target="_blank" rel="noreferrer" className="flex-1">{inner}</a>
+                      ) : (
+                        <div className="flex-1">{inner}</div>
                       );
                     }
-                    return <Link key={s.id} href={`/stories/${s.id}`}>{inner}</Link>;
+
+                    return (
+                      <div key={s.id} className="flex gap-2">
+                        {main}
+                        {!levelLocked && s.fileUrl && (
+                          <a
+                            href={s.fileUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="btn-outline px-4 text-sm shrink-0 self-stretch flex items-center whitespace-nowrap"
+                            title="Download the book (PDF)"
+                          >
+                            ⬇ PDF
+                          </a>
+                        )}
+                      </div>
+                    );
                   })}
                 </div>
               </section>

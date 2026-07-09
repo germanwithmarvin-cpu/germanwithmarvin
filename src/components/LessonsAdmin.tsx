@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { Lesson, QuizQuestion } from "@/lib/data";
 import { getLessons, saveLesson, deleteLesson, saveLessonOrder, slugify } from "@/lib/lessons";
+import PdfUpload from "@/components/PdfUpload";
 
 const LEVELS: Lesson["level"][] = ["Intro", "A1", "A2", "B1", "B2", "C1"];
 const OPTION_IDS = ["a", "b", "c"];
@@ -185,7 +186,7 @@ export default function LessonsAdmin() {
           <div>
             <label className="block text-sm mb-1 text-cream-dim">Level</label>
             <select className={inputClass} value={editing.level} onChange={(e) => setField("level", e.target.value as Lesson["level"])}>
-              {LEVELS.map((lv) => <option key={lv}>{lv}</option>)}
+              {LEVELS.map((lv) => <option key={lv} value={lv}>{lv === "Intro" ? "Essentials (top category)" : lv}</option>)}
             </select>
           </div>
           <div>
@@ -223,17 +224,26 @@ export default function LessonsAdmin() {
         </div>
       </div>
 
-      {/* PDF-Material */}
+      {/* PDF-Material (Download nach der Stunde) */}
       <div className="card p-5 space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="font-medium text-sm">📄 Learning material (PDFs)</span>
-          <button onClick={addMaterial} className="btn-outline px-3 py-1.5 text-sm">+ Add</button>
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <span className="font-medium text-sm">📄 Learning material (PDFs to download)</span>
+          <div className="flex items-center gap-2">
+            <PdfUpload
+              folder="lesson-materials"
+              onUploaded={(url, name) =>
+                setEditing((e) => (e ? { ...e, materials: [...e.materials, { title: name.replace(/\.pdf$/i, ""), url }] } : e))
+              }
+            />
+            <button onClick={addMaterial} className="btn-outline px-3 py-1.5 text-sm">+ Link</button>
+          </div>
         </div>
+        <p className="text-xs text-cream-dim">Upload a PDF (it lands here for students to download), or add an external link.</p>
         {editing.materials.length === 0 && <p className="text-xs text-cream-dim">No PDFs yet (optional).</p>}
         {editing.materials.map((m, mi) => (
           <div key={mi} className="flex gap-2 items-center">
-            <input className={inputClass} value={m.title} onChange={(e) => updateMaterial(mi, { title: e.target.value })} placeholder="Title" />
-            <input className={inputClass} value={m.url} onChange={(e) => updateMaterial(mi, { url: e.target.value })} placeholder="/materials/file.pdf" />
+            <input className={inputClass} value={m.title} onChange={(e) => updateMaterial(mi, { title: e.target.value })} placeholder="Title shown to students" />
+            <input className={inputClass} value={m.url} onChange={(e) => updateMaterial(mi, { url: e.target.value })} placeholder="https://… or uploaded file" />
             <button onClick={() => removeMaterial(mi)} className="text-red-300 text-sm px-2 shrink-0">✕</button>
           </div>
         ))}

@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import type { Story } from "@/lib/data";
 import { getStories, saveStory, deleteStory, saveStoryOrder, slugify } from "@/lib/stories";
+import PdfUpload from "@/components/PdfUpload";
 
 const LEVELS: Story["level"][] = ["A1", "A2", "B1", "B2", "C1"];
 const inputClass = "w-full rounded-lg bg-bordeaux-deep/60 border border-gold/25 px-3 py-2 outline-none focus:border-gold text-sm";
 
 function emptyStory(): Story {
-  return { id: "", title: "", level: "A1", intro: "", body: "" };
+  return { id: "", title: "", level: "A1", intro: "", body: "", fileUrl: "" };
 }
 
 export default function StoriesAdmin() {
@@ -121,8 +122,19 @@ export default function StoriesAdmin() {
           <input className={inputClass} value={editing.intro} onChange={(e) => setField("intro", e.target.value)} placeholder="One sentence about the story (optional)" />
         </div>
         <div>
-          <label className="block text-sm mb-1 text-cream-dim">Story text</label>
-          <textarea rows={14} className={inputClass} value={editing.body} onChange={(e) => setField("body", e.target.value)} placeholder="Write the story here. Line breaks are kept." />
+          <label className="block text-sm mb-1 text-cream-dim">Story text (optional)</label>
+          <textarea rows={14} className={inputClass} value={editing.body} onChange={(e) => setField("body", e.target.value)} placeholder="Write the story here. Line breaks are kept. Leave empty for a download-only book." />
+        </div>
+        <div>
+          <label className="block text-sm mb-1 text-cream-dim">Book download (PDF, optional)</label>
+          {editing.fileUrl ? (
+            <div className="flex items-center gap-3 text-sm">
+              <a href={editing.fileUrl} target="_blank" rel="noreferrer" className="text-gold-bright underline underline-offset-4">📕 View uploaded book</a>
+              <button onClick={() => setField("fileUrl", "")} className="text-red-300 text-xs">Remove</button>
+            </div>
+          ) : (
+            <PdfUpload folder="story-books" label="⬆ Upload book (PDF)" onUploaded={(url) => setField("fileUrl", url)} />
+          )}
         </div>
       </div>
 
