@@ -7,6 +7,7 @@ import type { Lesson } from "@/lib/data";
 import { getLessons } from "@/lib/lessons";
 import { completeLesson } from "@/lib/progress";
 import VideoPlayer from "@/components/VideoPlayer";
+import RichText from "@/components/RichText";
 
 export default function LessonPage() {
   const params = useParams<{ id: string }>();
@@ -112,9 +113,11 @@ export default function LessonPage() {
       {/* Video */}
       {!finished && <VideoPlayer videoId={lesson.videoId} title={lesson.title} />}
 
-      {/* Freitext unter dem Video (Skool-Stil) */}
+      {/* Freitext unter dem Video (Skool-Stil, mit Formatierung) */}
       {!finished && lesson.body.trim() && (
-        <div className="card p-5 whitespace-pre-wrap text-cream leading-relaxed">{lesson.body}</div>
+        <div className="card p-5 text-cream">
+          <RichText text={lesson.body} />
+        </div>
       )}
 
       {/* PDF-Lernmaterial */}

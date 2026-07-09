@@ -123,7 +123,13 @@ export default function StoriesAdmin() {
         </div>
         <div>
           <label className="block text-sm mb-1 text-cream-dim">Story text (optional)</label>
-          <textarea rows={14} className={inputClass} value={editing.body} onChange={(e) => setField("body", e.target.value)} placeholder="Write the story here. Line breaks are kept. Leave empty for a download-only book." />
+          <textarea rows={14} className={inputClass} value={editing.body} onChange={(e) => setField("body", e.target.value)} placeholder="Write the story here. Leave empty for a download-only book." />
+          <div className="text-xs text-cream-dim mt-2 rounded-lg bg-bordeaux-deep/40 border border-gold/15 p-3 space-y-0.5">
+            <div className="font-medium text-cream">Formatting:</div>
+            <div><code># Heading</code> · <code>**bold**</code> · <code>*italic*</code></div>
+            <div><code>- bullet</code> · <code>1. numbered</code> · <code>[link](https://…)</code></div>
+            <div>Leave a blank line between paragraphs.</div>
+          </div>
         </div>
         <div>
           <label className="block text-sm mb-1 text-cream-dim">Book download (PDF / PNG / JPG, optional)</label>

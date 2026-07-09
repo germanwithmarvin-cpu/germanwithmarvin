@@ -221,6 +221,14 @@ export default function LessonsAdmin() {
             placeholder={"Write anything to show under the video:\n\n• explanations & examples\n• homework or tasks\n• links\n\nLine breaks are kept."}
           />
           <p className="text-xs text-cream-dim mt-1">Shown to students right below the video. Leave empty to hide.</p>
+          <div className="text-xs text-cream-dim mt-2 rounded-lg bg-bordeaux-deep/40 border border-gold/15 p-3 space-y-0.5">
+            <div className="font-medium text-cream">Formatting (Skool-style):</div>
+            <div><code># Heading</code> · <code>## Smaller heading</code></div>
+            <div><code>**bold**</code> · <code>*italic*</code> · <code>`code`</code></div>
+            <div><code>- bullet point</code> (one per line) · <code>1. numbered</code></div>
+            <div><code>[link text](https://…)</code></div>
+            <div>Leave a blank line between paragraphs.</div>
+          </div>
         </div>
       </div>
 
