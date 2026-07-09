@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import type { Lesson, QuizQuestion } from "@/lib/data";
 import { getLessons, saveLesson, deleteLesson, saveLessonOrder, slugify } from "@/lib/lessons";
 
-const LEVELS: Lesson["level"][] = ["A1", "A2", "B1", "B2", "C1"];
+const LEVELS: Lesson["level"][] = ["Intro", "A1", "A2", "B1", "B2", "C1"];
 const OPTION_IDS = ["a", "b", "c"];
 
 function emptyLesson(): Lesson {

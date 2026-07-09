@@ -5,15 +5,16 @@ import { useRouter } from "next/navigation";
 import SubmissionsAdmin from "@/components/SubmissionsAdmin";
 import LessonsAdmin from "@/components/LessonsAdmin";
 import StoriesAdmin from "@/components/StoriesAdmin";
+import StudentsAdmin from "@/components/StudentsAdmin";
 import DecksAdmin from "@/components/admin/DecksAdmin";
 import CodesAdmin from "@/components/admin/CodesAdmin";
 import { createClient } from "@/lib/supabase/client";
 
-const tabs = ["Lessons", "Stories", "Vocabulary", "Codes", "Submissions"] as const;
+const tabs = ["Students", "Lessons", "Stories", "Vocabulary", "Codes", "Submissions"] as const;
 type Tab = (typeof tabs)[number];
 
 export default function AdminPage() {
-  const [tab, setTab] = useState<Tab>("Lessons");
+  const [tab, setTab] = useState<Tab>("Students");
   const router = useRouter();
   const [allowed, setAllowed] = useState<boolean | null>(null);
 
@@ -36,7 +37,7 @@ export default function AdminPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Teacher area</h1>
-        <p className="text-cream-dim text-sm">Manage your content, access codes and student submissions.</p>
+        <p className="text-cream-dim text-sm">See student progress, manage your content and access codes.</p>
       </div>
 
       <div className="flex gap-2 border-b border-gold/15">
@@ -52,6 +53,8 @@ export default function AdminPage() {
           </button>
         ))}
       </div>
+
+      {tab === "Students" && <StudentsAdmin />}
 
       {tab === "Lessons" && <LessonsAdmin />}
 

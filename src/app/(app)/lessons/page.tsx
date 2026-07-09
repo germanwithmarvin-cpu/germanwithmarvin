@@ -8,9 +8,10 @@ import { loadProgress } from "@/lib/progress";
 import { getAccess, canAccessVideoLevel, type AccessTier } from "@/lib/access";
 import { SITE } from "@/lib/config";
 
-// Übergeordnete Kategorien (Level) in fester Reihenfolge.
-const LEVELS: Lesson["level"][] = ["A1", "A2", "B1", "B2", "C1"];
+// Übergeordnete Kategorien (Level) in fester Reihenfolge – "Intro" ganz oben.
+const LEVELS: Lesson["level"][] = ["Intro", "A1", "A2", "B1", "B2", "C1"];
 const LEVEL_LABEL: Record<Lesson["level"], string> = {
+  Intro: "How to learn German",
   A1: "Beginner",
   A2: "Elementary",
   B1: "Intermediate",
@@ -65,7 +66,7 @@ export default function LessonsPage() {
           return (
             <section key={lv} className="space-y-3">
               <div className="flex items-center gap-3 flex-wrap">
-                <h2 className="text-xl font-bold text-gold-bright">{lv}</h2>
+                <h2 className="text-xl font-bold text-gold-bright">{lv === "Intro" ? "🚀 Start here" : lv}</h2>
                 <span className="text-sm text-cream-dim">{LEVEL_LABEL[lv]}</span>
                 {levelLocked && (
                   <span className="text-xs px-2 py-0.5 rounded-full bg-gold/15 text-gold-bright">

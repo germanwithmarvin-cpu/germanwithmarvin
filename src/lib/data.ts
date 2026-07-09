@@ -16,7 +16,8 @@ export type Material = { title: string; url: string };
 export type Lesson = {
   id: string;
   title: string;
-  level: "A1" | "A2" | "B1" | "B2" | "C1";
+  // "Intro" = „Start here"-Kategorie ganz oben (kostenlos, z. B. „How to study a language").
+  level: "Intro" | "A1" | "A2" | "B1" | "B2" | "C1";
   topic: string;
   description: string;
   // YouTube-Video-ID (nicht gelistete Videos). Aus dem Link …watch?v=ABC123 → "ABC123".

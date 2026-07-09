@@ -32,7 +32,8 @@ export const APP_CURRENCY = "USD";
 // Kostenloser Vollzugang (alle Level) für neue Konten – in Tagen.
 export const TRIAL_DAYS = 7;
 // Diese Level sind IMMER kostenlos (auch ohne Abo / nach dem Trial).
-export const FREE_LEVELS = ["A1"] as const;
+// "Intro" = die „Start here"-Kategorie (Lern-Grundlagen), für alle offen.
+export const FREE_LEVELS = ["Intro", "A1"] as const;
 
 // Preis hübsch formatiert, z. B. "$39".
 export function priceLabel(): string {
