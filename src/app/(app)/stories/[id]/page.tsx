@@ -7,7 +7,6 @@ import type { Story } from "@/lib/data";
 import { getStory } from "@/lib/stories";
 import { getAccess, canAccessVideoLevel } from "@/lib/access";
 import Paywall from "@/components/Paywall";
-import RichText from "@/components/RichText";
 
 export default function StoryPage() {
   const params = useParams<{ id: string }>();
@@ -50,9 +49,7 @@ export default function StoryPage() {
       </div>
 
       {story.body.trim() && (
-        <article className="card p-6 leading-relaxed text-cream text-lg">
-          <RichText text={story.body} />
-        </article>
+        <article className="card p-6 richtext text-cream text-lg" dangerouslySetInnerHTML={{ __html: story.body }} />
       )}
 
       {story.fileUrl && (

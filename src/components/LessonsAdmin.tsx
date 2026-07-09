@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { Lesson, QuizQuestion } from "@/lib/data";
 import { getLessons, saveLesson, deleteLesson, saveLessonOrder, slugify } from "@/lib/lessons";
 import PdfUpload from "@/components/PdfUpload";
+import RichEditor from "@/components/RichEditor";
 
 const LEVELS: Lesson["level"][] = ["Intro", "A1", "A2", "B1", "B2", "C1"];
 const OPTION_IDS = ["a", "b", "c"];
@@ -212,23 +213,13 @@ export default function LessonsAdmin() {
           <p className="text-xs text-cream-dim mt-1">Upload your video to YouTube as “Unlisted”, then paste only the ID here.</p>
         </div>
         <div>
-          <label className="block text-sm mb-1 text-cream-dim">Text below the video (Skool-style)</label>
-          <textarea
-            rows={6}
-            className={inputClass}
+          <label className="block text-sm mb-1 text-cream-dim">Text below the video</label>
+          <RichEditor
             value={editing.body}
-            onChange={(e) => setField("body", e.target.value)}
-            placeholder={"Write anything to show under the video:\n\n• explanations & examples\n• homework or tasks\n• links\n\nLine breaks are kept."}
+            onChange={(html) => setField("body", html)}
+            placeholder="Write explanations, tasks or links. Use the H / B / I buttons to format."
           />
-          <p className="text-xs text-cream-dim mt-1">Shown to students right below the video. Leave empty to hide.</p>
-          <div className="text-xs text-cream-dim mt-2 rounded-lg bg-bordeaux-deep/40 border border-gold/15 p-3 space-y-0.5">
-            <div className="font-medium text-cream">Formatting (Skool-style):</div>
-            <div><code># Heading</code> · <code>## Smaller heading</code></div>
-            <div><code>**bold**</code> · <code>*italic*</code> · <code>`code`</code></div>
-            <div><code>- bullet point</code> (one per line) · <code>1. numbered</code></div>
-            <div><code>[link text](https://…)</code></div>
-            <div>Leave a blank line between paragraphs.</div>
-          </div>
+          <p className="text-xs text-cream-dim mt-1">Select text, then click <b>H</b> (heading), <b>B</b> (bold) or <b>I</b> (italic). Leave empty to hide.</p>
         </div>
       </div>
 

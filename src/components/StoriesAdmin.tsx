@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { Story } from "@/lib/data";
 import { getStories, saveStory, deleteStory, saveStoryOrder, slugify } from "@/lib/stories";
 import PdfUpload from "@/components/PdfUpload";
+import RichEditor from "@/components/RichEditor";
 
 const LEVELS: Story["level"][] = ["A1", "A2", "B1", "B2", "C1"];
 const inputClass = "w-full rounded-lg bg-bordeaux-deep/60 border border-gold/25 px-3 py-2 outline-none focus:border-gold text-sm";
@@ -123,13 +124,12 @@ export default function StoriesAdmin() {
         </div>
         <div>
           <label className="block text-sm mb-1 text-cream-dim">Story text (optional)</label>
-          <textarea rows={14} className={inputClass} value={editing.body} onChange={(e) => setField("body", e.target.value)} placeholder="Write the story here. Leave empty for a download-only book." />
-          <div className="text-xs text-cream-dim mt-2 rounded-lg bg-bordeaux-deep/40 border border-gold/15 p-3 space-y-0.5">
-            <div className="font-medium text-cream">Formatting:</div>
-            <div><code># Heading</code> · <code>**bold**</code> · <code>*italic*</code></div>
-            <div><code>- bullet</code> · <code>1. numbered</code> · <code>[link](https://…)</code></div>
-            <div>Leave a blank line between paragraphs.</div>
-          </div>
+          <RichEditor
+            value={editing.body}
+            onChange={(html) => setField("body", html)}
+            placeholder="Write the story here, or leave empty for a download-only book."
+          />
+          <p className="text-xs text-cream-dim mt-1">Select text, then click <b>H</b>, <b>B</b> or <b>I</b> to format.</p>
         </div>
         <div>
           <label className="block text-sm mb-1 text-cream-dim">Book download (PDF / PNG / JPG, optional)</label>

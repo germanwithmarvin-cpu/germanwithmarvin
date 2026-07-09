@@ -142,3 +142,17 @@ h1 { line-height: 1.08; }
 }
 .btn-again:hover, .btn-hard:hover, .btn-good:hover, .btn-easy:hover { filter: brightness(1.1); }
 .btn-again:active, .btn-hard:active, .btn-good:active, .btn-easy:active { transform: translateY(1px); }
+
+/* Formatierter Text (Editor + Anzeige): Überschriften, fett, kursiv, Listen, Links. */
+.richtext h1 { font-size: 1.5rem; font-weight: 700; margin: 0.75rem 0 0.25rem; line-height: 1.25; }
+.richtext h2 { font-size: 1.25rem; font-weight: 600; margin: 0.75rem 0 0.25rem; line-height: 1.3; }
+.richtext h3 { font-size: 1.1rem; font-weight: 600; margin: 0.5rem 0 0.25rem; }
+.richtext p  { margin: 0.5rem 0; line-height: 1.65; }
+.richtext ul { list-style: disc; padding-left: 1.25rem; margin: 0.5rem 0; }
+.richtext ol { list-style: decimal; padding-left: 1.25rem; margin: 0.5rem 0; }
+.richtext li { margin: 0.15rem 0; }
+.richtext a  { color: var(--gold-bright); text-decoration: underline; text-underline-offset: 3px; }
+.richtext strong, .richtext b { font-weight: 700; }
+.richtext em, .richtext i { font-style: italic; }
+/* Platzhalter im leeren Editor */
+.richtext-editor:empty:before { content: attr(data-placeholder); color: var(--cream-dim); pointer-events: none; }
