@@ -146,17 +146,26 @@ export default function LessonsAdmin() {
           const items = lessons.filter((l) => l.level === lv);
           if (items.length === 0) return null;
           return (
-            <section key={lv} className="space-y-2">
-              <div className="flex items-center gap-2 flex-wrap pt-2">
-                <h3 className="text-lg font-bold text-gold-bright">{lv === "Intro" ? "⭐ Essentials" : lv}</h3>
-                <span className="text-xs text-cream-dim">{LEVEL_LABEL[lv]}</span>
+            <section key={lv} className="space-y-3">
+              <div className="flex items-center gap-3 flex-wrap pt-2">
+                <h2 className="text-xl font-bold text-gold-bright">{lv === "Intro" ? "⭐ Essentials" : lv}</h2>
+                <span className="text-sm text-cream-dim">{LEVEL_LABEL[lv]}</span>
                 <span className="text-xs text-cream-dim">· {items.length}</span>
               </div>
 
               {items.map((l, i) => (
-                <div key={l.id} className="card p-4 flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="flex flex-col shrink-0">
+                <div key={l.id} className="card p-5 flex items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap text-xs text-cream-dim">
+                      <span>{l.topic || "Lesson"} · {l.durationMin} min · +{l.xp} XP</span>
+                      {l.quizEnabled && l.quiz.length > 0 && <span className="text-gold-bright">· ⚡ quiz ({l.quiz.length})</span>}
+                    </div>
+                    <div className="text-lg font-semibold mt-1 truncate">{l.title}</div>
+                    {l.description && <div className="text-sm text-cream-dim truncate">{l.description}</div>}
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex flex-col">
                       <button
                         onClick={() => move(lv, i, -1)}
                         disabled={i === 0}
@@ -172,15 +181,6 @@ export default function LessonsAdmin() {
                         aria-label="Move down"
                       >▼</button>
                     </div>
-                    <span className="grid place-items-center w-7 h-7 rounded-full border border-gold/40 text-gold-bright text-xs font-semibold shrink-0">{i + 1}</span>
-                    <div className="min-w-0">
-                      <div className="font-medium truncate">{l.title}</div>
-                      <div className="text-xs text-cream-dim">
-                        {l.durationMin} min · +{l.xp} XP · {l.quizEnabled && l.quiz.length > 0 ? `⚡ quiz on (${l.quiz.length})` : "quiz off"}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-2 shrink-0">
                     <button onClick={() => startEdit(l)} className="btn-outline px-3 py-1.5 text-sm">Edit</button>
                     <button onClick={() => remove(l)} className="btn-outline px-3 py-1.5 text-sm text-red-300">Delete</button>
                   </div>
