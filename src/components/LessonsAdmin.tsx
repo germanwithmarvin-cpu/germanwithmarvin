@@ -7,6 +7,14 @@ import PdfUpload from "@/components/PdfUpload";
 import RichEditor from "@/components/RichEditor";
 
 const LEVELS: Lesson["level"][] = ["Intro", "A1", "A2", "B1", "B2", "C1"];
+const LEVEL_LABEL: Record<Lesson["level"], string> = {
+  Intro: "Essentials · general lessons",
+  A1: "Beginner",
+  A2: "Elementary",
+  B1: "Intermediate",
+  B2: "Upper intermediate",
+  C1: "Advanced",
+};
 const OPTION_IDS = ["a", "b", "c"];
 
 function emptyLesson(): Lesson {
@@ -85,14 +93,17 @@ export default function LessonsAdmin() {
     refresh();
   }
 
-  // Lektion in der Reihenfolge verschieben (−1 = hoch, +1 = runter).
-  async function move(i: number, dir: -1 | 1) {
-    const j = i + dir;
-    if (j < 0 || j >= lessons.length) return;
-    const next = [...lessons];
-    [next[i], next[j]] = [next[j], next[i]];
-    setLessons(next); // sofort sichtbar
-    const { error } = await saveLessonOrder(next.map((l) => l.id));
+  // Lektion INNERHALB ihres Levels verschieben (−1 = hoch, +1 = runter).
+  async function move(level: Lesson["level"], indexInLevel: number, dir: -1 | 1) {
+    const groups = LEVELS.map((lv) => lessons.filter((l) => l.level === lv));
+    const gi = LEVELS.indexOf(level);
+    const group = groups[gi];
+    const j = indexInLevel + dir;
+    if (j < 0 || j >= group.length) return;
+    [group[j], group[indexInLevel]] = [group[indexInLevel], group[j]];
+    const full = groups.flat();
+    setLessons(full); // sofort sichtbar
+    const { error } = await saveLessonOrder(full.map((l) => l.id));
     if (error) { setError(error); refresh(); }
   }
 
@@ -128,41 +139,56 @@ export default function LessonsAdmin() {
         {loading && <p className="text-sm text-cream-dim">Loading…</p>}
         {!loading && lessons.length === 0 && <p className="text-sm text-cream-dim">No lessons yet — add your first one.</p>}
         {!loading && lessons.length > 0 && (
-          <p className="text-xs text-cream-dim">Use ↑ / ↓ to change the order of the learning path.</p>
+          <p className="text-xs text-cream-dim">Grouped by level. Use ▲ / ▼ to reorder lessons within a level.</p>
         )}
-        {lessons.map((l, i) => (
-          <div key={l.id} className="card p-4 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="flex flex-col shrink-0">
-                <button
-                  onClick={() => move(i, -1)}
-                  disabled={i === 0}
-                  className="px-2 leading-none text-cream-dim hover:text-cream disabled:opacity-30"
-                  title="Move up"
-                  aria-label="Move up"
-                >▲</button>
-                <button
-                  onClick={() => move(i, 1)}
-                  disabled={i === lessons.length - 1}
-                  className="px-2 leading-none text-cream-dim hover:text-cream disabled:opacity-30"
-                  title="Move down"
-                  aria-label="Move down"
-                >▼</button>
+
+        {LEVELS.map((lv) => {
+          const items = lessons.filter((l) => l.level === lv);
+          if (items.length === 0) return null;
+          return (
+            <section key={lv} className="space-y-2">
+              <div className="flex items-center gap-2 flex-wrap pt-2">
+                <h3 className="text-lg font-bold text-gold-bright">{lv === "Intro" ? "⭐ Essentials" : lv}</h3>
+                <span className="text-xs text-cream-dim">{LEVEL_LABEL[lv]}</span>
+                <span className="text-xs text-cream-dim">· {items.length}</span>
               </div>
-              <span className="grid place-items-center w-7 h-7 rounded-full border border-gold/40 text-gold-bright text-xs font-semibold shrink-0">{i + 1}</span>
-              <div className="min-w-0">
-                <div className="font-medium truncate">{l.title}</div>
-                <div className="text-xs text-cream-dim">
-                  {l.level} · {l.durationMin} min · +{l.xp} XP · {l.quizEnabled && l.quiz.length > 0 ? `⚡ quiz on (${l.quiz.length})` : "quiz off"}
+
+              {items.map((l, i) => (
+                <div key={l.id} className="card p-4 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="flex flex-col shrink-0">
+                      <button
+                        onClick={() => move(lv, i, -1)}
+                        disabled={i === 0}
+                        className="px-2 leading-none text-cream-dim hover:text-cream disabled:opacity-30"
+                        title="Move up"
+                        aria-label="Move up"
+                      >▲</button>
+                      <button
+                        onClick={() => move(lv, i, 1)}
+                        disabled={i === items.length - 1}
+                        className="px-2 leading-none text-cream-dim hover:text-cream disabled:opacity-30"
+                        title="Move down"
+                        aria-label="Move down"
+                      >▼</button>
+                    </div>
+                    <span className="grid place-items-center w-7 h-7 rounded-full border border-gold/40 text-gold-bright text-xs font-semibold shrink-0">{i + 1}</span>
+                    <div className="min-w-0">
+                      <div className="font-medium truncate">{l.title}</div>
+                      <div className="text-xs text-cream-dim">
+                        {l.durationMin} min · +{l.xp} XP · {l.quizEnabled && l.quiz.length > 0 ? `⚡ quiz on (${l.quiz.length})` : "quiz off"}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                    <button onClick={() => startEdit(l)} className="btn-outline px-3 py-1.5 text-sm">Edit</button>
+                    <button onClick={() => remove(l)} className="btn-outline px-3 py-1.5 text-sm text-red-300">Delete</button>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div className="flex gap-2 shrink-0">
-              <button onClick={() => startEdit(l)} className="btn-outline px-3 py-1.5 text-sm">Edit</button>
-              <button onClick={() => remove(l)} className="btn-outline px-3 py-1.5 text-sm text-red-300">Delete</button>
-            </div>
-          </div>
-        ))}
+              ))}
+            </section>
+          );
+        })}
       </div>
     );
   }
