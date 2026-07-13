@@ -17,6 +17,7 @@ function fromRow(r: Record<string, unknown>): Lesson {
     body: (r.body as string) ?? "",
     quizEnabled: (r.quiz_enabled as boolean) ?? false,
     quiz: (r.quiz as Lesson["quiz"]) ?? [],
+    exercises: (r.exercises as Lesson["exercises"]) ?? [],
     materials: (r.materials as Lesson["materials"]) ?? [],
   };
 }
@@ -34,6 +35,7 @@ function toRow(lesson: Lesson, sortOrder?: number) {
     body: lesson.body,
     quiz_enabled: lesson.quizEnabled,
     quiz: lesson.quiz,
+    exercises: lesson.exercises,
     materials: lesson.materials,
   };
   if (sortOrder !== undefined) row.sort_order = sortOrder;

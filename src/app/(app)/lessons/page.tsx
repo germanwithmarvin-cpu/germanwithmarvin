@@ -78,14 +78,14 @@ export default function LessonsPage() {
               <div className="space-y-3">
                 {items.map((l) => {
                   const isDone = completed.includes(l.id);
-                  const hasQuiz = l.quizEnabled && l.quiz.length > 0;
+                  const hasQuiz = l.quizEnabled && (l.exercises.length > 0 || l.quiz.length > 0);
 
                   const inner = (
                     <div className={`card p-5 flex items-center justify-between gap-4 transition ${levelLocked ? "opacity-60" : "hover:border-gold/50"}`}>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-xs text-cream-dim">{l.topic} · {l.durationMin} min</span>
-                          {hasQuiz && <span className="text-xs text-gold-bright">· ⚡ quiz</span>}
+                          {hasQuiz && <span className="text-xs text-gold-bright">· ⚡ exercises</span>}
                         </div>
                         <div className="text-lg font-semibold mt-1">{l.title}</div>
                         <div className="text-sm text-cream-dim">{l.description}</div>

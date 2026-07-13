@@ -1,12 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import type { Lesson } from "@/lib/data";
+import type { Lesson, Exercise } from "@/lib/data";
 import { getLessons } from "@/lib/lessons";
 import { completeLesson } from "@/lib/progress";
 import VideoPlayer from "@/components/VideoPlayer";
+import Exercises from "@/components/Exercises";
+
+// Alte Multiple-Choice-Quizze weiter unterstützen: in Aufgaben umwandeln.
+function quizToExercises(quiz: Lesson["quiz"]): Exercise[] {
+  return quiz.map((q) => ({
+    id: q.id,
+    type: "mc" as const,
+    prompt: q.prompt,
+    options: q.options,
+    correctOptionId: q.correctOptionId,
+    explanation: q.explanation,
+  }));
+}
 
 export default function LessonPage() {
   const params = useParams<{ id: string }>();
@@ -14,6 +27,10 @@ export default function LessonPage() {
   const [lesson, setLesson] = useState<Lesson | undefined>(undefined);
   const [nextLesson, setNextLesson] = useState<Lesson | undefined>(undefined);
   const [loading, setLoading] = useState(true);
+
+  const [watched, setWatched] = useState(false);
+  const [finished, setFinished] = useState(false);
+  const [score, setScore] = useState<{ correct: number; total: number } | null>(null);
 
   useEffect(() => {
     getLessons().then((all) => {
@@ -24,16 +41,13 @@ export default function LessonPage() {
     });
   }, [params.id]);
 
-  const [watched, setWatched] = useState(false);
-  const [step, setStep] = useState(0); // welche Quizfrage
-  const [selected, setSelected] = useState<string | null>(null);
-  const [checked, setChecked] = useState(false);
-  const [correctCount, setCorrectCount] = useState(0);
-  const [finished, setFinished] = useState(false);
+  // Aufgabenliste: neue Aufgaben bevorzugt, sonst altes MC-Quiz.
+  const items = useMemo<Exercise[]>(() => {
+    if (!lesson) return [];
+    return lesson.exercises.length > 0 ? lesson.exercises : quizToExercises(lesson.quiz);
+  }, [lesson]);
 
-  if (loading) {
-    return <p className="text-sm text-cream-dim">Loading lesson…</p>;
-  }
+  if (loading) return <p className="text-sm text-cream-dim">Loading lesson…</p>;
 
   if (!lesson) {
     return (
@@ -44,49 +58,29 @@ export default function LessonPage() {
     );
   }
 
-  // Quiz nur, wenn der Lehrer es aktiviert hat UND Fragen hinterlegt sind.
-  const quizOn = lesson.quizEnabled && lesson.quiz.length > 0;
-  const q = lesson.quiz[step];
-  const isCorrect = checked && selected === q?.correctOptionId;
+  const exercisesOn = lesson.quizEnabled && items.length > 0;
 
-  function check() {
-    if (selected == null) return;
-    setChecked(true);
-    if (selected === q.correctOptionId) setCorrectCount((c) => c + 1);
-  }
-
-  function next() {
-    if (step + 1 < lesson!.quiz.length) {
-      setStep(step + 1);
-      setSelected(null);
-      setChecked(false);
-    } else {
-      void completeLesson(lesson!.id, lesson!.xp);
-      setFinished(true);
-    }
-  }
-
-  // Lektion von vorn beginnen (wiederholen)
-  function restart() {
-    setWatched(false);
-    setStep(0);
-    setSelected(null);
-    setChecked(false);
-    setCorrectCount(0);
-    setFinished(false);
-  }
-
-  // Video als angesehen markieren. Ohne Quiz ist die Lektion damit direkt fertig.
   function markWatched() {
     setWatched(true);
-    if (!quizOn) {
+    if (!exercisesOn) {
       void completeLesson(lesson!.id, lesson!.xp);
       setFinished(true);
     }
   }
 
-  // Schrittanzeige: mit Quiz 3 Schritte, ohne Quiz nur Watch → Done.
-  const steps = quizOn ? ["1 · Watch", "2 · Practice", "3 · Done"] : ["1 · Watch", "2 · Done"];
+  function onExercisesDone(correct: number, total: number) {
+    setScore({ correct, total });
+    void completeLesson(lesson!.id, lesson!.xp);
+    setFinished(true);
+  }
+
+  function restart() {
+    setWatched(false);
+    setFinished(false);
+    setScore(null);
+  }
+
+  const steps = exercisesOn ? ["1 · Watch", "2 · Practice", "3 · Done"] : ["1 · Watch", "2 · Done"];
   const phase = finished ? steps.length : watched ? 2 : 1;
 
   return (
@@ -97,13 +91,9 @@ export default function LessonPage() {
         <p className="text-cream-dim text-sm mt-1">{lesson.level} · {lesson.durationMin} min · +{lesson.xp} XP</p>
       </div>
 
-      {/* Geführte Schritt-Anzeige: 1. Watch → 2. Practice → 3. Done */}
       <div className="flex items-center gap-2 text-sm">
         {steps.map((label, i) => (
-          <span
-            key={label}
-            className={`px-3 py-1 rounded-full ${phase === i + 1 ? "bg-gold/25 text-cream" : "bg-bordeaux-soft text-cream-dim"}`}
-          >
+          <span key={label} className={`px-3 py-1 rounded-full ${phase === i + 1 ? "bg-gold/25 text-cream" : "bg-bordeaux-soft text-cream-dim"}`}>
             {label}
           </span>
         ))}
@@ -133,71 +123,23 @@ export default function LessonPage() {
 
       {!watched && (
         <button onClick={markWatched} className="btn-gold px-6 py-3 w-full">
-          {quizOn ? "I've watched it — start the quiz ✅" : "I've watched it — mark as complete ✅"}
+          {exercisesOn ? "I've watched it — start the exercises ✅" : "I've watched it — mark as complete ✅"}
         </button>
       )}
 
-      {/* Quiz / Test */}
-      {watched && !finished && q && (
-        <div className="card p-6 space-y-4">
-          <div className="flex justify-between text-sm text-cream-dim">
-            <span>Quiz</span>
-            <span>Question {step + 1} / {lesson.quiz.length}</span>
-          </div>
-          <h2 className="text-lg font-semibold">{q.prompt}</h2>
-          <div className="space-y-2">
-            {q.options.map((opt) => {
-              const chosen = selected === opt.id;
-              const showCorrect = checked && opt.id === q.correctOptionId;
-              const showWrong = checked && chosen && opt.id !== q.correctOptionId;
-              return (
-                <button
-                  key={opt.id}
-                  disabled={checked}
-                  onClick={() => setSelected(opt.id)}
-                  className={`w-full text-left px-4 py-3 rounded-lg border transition ${
-                    showCorrect
-                      ? "border-green-400 bg-green-400/15"
-                      : showWrong
-                      ? "border-red-accent bg-red-accent/15"
-                      : chosen
-                      ? "border-gold bg-gold/15"
-                      : "border-gold/25 hover:border-gold/50"
-                  }`}
-                >
-                  {opt.text}
-                </button>
-              );
-            })}
-          </div>
-
-          {checked && (
-            <div className={`rounded-lg p-4 text-sm ${isCorrect ? "bg-green-400/15" : "bg-red-accent/15"}`}>
-              <strong>{isCorrect ? "Correct! 🎉" : "Not quite."}</strong>
-              <p className="mt-1 text-cream-dim">{q.explanation}</p>
-            </div>
-          )}
-
-          {!checked ? (
-            <button onClick={check} disabled={selected == null} className="btn-gold px-6 py-2.5 w-full disabled:opacity-40">
-              Check answer
-            </button>
-          ) : (
-            <button onClick={next} className="btn-gold px-6 py-2.5 w-full">
-              {step + 1 < lesson.quiz.length ? "Next question" : "Finish lesson"}
-            </button>
-          )}
-        </div>
+      {/* Aufgabenteil */}
+      {watched && !finished && exercisesOn && (
+        <Exercises items={items} onDone={onExercisesDone} />
       )}
 
-      {/* Abschluss – möglichst wenige Buttons */}
+      {/* Abschluss */}
       {finished && (
         <div className="card p-8 text-center space-y-5">
           <div className="text-5xl">🏆</div>
           <h2 className="text-xl font-bold">Lesson complete!</h2>
           <p className="text-cream-dim">
-            {quizOn
-              ? `You got ${correctCount} of ${lesson.quiz.length} right and earned +${lesson.xp} XP.`
+            {score
+              ? `You got ${score.correct} of ${score.total} right and earned +${lesson.xp} XP.`
               : `Nicely done — you earned +${lesson.xp} XP.`}
           </p>
           {nextLesson ? (

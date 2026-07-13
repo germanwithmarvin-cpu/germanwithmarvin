@@ -13,6 +13,21 @@ export type QuizQuestion = {
 
 export type Material = { title: string; url: string };
 
+// ---- Interaktive Aufgaben (nach dem Video, direkt in der App lösbar) ----------
+export type ExerciseBase = { id: string; prompt: string; explanation?: string };
+// Multiple Choice (eine richtige Antwort)
+export type MCExercise = ExerciseBase & { type: "mc"; options: QuizOption[]; correctOptionId: string };
+// Lückentext: `prompt` enthält "___" als Lücke; `answers` = akzeptierte Lösungen.
+export type GapExercise = ExerciseBase & { type: "gap"; answers: string[] };
+// Satzbau: `correct` = Wörter in richtiger Reihenfolge (Anzeige wird gemischt).
+export type OrderExercise = ExerciseBase & { type: "order"; correct: string[] };
+// Zuordnen: Paare links↔rechts verbinden.
+export type MatchExercise = ExerciseBase & { type: "match"; pairs: { left: string; right: string }[] };
+// Kategorisieren: jedes Item in die richtige Kategorie einsortieren.
+export type CategorizeExercise = ExerciseBase & { type: "categorize"; categories: string[]; items: { text: string; category: string }[] };
+
+export type Exercise = MCExercise | GapExercise | OrderExercise | MatchExercise | CategorizeExercise;
+
 export type Lesson = {
   id: string;
   title: string;
@@ -25,9 +40,11 @@ export type Lesson = {
   durationMin: number;
   // Freitext unter dem Video (Skool-Stil): Erklärungen, Links, Aufgaben. Zeilenumbrüche bleiben erhalten.
   body: string;
-  // Wenn false, wird das Quiz für diese Lektion ausgeblendet (auch wenn Fragen hinterlegt sind).
+  // Wenn false, wird der Aufgabenteil für diese Lektion ausgeblendet.
   quizEnabled: boolean;
   quiz: QuizQuestion[];
+  // Neue, vielfältige Aufgaben (Lückentext, Satzbau, Zuordnen …). Wenn leer, wird `quiz` (MC) genutzt.
+  exercises: Exercise[];
   // PDF-Lernmaterial zum Herunterladen. Lege die PDFs in den Ordner public/materials/.
   materials: Material[];
   xp: number;

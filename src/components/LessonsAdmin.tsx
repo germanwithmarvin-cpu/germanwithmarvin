@@ -29,8 +29,9 @@ function emptyLesson(): Lesson {
     xp: 100,
     body: "",
     materials: [],
-    quizEnabled: false, // Quiz ist standardmäßig AUS – erst aktivieren, dann Fragen anlegen.
+    quizEnabled: false, // Aufgabenteil ist standardmäßig AUS – erst aktivieren.
     quiz: [],
+    exercises: [],
   };
 }
 
@@ -158,7 +159,9 @@ export default function LessonsAdmin() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap text-xs text-cream-dim">
                       <span>{l.topic || "Lesson"} · {l.durationMin} min · +{l.xp} XP</span>
-                      {l.quizEnabled && l.quiz.length > 0 && <span className="text-gold-bright">· ⚡ quiz ({l.quiz.length})</span>}
+                      {l.quizEnabled && (l.exercises.length > 0 || l.quiz.length > 0) && (
+                        <span className="text-gold-bright">· ⚡ exercises ({l.exercises.length || l.quiz.length})</span>
+                      )}
                     </div>
                     <div className="text-lg font-semibold mt-1 truncate">{l.title}</div>
                     {l.description && <div className="text-sm text-cream-dim truncate">{l.description}</div>}
