@@ -98,6 +98,17 @@ export default function Exercises({ items, onDone }: { items: Exercise[]; onDone
     }
   }
 
+  // Richtige Lösung als Text – wird bei falscher Antwort deutlich angezeigt.
+  function solutionText(): string {
+    switch (ex.type) {
+      case "mc": return ex.options.find((o) => o.id === ex.correctOptionId)?.text ?? "";
+      case "gap": return ex.answers.join(" / ");
+      case "order": return ex.correct.join(" ");
+      case "match": return ex.pairs.map((p) => `${p.left} → ${p.right}`).join("  ·  ");
+      case "categorize": return ex.items.map((it) => `${it.text} → ${it.category}`).join("  ·  ");
+    }
+  }
+
   return (
     <div className="card p-6 space-y-4">
       <div className="flex justify-between gap-3 text-sm text-cream-dim">
@@ -119,8 +130,8 @@ export default function Exercises({ items, onDone }: { items: Exercise[]; onDone
                 key={opt.id}
                 disabled={checked}
                 onClick={() => setMc(opt.id)}
-                className={`w-full text-left px-4 py-3 rounded-lg border transition ${
-                  showRight ? "border-green-400 bg-green-400/15" : showWrong ? "border-red-accent bg-red-accent/15" : chosen ? "border-gold bg-gold/15" : "border-gold/25 hover:border-gold/50"
+                className={`w-full text-left px-4 py-3 rounded-lg border-2 transition ${
+                  showRight ? "border-green-400 bg-green-400/25" : showWrong ? "border-red-accent bg-red-accent/30" : chosen ? "border-gold bg-gold/15" : "border-gold/25 hover:border-gold/50"
                 }`}
               >
                 {opt.text}
@@ -142,8 +153,8 @@ export default function Exercises({ items, onDone }: { items: Exercise[]; onDone
                   disabled={checked}
                   onChange={(e) => setGap(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter" && !checked && ready()) check(); }}
-                  className={`inline-block w-40 rounded-md bg-bordeaux-deep/60 border px-2 py-1 outline-none ${
-                    checked ? (lastCorrect ? "border-green-400" : "border-red-accent") : "border-gold/40 focus:border-gold"
+                  className={`inline-block w-40 rounded-md bg-bordeaux-deep/60 px-2 py-1 outline-none ${
+                    checked ? (lastCorrect ? "border-2 border-green-400 bg-green-400/10" : "border-2 border-red-accent bg-red-accent/25") : "border border-gold/40 focus:border-gold"
                   }`}
                   placeholder="…"
                 />
@@ -231,11 +242,22 @@ export default function Exercises({ items, onDone }: { items: Exercise[]; onDone
         </div>
       )}
 
-      {/* Feedback + Erklärung */}
+      {/* Feedback + Erklärung – bei Fehler deutlich mit richtiger Lösung */}
       {checked && (
-        <div className={`rounded-lg p-4 text-sm ${lastCorrect ? "bg-green-400/15" : "bg-red-accent/15"}`}>
-          <strong>{lastCorrect ? "Correct! 🎉" : "Not quite."}</strong>
-          {ex.explanation && <p className="mt-1 text-cream-dim">{ex.explanation}</p>}
+        <div className={`rounded-xl p-4 border-2 ${lastCorrect ? "border-green-400/60 bg-green-400/15" : "border-red-accent bg-red-accent/20"}`}>
+          <div className="flex items-center gap-2 font-bold">
+            <span className="text-2xl">{lastCorrect ? "✅" : "❌"}</span>
+            <span className={lastCorrect ? "text-green-300" : "text-red-300"}>
+              {lastCorrect ? "Correct!" : "Not quite"}
+            </span>
+          </div>
+          {!lastCorrect && (
+            <p className="mt-2 text-sm">
+              <span className="text-cream-dim">Correct answer: </span>
+              <span className="text-green-300 font-semibold">{solutionText()}</span>
+            </p>
+          )}
+          {ex.explanation && <p className="mt-2 text-sm text-cream-dim">💡 {ex.explanation}</p>}
         </div>
       )}
 
