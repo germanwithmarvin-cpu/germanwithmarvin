@@ -12,7 +12,6 @@ const links = [
   { href: "/decks", label: "Flashcards", icon: "🗂️" },
   { href: "/stories", label: "Stories", icon: "📖" },
   { href: "/stats", label: "Statistics", icon: "📊" },
-  { href: "/writing", label: "Writing tasks", icon: "✍️" },
 ];
 
 // Nur für Lehrer sichtbar:

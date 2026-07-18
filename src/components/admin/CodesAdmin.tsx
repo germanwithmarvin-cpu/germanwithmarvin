@@ -8,7 +8,7 @@ const inputCls = "rounded-lg bg-bordeaux-deep/60 border border-gold/25 px-3 py-2
 export default function CodesAdmin() {
   const [codes, setCodes] = useState<AccessCode[]>([]);
   const [loading, setLoading] = useState(true);
-  const [scope, setScope] = useState<CodeScope>("full");
+  const scope: CodeScope = "full"; // Codes geben immer Vollzugang
   const [kind, setKind] = useState<"single" | "community">("single");
   const [count, setCount] = useState(10);
   const [note, setNote] = useState("");
@@ -49,14 +49,8 @@ export default function CodesAdmin() {
       {/* Generator */}
       <div className="card p-5 space-y-3">
         <h3 className="font-semibold">Generate access codes</h3>
+        <p className="text-xs text-cream-dim">Codes give full access. Use them for Preply/Skool students.</p>
         <div className="grid sm:grid-cols-2 gap-3">
-          <div>
-            <label className="block text-sm mb-1 text-cream-dim">Unlocks</label>
-            <select value={scope} onChange={(e) => setScope(e.target.value as CodeScope)} className={`${inputCls} w-full`}>
-              <option value="full">Complete system (videos + vocabulary)</option>
-              <option value="vocab">Vocabulary app only</option>
-            </select>
-          </div>
           <div>
             <label className="block text-sm mb-1 text-cream-dim">Type</label>
             <select value={kind} onChange={(e) => setKind(e.target.value as "single" | "community")} className={`${inputCls} w-full`}>

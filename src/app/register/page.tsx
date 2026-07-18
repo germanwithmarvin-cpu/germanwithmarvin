@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import { createClient } from "@/lib/supabase/client";
-import { TRIAL_DAYS } from "@/lib/config";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -51,7 +50,7 @@ export default function RegisterPage() {
         <div className="card p-8 w-full max-w-sm">
           <h1 className="text-2xl font-bold text-center">Start learning free</h1>
           <p className="text-sm text-cream-dim text-center mt-1">
-            {TRIAL_DAYS} days full access. A1 stays free forever. No card needed.
+            Create your account to redeem a Preply/Skool code or continue after your purchase.
           </p>
 
           <form className="mt-6 space-y-4" onSubmit={handleRegister}>

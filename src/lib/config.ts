@@ -16,24 +16,18 @@ export const SITE = {
   stripePaymentLink: "https://buy.stripe.com/test_6oU9AT7INcJE505chl7Re00",
 };
 
-// Baut den Checkout-Link und hängt Nutzer-ID + E-Mail an, damit der Webhook
-// nach der Zahlung genau weiß, welches Konto freigeschaltet werden soll.
-export function checkoutUrl(userId?: string, email?: string): string {
+// Pay-first: Der Kunde zahlt zuerst; das Konto entsteht danach. Die Zuordnung
+// läuft über die bezahlte E-Mail (Webhook). Optional eine E-Mail vorbefüllen.
+export function checkoutUrl(email?: string): string {
   const url = new URL(SITE.stripePaymentLink);
-  if (userId) url.searchParams.set("client_reference_id", userId);
   if (email) url.searchParams.set("prefilled_email", email);
   return url.toString();
 }
 
 // ---- Preis- & Zugangsmodell -------------------------------------------------
-// App-Abo pro Monat (Videos + Flashcards + Stories, alle Level A1–B2).
+// App-Abo pro Monat (alles inklusive: Videos, Aufgaben, Flashcards, Stories).
 export const APP_PRICE = 39;
 export const APP_CURRENCY = "USD";
-// Kostenloser Vollzugang (alle Level) für neue Konten – in Tagen.
-export const TRIAL_DAYS = 7;
-// Diese Level sind IMMER kostenlos (auch ohne Abo / nach dem Trial).
-// "Intro" = die „Start here"-Kategorie (Lern-Grundlagen), für alle offen.
-export const FREE_LEVELS = ["Intro", "A1"] as const;
 
 // Preis hübsch formatiert, z. B. "$39".
 export function priceLabel(): string {

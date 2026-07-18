@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import SubmissionsAdmin from "@/components/SubmissionsAdmin";
 import LessonsAdmin from "@/components/LessonsAdmin";
 import StoriesAdmin from "@/components/StoriesAdmin";
 import StudentsAdmin from "@/components/StudentsAdmin";
@@ -10,7 +9,7 @@ import DecksAdmin from "@/components/admin/DecksAdmin";
 import CodesAdmin from "@/components/admin/CodesAdmin";
 import { createClient } from "@/lib/supabase/client";
 
-const tabs = ["Students", "Lessons", "Stories", "Vocabulary", "Codes", "Submissions"] as const;
+const tabs = ["Students", "Lessons", "Stories", "Vocabulary", "Codes"] as const;
 type Tab = (typeof tabs)[number];
 
 export default function AdminPage() {
@@ -63,8 +62,6 @@ export default function AdminPage() {
       {tab === "Vocabulary" && <DecksAdmin />}
 
       {tab === "Codes" && <CodesAdmin />}
-
-      {tab === "Submissions" && <SubmissionsAdmin />}
     </div>
   );
 }

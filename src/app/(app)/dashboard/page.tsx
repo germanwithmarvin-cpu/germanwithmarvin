@@ -15,7 +15,7 @@ const TILES = [
   { href: "/lessons", icon: "🎬", label: "Lessons", sub: "Watch & practice" },
   { href: "/decks", icon: "🗂️", label: "Flashcards", sub: "Learn vocabulary" },
   { href: "/stories", icon: "📖", label: "Stories", sub: "Read at your level" },
-  { href: "/writing", icon: "✍️", label: "Writing", sub: "Get feedback" },
+  { href: "/stats", icon: "📊", label: "Statistics", sub: "See your progress" },
 ];
 
 // Rotierende Lern-Tipps – bei jedem Laden erscheint ein zufälliger.
@@ -47,7 +47,6 @@ export default function Dashboard() {
   const [due, setDue] = useState<number | null>(null);
   const [firstName, setFirstName] = useState("");
   const [tip, setTip] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | undefined>();
   const [email, setEmail] = useState<string | undefined>();
 
   useEffect(() => {
@@ -61,7 +60,6 @@ export default function Dashboard() {
       const full = (user?.user_metadata?.full_name as string) || "";
       const first = full.trim().split(/\s+/)[0];
       if (first) setFirstName(first);
-      setUserId(user?.id);
       setEmail(user?.email ?? undefined);
     });
 
@@ -83,22 +81,18 @@ export default function Dashboard() {
         </p>
       </div>
 
-      {/* Abo-Banner: für Trial- und Gratis-Konten den Vollzugang anbieten */}
-      {access && (access.tier === "trial" || access.tier === "free") && (
+      {/* Paywall-Banner: Konten ohne Vollzugang zum Abschluss bewegen */}
+      {access && access.tier === "none" && (
         <div className="card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-gold/30">
           <div>
-            <div className="font-semibold">
-              {access.tier === "trial"
-                ? `🎁 ${access.trialDaysLeft} day${access.trialDaysLeft === 1 ? "" : "s"} of full access left`
-                : "🔓 Unlock everything"}
-            </div>
+            <div className="font-semibold">🔓 Unlock full access</div>
             <div className="text-sm text-cream-dim mt-0.5">
-              Get <span className="text-cream">German Simplified — All-Access</span>: all levels, videos,
-              flashcards & stories for {priceLabel()}/month. Cancel anytime. A1 stays free.
+              Get <span className="text-cream">German Simplified — All-Access</span>: all videos, exercises,
+              flashcards & stories for {priceLabel()}/month. Cancel anytime.
             </div>
           </div>
           <div className="flex flex-col items-stretch sm:items-end gap-1.5 shrink-0">
-            <a href={checkoutUrl(userId, email)} className="btn-gold px-5 py-2.5 text-sm text-center whitespace-nowrap">
+            <a href={checkoutUrl(email)} className="btn-gold px-5 py-2.5 text-sm text-center whitespace-nowrap">
               Get full access — {priceLabel()}/mo
             </a>
             <Link href="/redeem" className="text-xs text-cream-dim hover:text-cream underline underline-offset-4 text-center">

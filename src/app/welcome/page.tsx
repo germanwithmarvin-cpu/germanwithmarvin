@@ -64,28 +64,11 @@ export default function WelcomePage() {
     });
   }, []);
 
-  // Holt echte KI-Korrektur; fällt auf die einfache Prüfung zurück, wenn kein Schlüssel da ist.
-  async function checkWriting() {
+  // Einfache Sofort-Rückmeldung zur Einstufungs-Schreibprobe (ohne KI).
+  function checkWriting() {
     setChecking(true);
-    setFeedback(null);
-    setAiFeedback(null);
-    try {
-      const res = await fetch("/api/correct-writing", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: "Placement: write ~30 words about yourself or your day", text: writing }),
-      });
-      const data = await res.json();
-      if (data.configured && data.feedback) {
-        setAiFeedback(data.feedback as AiFeedback);
-      } else {
-        setFeedback(instantFeedback(writing));
-      }
-    } catch {
-      setFeedback(instantFeedback(writing));
-    } finally {
-      setChecking(false);
-    }
+    setFeedback(instantFeedback(writing));
+    setChecking(false);
   }
 
   const score = answers.reduce<number>((s, a, i) => s + (a === assessment[i].correct ? 1 : 0), 0);
@@ -242,7 +225,7 @@ export default function WelcomePage() {
                   <li>✓ Writing feedback — cancel anytime</li>
                 </ul>
                 <a
-                  href={checkoutUrl(userId, email)}
+                  href={checkoutUrl(email)}
                   className="btn-gold px-6 py-3 mt-5 block text-center"
                 >
                   Get full access — {priceLabel()}/month

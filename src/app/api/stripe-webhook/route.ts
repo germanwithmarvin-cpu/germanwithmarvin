@@ -1,17 +1,16 @@
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
-// Stripe schickt hierher Ereignisse (bezahlt, gekündigt …). Wir schalten den
-// Zugang des Nutzers danach automatisch frei oder wieder ab.
+// Stripe meldet hierher: bezahlt / gekündigt / Zahlung fehlgeschlagen.
+// Pay-first-Modell: Das Konto existiert bei der Zahlung evtl. noch nicht,
+// daher merken wir uns die BEZAHLTE E-MAIL in paid_subscriptions. Der Zugang
+// wird daraus live abgeleitet (siehe public.my_access()).
 //
-// Nötige Umgebungsvariablen (in Vercel + .env.local):
-//   STRIPE_SECRET_KEY          – Stripe → Developers → API keys (Secret key)
-//   STRIPE_WEBHOOK_SECRET      – Stripe → Developers → Webhooks → Signing secret
-//   SUPABASE_SERVICE_ROLE_KEY  – Supabase → Project settings → API → service_role
+// Nötige Umgebungsvariablen (Vercel + .env.local):
+//   STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, SUPABASE_SERVICE_ROLE_KEY
 
 export const runtime = "nodejs";
 
-// Admin-Client (umgeht RLS) – nur serverseitig, mit dem Service-Role-Key.
 function admin() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -20,28 +19,30 @@ function admin() {
   );
 }
 
-async function setScope(where: { id?: string; customerId?: string }, scope: "full" | "none", customerId?: string) {
+// Abo eintragen/aktualisieren (per E-Mail als Schlüssel).
+async function upsertPaid(email: string | null | undefined, customerId: string | null | undefined, status: string) {
+  if (!email) return;
   const db = admin();
-  const patch: Record<string, unknown> = { access_scope: scope };
-  if (customerId) patch.stripe_customer_id = customerId;
+  await db.from("paid_subscriptions").upsert(
+    { email: email.toLowerCase(), stripe_customer_id: customerId ?? null, status, updated_at: new Date().toISOString() },
+    { onConflict: "email" },
+  );
+}
 
-  if (where.id) {
-    await db.from("profiles").update(patch).eq("id", where.id);
-  } else if (where.customerId) {
-    await db.from("profiles").update(patch).eq("stripe_customer_id", where.customerId);
-  }
+// Status anhand der Stripe-Kundennummer ändern (Kündigung etc.).
+async function setStatusByCustomer(customerId: string, status: string) {
+  const db = admin();
+  await db.from("paid_subscriptions").update({ status, updated_at: new Date().toISOString() }).eq("stripe_customer_id", customerId);
 }
 
 export async function POST(req: Request) {
   const secretKey = process.env.STRIPE_SECRET_KEY;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-  if (!secretKey || !webhookSecret) {
-    return new Response("Stripe not configured", { status: 500 });
-  }
+  if (!secretKey || !webhookSecret) return new Response("Stripe not configured", { status: 500 });
 
   const stripe = new Stripe(secretKey);
   const sig = req.headers.get("stripe-signature");
-  const body = await req.text(); // Rohtext für die Signaturprüfung
+  const body = await req.text();
 
   let event: Stripe.Event;
   try {
@@ -52,35 +53,27 @@ export async function POST(req: Request) {
 
   try {
     switch (event.type) {
-      // Bezahlt: Konto auf Vollzugang schalten und Stripe-Kundennummer merken.
       case "checkout.session.completed": {
         const s = event.data.object as Stripe.Checkout.Session;
-        const userId = s.client_reference_id ?? undefined;
-        const customerId = (typeof s.customer === "string" ? s.customer : s.customer?.id) ?? undefined;
-        if (userId) await setScope({ id: userId }, "full", customerId);
-        else if (customerId) await setScope({ customerId }, "full", customerId);
+        const email = s.customer_details?.email ?? s.customer_email ?? null;
+        const customerId = typeof s.customer === "string" ? s.customer : s.customer?.id ?? null;
+        await upsertPaid(email, customerId, "active");
         break;
       }
-
-      // Abo wieder aktiv (z. B. nach erfolgreicher Zahlung): Vollzugang sicherstellen.
       case "customer.subscription.updated": {
         const sub = event.data.object as Stripe.Subscription;
         const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
-        const active = sub.status === "active" || sub.status === "trialing";
-        await setScope({ customerId }, active ? "full" : "none");
+        await setStatusByCustomer(customerId, sub.status); // active | past_due | canceled | …
         break;
       }
-
-      // Gekündigt / ausgelaufen: Zugang entziehen (zurück auf nur A1).
       case "customer.subscription.deleted": {
         const sub = event.data.object as Stripe.Subscription;
         const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
-        await setScope({ customerId }, "none");
+        await setStatusByCustomer(customerId, "canceled");
         break;
       }
     }
   } catch (err) {
-    // Bei einem Fehler 500 melden – Stripe versucht es dann erneut.
     return new Response(`Handler error: ${(err as Error).message}`, { status: 500 });
   }
 

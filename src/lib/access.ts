@@ -1,56 +1,42 @@
 "use client";
 
 import { createClient } from "@/lib/supabase/client";
-import { TRIAL_DAYS, FREE_LEVELS } from "@/lib/config";
 
-// Zugangsstufen:
-//  - subscribed: Abo ODER Lehrer ODER Freischaltcode "Komplett" → alles frei
-//  - vocab:      Freischaltcode "Nur Vokabel" → Vokabel-App (alle Level) frei, Videos ab A2 = Skool-Hinweis
-//  - trial:      neues Konto, innerhalb der Gratis-Tage → alles frei (befristet)
-//  - free:       nichts davon → nur kostenlose Level (A1) + Buchung
-export type AccessTier = "free" | "trial" | "subscribed" | "vocab";
-export type Access = { tier: AccessTier; trialDaysLeft: number };
-
-function isFreeLevel(level: string): boolean {
-  return (FREE_LEVELS as readonly string[]).includes(level);
-}
+// Harte Paywall: Es gibt nur noch VOLLZUGANG oder KEINEN Zugang.
+//  - full: Lehrer, per Code freigeschaltet ODER aktives Stripe-Abo (per E-Mail).
+//  - none: kein Zugang → Paywall.
+export type AccessTier = "full" | "none";
+export type Access = { tier: AccessTier };
 
 export async function getAccess(): Promise<Access> {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { tier: "free", trialDaysLeft: 0 };
+  if (!user) return { tier: "none" };
 
-  const { data } = await supabase
+  // Zugang wird serverseitig sicher abgeleitet (Code ODER aktives Stripe-Abo).
+  const { data, error } = await supabase.rpc("my_access");
+  if (!error) return { tier: data === "full" ? "full" : "none" };
+
+  // Fallback, falls my_access() noch nicht installiert ist: Lehrer + Code weiterhin freischalten.
+  const { data: profile } = await supabase
     .from("profiles")
-    .select("is_subscribed, is_teacher, access_scope, created_at")
+    .select("is_teacher, access_scope")
     .eq("id", user.id)
     .single();
-
-  // Lehrer, Abonnenten und "Komplett"-Code: voller Zugang.
-  if (data?.is_teacher || data?.is_subscribed || data?.access_scope === "full") {
-    return { tier: "subscribed", trialDaysLeft: 0 };
-  }
-  if (data?.access_scope === "vocab") return { tier: "vocab", trialDaysLeft: 0 };
-
-  const createdMs = data?.created_at ? new Date(data.created_at as string).getTime() : Date.now();
-  const msLeft = createdMs + TRIAL_DAYS * 86_400_000 - Date.now();
-  if (msLeft > 0) return { tier: "trial", trialDaysLeft: Math.ceil(msLeft / 86_400_000) };
-  return { tier: "free", trialDaysLeft: 0 };
+  return { tier: profile?.is_teacher || profile?.access_scope === "full" ? "full" : "none" };
 }
 
-// Vokabel-App (Flashcards) dieses Levels? A1 immer; sonst Trial/Abo/Komplett/Vokabel.
-export function canAccessVocabLevel(tier: AccessTier, level: string): boolean {
-  if (isFreeLevel(level)) return true;
-  return tier === "trial" || tier === "subscribed" || tier === "vocab";
+export function hasAccess(tier: AccessTier): boolean {
+  return tier === "full";
 }
 
-// Video-Lektionen dieses Levels? A1 immer; sonst Trial/Abo/Komplett (NICHT vocab).
-export function canAccessVideoLevel(tier: AccessTier, level: string): boolean {
-  if (isFreeLevel(level)) return true;
-  return tier === "trial" || tier === "subscribed";
+// Kompatibilitäts-Helfer (Level spielt keine Rolle mehr – alles braucht Vollzugang).
+export function canAccessVocabLevel(tier: AccessTier, _level?: string): boolean {
+  return tier === "full";
 }
-
-// Premium (Schreibaufgaben, Nachrichten): nur Trial/Abo/Komplett.
+export function canAccessVideoLevel(tier: AccessTier, _level?: string): boolean {
+  return tier === "full";
+}
 export function canAccessPremium(tier: AccessTier): boolean {
-  return tier === "trial" || tier === "subscribed";
+  return tier === "full";
 }

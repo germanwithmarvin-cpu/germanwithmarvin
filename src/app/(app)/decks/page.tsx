@@ -6,6 +6,7 @@ import { getDecks } from "@/lib/decks";
 import { countFlagged, getDeckProgress, getLearnedSummary, type DeckProgress } from "@/lib/study";
 import { LEVELS, type Deck } from "@/lib/types";
 import { getAccess, canAccessVocabLevel, type AccessTier } from "@/lib/access";
+import Paywall from "@/components/Paywall";
 
 type DeckNode = { kind: "deck"; deck: Deck; prog: DeckProgress; done: boolean; current: boolean; firstOfLevel: boolean; locked: boolean };
 type TrophyNode = { kind: "trophy"; name: string; icon: string; earned: boolean; champion: boolean; key: string };
@@ -64,7 +65,7 @@ export default function DecksPage() {
   const [progress, setProgress] = useState<Record<string, DeckProgress>>({});
   const [flagged, setFlagged] = useState(0);
   const [learnedTotal, setLearnedTotal] = useState(0);
-  const [tier, setTier] = useState<AccessTier>("free");
+  const [tier, setTier] = useState<AccessTier>("none");
   const [loading, setLoading] = useState(true);
   const [width, setWidth] = useState(0);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -156,6 +157,8 @@ export default function DecksPage() {
   const knownCards = ordered.reduce((s, d) => s + (progress[d.id]?.known ?? 0), 0);
   const decksDone = ordered.filter(isDone).length;
   const pct = totalCards ? Math.round((knownCards / totalCards) * 100) : 0;
+
+  if (!loading && tier !== "full") return <Paywall title="Unlock the flashcard trainer" />;
 
   return (
     <div className="grid md:grid-cols-[1fr_13rem] gap-8">

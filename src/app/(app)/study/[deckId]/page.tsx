@@ -5,8 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import Flashcard, { type Direction } from "@/components/Flashcard";
 import { getAllItems, getFlaggedItems, getDueToday, getLearnedItems, reviewCard, toggleFlag, type StudyItem } from "@/lib/study";
-import { getDeck } from "@/lib/decks";
-import { getAccess, canAccessVocabLevel } from "@/lib/access";
+import { getAccess } from "@/lib/access";
 import { intervalPreview } from "@/lib/srs";
 import type { Rating } from "@/lib/types";
 import Paywall from "@/components/Paywall";
@@ -39,13 +38,11 @@ export default function StudyPage() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      // Zugangsprüfung: ein bestimmtes Deck (A2–B2) erfordert ein Abo.
-      if (!isMarked && !isToday && !isLearned) {
-        const [deck, access] = await Promise.all([getDeck(deckId), getAccess()]);
-        if (deck && !canAccessVocabLevel(access.tier, deck.level)) {
-          if (!cancelled) { setBlocked(true); setLoading(false); }
-          return;
-        }
+      // Harte Paywall: Lernen (auch heute/markiert/gelernt) erfordert Vollzugang.
+      const access = await getAccess();
+      if (access.tier !== "full") {
+        if (!cancelled) { setBlocked(true); setLoading(false); }
+        return;
       }
       const items = isMarked
         ? await getFlaggedItems()
