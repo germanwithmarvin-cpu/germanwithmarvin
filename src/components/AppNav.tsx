@@ -43,7 +43,7 @@ export default function AppNav() {
   return (
     <aside className="w-full md:w-72 shrink-0 md:min-h-screen border-b md:border-b-0 md:border-r border-gold/15 p-5">
       <div className="mb-8">
-        <Logo href="/dashboard" size={52} />
+        <Logo href="/dashboard" size={96} />
       </div>
       <nav className="flex md:flex-col gap-1.5 overflow-x-auto">
         {visibleLinks.map((l) => {
