@@ -11,9 +11,8 @@ export const SITE = {
   skoolUrl: "https://www.skool.com/german-with-marvin-5887/about",
   // Verkaufskanäle (Zugang läuft über diese Plattformen – dort gibt es die Codes).
   preplyUrl: "https://preply.com/en/tutor/6416829",
-  // Stripe-Zahlungslink für das Monats-Abo (Managed Payments / Merchant of Record).
-  // TEST-Link – vor dem echten Start durch den Live-Link ersetzen.
-  stripePaymentLink: "https://buy.stripe.com/test_6oU9AT7INcJE505chl7Re00",
+  // Stripe-Zahlungslink für das Monats-Abo (Managed Payments / Merchant of Record) – LIVE.
+  stripePaymentLink: "https://buy.stripe.com/6oU9AT7INcJE505chl7Re00",
 };
 
 // Pay-first: Der Kunde zahlt zuerst; das Konto entsteht danach. Die Zuordnung
