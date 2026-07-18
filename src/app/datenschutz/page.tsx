@@ -74,11 +74,12 @@ function PrivacyEN() {
         </p>
       </Section>
 
-      <Section title="5. Writing tasks & AI correction">
+      <Section title="5. Payments">
         <p>
-          If you use the “Writing tasks” feature and submit a text for correction, that text is transmitted to{" "}
-          <strong>Anthropic PBC</strong> (San Francisco, CA, USA) for automated language analysis. Please do
-          not include particularly sensitive personal data in these texts. Legal basis: Art. 6(1)(b) GDPR.
+          Subscription payments are processed by <strong>Stripe</strong> (Managed Payments / Merchant of
+          Record). Stripe collects the payment and handles applicable tax; we do <strong>not</strong> store
+          card details. You get instant access after checkout and can cancel anytime. Legal basis: Art.
+          6(1)(b) GDPR.
         </p>
       </Section>
 
@@ -90,11 +91,10 @@ function PrivacyEN() {
         </p>
       </Section>
 
-      <Section title="7. Payments">
+      <Section title="7. Preply &amp; Skool">
         <p>
-          Access to paid content is handled exclusively via the external platforms <strong>Skool</strong> and{" "}
-          <strong>Preply</strong>. Payments take place there; we do <strong>not</strong> collect or store any
-          payment data on this website. The privacy policies of the respective platform also apply.
+          Students of my Preply or Skool courses can unlock the app with an access code. Any payments on those
+          platforms are handled by them under their own privacy policies.
         </p>
       </Section>
 
@@ -110,7 +110,7 @@ function PrivacyEN() {
         <ul className="list-disc pl-5 mt-2 space-y-1">
           <li>Vercel Inc. (hosting, USA)</li>
           <li>Supabase Inc. (account &amp; database, USA/Singapore)</li>
-          <li>Anthropic PBC (AI text correction, USA)</li>
+          <li>Stripe (payment processing / merchant of record, USA &amp; Ireland)</li>
           <li>Google Ireland Ltd. / YouTube (video hosting, EU/USA)</li>
         </ul>
         <p className="mt-2">
@@ -196,11 +196,12 @@ function PrivacyDE() {
         </p>
       </Section>
 
-      <Section title="5. Schreibaufgaben & KI-Korrektur">
+      <Section title="5. Zahlungen">
         <p>
-          Reichst du über „Writing tasks" einen Text zur Korrektur ein, wird dieser zur automatisierten
-          sprachlichen Auswertung an <strong>Anthropic PBC</strong> (San Francisco, USA) übermittelt. Bitte
-          keine besonders sensiblen personenbezogenen Daten eingeben. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO.
+          Abo-Zahlungen werden über <strong>Stripe</strong> (Managed Payments / Merchant of Record)
+          abgewickelt. Stripe zieht die Zahlung ein und kümmert sich um die Umsatzsteuer; wir speichern
+          <strong> keine</strong> Kartendaten. Nach dem Checkout gibt es sofort Zugang, jederzeit kündbar.
+          Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO.
         </p>
       </Section>
 
@@ -212,11 +213,10 @@ function PrivacyDE() {
         </p>
       </Section>
 
-      <Section title="7. Zahlungen">
+      <Section title="7. Preply &amp; Skool">
         <p>
-          Der Zugang zu kostenpflichtigen Inhalten wird ausschließlich über <strong>Skool</strong> und{" "}
-          <strong>Preply</strong> abgewickelt. Wir erheben und speichern <strong>keine</strong> Zahlungsdaten.
-          Es gelten zusätzlich die Datenschutzbestimmungen der jeweiligen Plattform.
+          Schüler meiner Preply- oder Skool-Kurse schalten die App per Zugangscode frei. Etwaige Zahlungen auf
+          diesen Plattformen wickeln die Plattformen selbst unter ihren eigenen Datenschutzbestimmungen ab.
         </p>
       </Section>
 
@@ -232,7 +232,7 @@ function PrivacyDE() {
         <ul className="list-disc pl-5 mt-2 space-y-1">
           <li>Vercel Inc. (Hosting, USA)</li>
           <li>Supabase Inc. (Konto &amp; Datenbank, USA/Singapur)</li>
-          <li>Anthropic PBC (KI-Textkorrektur, USA)</li>
+          <li>Stripe (Zahlungsabwicklung / Merchant of Record, USA &amp; Irland)</li>
           <li>Google Ireland Ltd. / YouTube (Videohosting, EU/USA)</li>
         </ul>
         <p className="mt-2">
