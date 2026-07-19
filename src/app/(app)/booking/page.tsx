@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import AvailabilityEditor from "@/components/booking/AvailabilityEditor";
 import BookingCalendar from "@/components/booking/BookingCalendar";
 import LessonsList from "@/components/booking/LessonsList";
+import LessonCalendar from "@/components/booking/LessonCalendar";
 
 export default function BookingPage() {
   const [checkoutState, setCheckoutState] = useState<string | null>(null);
@@ -90,8 +91,9 @@ export default function BookingPage() {
         // -------- Lehrer: Verfügbarkeit + alle Termine --------
         <>
           <AvailabilityEditor />
-          <div className="card p-5">
-            <div className="font-semibold text-lg mb-3">Upcoming lessons</div>
+          <div className="space-y-3">
+            <div className="font-semibold text-lg">Upcoming lessons</div>
+            <LessonCalendar bookings={bookings} />
             <LessonsList bookings={bookings} onChange={refresh} teacher />
           </div>
         </>
@@ -126,8 +128,9 @@ export default function BookingPage() {
 
               <BookingCalendar canBook={credits.balance > 0} onBooked={refresh} />
 
-              <div>
-                <div className="font-semibold mb-2">Your upcoming lessons</div>
+              <div className="space-y-3">
+                <div className="font-semibold">Your upcoming lessons</div>
+                <LessonCalendar bookings={bookings} />
                 <LessonsList bookings={bookings} onChange={refresh} />
               </div>
 
