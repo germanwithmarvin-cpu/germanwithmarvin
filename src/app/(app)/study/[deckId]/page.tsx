@@ -34,6 +34,11 @@ export default function StudyPage() {
   const [direction, setDirection] = useState<Direction>("en-de");
   const [blocked, setBlocked] = useState(false);
 
+  // Abfrage-Modus: umdrehen / tippen / auswählen.
+  const [mode, setMode] = useState<"flip" | "type" | "choose">("flip");
+  const [typed, setTyped] = useState("");
+  const [chosen, setChosen] = useState<string | null>(null);
+
   // Lebendigkeit: Combo-Streak + Feedback-Animation + Funken-Burst.
   const [combo, setCombo] = useState(0);
   const [bestCombo, setBestCombo] = useState(0);
@@ -72,6 +77,20 @@ export default function StudyPage() {
     return Object.fromEntries(RATINGS.map((r) => [r.key, intervalPreview(current.state, r.key)])) as Record<Rating, string>;
   }, [current]);
 
+  // Antwort-Text der aktuellen Karte in Abfragerichtung (en-de → Antwort Deutsch).
+  const answerOf = useCallback((it: StudyItem | undefined) => (it ? (direction === "en-de" ? it.card.front : it.card.back) : ""), [direction]);
+  const correctAnswer = answerOf(current);
+
+  // Vier Optionen für den Auswahl-Modus: richtige Antwort + 3 aus der Runde.
+  const options = useMemo(() => {
+    if (mode !== "choose" || !current) return [] as string[];
+    const pool = Array.from(new Set(queue.slice(1).map((it) => answerOf(it)).filter((t) => t && t !== correctAnswer)));
+    for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+    const opts = [correctAnswer, ...pool.slice(0, 3)];
+    for (let i = opts.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [opts[i], opts[j]] = [opts[j], opts[i]]; }
+    return opts;
+  }, [mode, current, queue, answerOf, correctAnswer]);
+
   const rate = useCallback(async (rating: Rating) => {
     if (!current || saving || !revealed) return;
     setSaving(true);
@@ -106,9 +125,22 @@ export default function StudyPage() {
       const q = [...rest]; q.splice(pos, 0, updated); return q;
     });
     setRevealed(false);
+    setTyped("");
+    setChosen(null);
     setSaving(false);
     setTimeout(() => setFeedback(null), 460);
   }, [current, saving, revealed, bestCombo]);
+
+  // Aktive Modi: Antwort einreichen → aufdecken + sofortiges Feedback.
+  const submitAnswer = useCallback((value: string) => {
+    if (!current || revealed) return;
+    const ok = checkTyped(value, correctAnswer);
+    setChosen(value);
+    setFeedback(ok ? "correct" : "wrong");
+    if (ok) setBurstId((b) => b + 1);
+    setRevealed(true);
+    setTimeout(() => setFeedback(null), 460);
+  }, [current, revealed, correctAnswer]);
 
   const toggleFlagCurrent = useCallback(async () => {
     if (!current) return;
@@ -124,7 +156,11 @@ export default function StudyPage() {
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
       if (!revealed) {
-        if (e.code === "Space" || e.key === "Enter" || e.key === "ArrowUp") { e.preventDefault(); setRevealed(true); }
+        if (mode === "flip" && (e.code === "Space" || e.key === "Enter" || e.key === "ArrowUp")) { e.preventDefault(); setRevealed(true); }
+        if (mode === "choose") {
+          const i = ["1", "2", "3", "4"].indexOf(e.key);
+          if (i >= 0 && options[i]) { e.preventDefault(); submitAnswer(options[i]); }
+        }
         return;
       }
       if (e.code === "Space" || e.key === "Enter") { e.preventDefault(); rate("good"); return; }
@@ -134,7 +170,7 @@ export default function StudyPage() {
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [current, revealed, saving, rate, toggleFlagCurrent]);
+  }, [current, revealed, saving, rate, toggleFlagCurrent, mode, options, submitAnswer]);
 
   if (blocked) return <Paywall title="This level needs a membership" />;
   if (loading) return <p className="text-cream-dim">Loading…</p>;
@@ -191,6 +227,19 @@ export default function StudyPage() {
         </button>
       </div>
 
+      {/* Abfrage-Modus */}
+      <div className="max-w-xl mx-auto mb-3 grid grid-cols-3 gap-1 p-1 rounded-xl bg-bordeaux-deep/40 border border-gold/15">
+        {([["flip", "🔁 Flip"], ["type", "⌨️ Type"], ["choose", "🔀 Choose"]] as const).map(([m, label]) => (
+          <button
+            key={m}
+            onClick={() => { setMode(m); setRevealed(false); setTyped(""); setChosen(null); }}
+            className={`py-1.5 rounded-lg text-sm font-medium transition ${mode === m ? "btn-gold" : "text-cream-dim hover:text-cream"}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       {/* Combo-Streak */}
       <div className="max-w-xl mx-auto h-7 mb-1 flex items-center justify-center">
         {combo >= 2 && (
@@ -211,20 +260,72 @@ export default function StudyPage() {
 
       <div className="max-w-xl mx-auto mt-6">
         {!revealed ? (
-          <button onClick={() => setRevealed(true)} className="btn-gold w-full py-3">Show answer <span className="opacity-70 text-sm">(Space)</span></button>
+          mode === "flip" ? (
+            <button onClick={() => setRevealed(true)} className="btn-gold w-full py-3">Show answer <span className="opacity-70 text-sm">(Space)</span></button>
+          ) : mode === "type" ? (
+            <form onSubmit={(e) => { e.preventDefault(); if (typed.trim()) submitAnswer(typed); }} className="flex gap-2">
+              <input autoFocus value={typed} onChange={(e) => setTyped(e.target.value)} placeholder={`Type the ${direction === "en-de" ? "German" : "English"} answer…`} className="flex-1 rounded-xl bg-bordeaux-deep/60 border border-gold/25 px-4 py-3 outline-none focus:border-gold" />
+              <button type="submit" disabled={!typed.trim()} className="btn-gold px-6 disabled:opacity-50">Check</button>
+            </form>
+          ) : (
+            <div className="grid sm:grid-cols-2 gap-2">
+              {options.map((opt, i) => (
+                <button key={opt} onClick={() => submitAnswer(opt)} className="btn-outline py-3 px-3 text-left flex items-center gap-2">
+                  <span className="opacity-50 text-xs">{i + 1}</span><span>{opt}</span>
+                </button>
+              ))}
+            </div>
+          )
         ) : (
-          <div className="grid grid-cols-4 gap-2">
-            {RATINGS.map((r) => (
-              <button key={r.key} onClick={() => rate(r.key)} disabled={saving} className={`${r.cls} py-3 px-1 flex flex-col items-center disabled:opacity-50`}>
-                <span className="text-sm">{r.label} <span className="opacity-60 text-xs">{r.hot}</span></span>
-                <span className="text-xs opacity-80">{previews[r.key]}</span>
-              </button>
-            ))}
-          </div>
+          <>
+            {(mode === "type" || mode === "choose") && chosen !== null && (
+              <div className={`text-center text-sm mb-3 ${checkTyped(chosen, correctAnswer) ? "text-green-700" : "text-red-700"}`}>
+                {checkTyped(chosen, correctAnswer) ? "✓ Correct!" : <>✗ You answered “{chosen}” — correct: <b>{correctAnswer}</b></>}
+              </div>
+            )}
+            <div className="grid grid-cols-4 gap-2">
+              {RATINGS.map((r) => (
+                <button key={r.key} onClick={() => rate(r.key)} disabled={saving} className={`${r.cls} py-3 px-1 flex flex-col items-center disabled:opacity-50`}>
+                  <span className="text-sm">{r.label} <span className="opacity-60 text-xs">{r.hot}</span></span>
+                  <span className="text-xs opacity-80">{previews[r.key]}</span>
+                </button>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>
   );
+}
+
+// ---- Antwort-Prüfung für Tippen/Auswahl -----------------------------------
+// Groß/Klein, Leerzeichen, Artikel & End-Satzzeichen egal; Umlaute tolerant
+// (ä=ae …); ein kleiner Tippfehler wird bei längeren Wörtern verziehen.
+function norm(s: string): string {
+  return s.toLowerCase().trim().replace(/\s+/g, " ").replace(/[.!?,;:]+$/, "").replace(/^(der|die|das|the|to|a|an)\s+/, "");
+}
+function deFold(s: string): string {
+  return s.replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss");
+}
+function lev(a: string, b: string): number {
+  const m = a.length, n = b.length;
+  const d = Array.from({ length: m + 1 }, (_, i) => [i, ...Array(n).fill(0)]);
+  for (let j = 0; j <= n; j++) d[0][j] = j;
+  for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++) {
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  }
+  return d[m][n];
+}
+function checkTyped(input: string, answer: string): boolean {
+  const a = deFold(norm(input));
+  if (!a) return false;
+  // Mehrere zulässige Formen (durch / oder , getrennt) einzeln prüfen.
+  const parts = answer.split(/[/,;]/).map((p) => deFold(norm(p))).filter(Boolean);
+  for (const p of parts) {
+    if (a === p) return true;
+    if (p.length > 4 && lev(a, p) <= 1) return true;
+  }
+  return false;
 }
 
 // Kleiner Funken-Burst über der Karte beim Richtig-Feedback.
