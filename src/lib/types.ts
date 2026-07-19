@@ -38,10 +38,13 @@ export type Rating = "again" | "hard" | "good" | "easy";
 // Lernzustand einer Karte pro Schüler (Kern des Algorithmus).
 export type CardState = {
   cardId: string;
-  ease: number; // "Leichtigkeit" – wächst/sinkt mit der Bewertung
-  intervalDays: number; // aktueller Abstand bis zur nächsten Wiederholung
+  ease: number; // (Alt-SM2, nur noch informativ) "Leichtigkeit"
+  intervalDays: number; // aktueller Abstand bis zur nächsten Wiederholung (abgeleitet)
   repetitions: number; // wie oft hintereinander korrekt
   lapses: number; // wie oft "Again" gedrückt
+  // FSRS-Gedächtnismodell:
+  stability: number; // wie lange die Karte "hält" (Tage); 0 = neu/kein Modell
+  difficulty: number; // wie zäh die Karte ist (1–10); 0 = neu
   dueAt: string; // ISO-Zeit, wann die Karte wieder fällig ist
   lastReviewedAt: string | null;
   flagged: boolean; // vom Schüler für später markiert

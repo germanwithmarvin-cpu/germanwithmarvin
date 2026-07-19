@@ -21,12 +21,19 @@ function startOfTodayISO(): string {
 
 function stateFromRow(cardId: string, r: Record<string, unknown> | undefined): CardState {
   if (!r) return newState(cardId);
+  const interval = Number(r.interval_days ?? 0);
+  // Sanfte Übernahme alter SM-2-Karten: fehlt das FSRS-Modell, wird die
+  // Stabilität aus dem bisherigen Intervall geschätzt (Schwierigkeit neutral).
+  const stability = r.stability != null ? Number(r.stability) : interval > 0 ? interval : 0;
+  const difficulty = r.difficulty != null ? Number(r.difficulty) : interval > 0 ? 5 : 0;
   return {
     cardId,
     ease: Number(r.ease ?? 2.5),
-    intervalDays: Number(r.interval_days ?? 0),
+    intervalDays: interval,
     repetitions: Number(r.repetitions ?? 0),
     lapses: Number(r.lapses ?? 0),
+    stability,
+    difficulty,
     dueAt: (r.due_at as string) ?? new Date().toISOString(),
     lastReviewedAt: (r.last_reviewed_at as string) ?? null,
     flagged: Boolean(r.flagged),
@@ -93,19 +100,25 @@ export async function reviewCard(state: CardState, rating: Rating): Promise<Card
 
   const next = schedule(state, rating);
 
-  await supabase.from("fc_card_states").upsert(
-    {
-      user_id: user.id,
-      card_id: state.cardId,
-      ease: next.ease,
-      interval_days: next.intervalDays,
-      repetitions: next.repetitions,
-      lapses: next.lapses,
-      due_at: next.dueAt,
-      last_reviewed_at: next.lastReviewedAt,
-    },
+  const base = {
+    user_id: user.id,
+    card_id: state.cardId,
+    ease: next.ease,
+    interval_days: next.intervalDays,
+    repetitions: next.repetitions,
+    lapses: next.lapses,
+    due_at: next.dueAt,
+    last_reviewed_at: next.lastReviewedAt,
+  };
+  // Mit FSRS-Feldern speichern; falls die Spalten (noch) fehlen (Migration
+  // add-fsrs.sql noch nicht ausgeführt), ohne sie erneut versuchen.
+  const { error } = await supabase.from("fc_card_states").upsert(
+    { ...base, stability: next.stability, difficulty: next.difficulty },
     { onConflict: "user_id,card_id" },
   );
+  if (error) {
+    await supabase.from("fc_card_states").upsert(base, { onConflict: "user_id,card_id" });
+  }
 
   await supabase.from("fc_review_log").insert({
     user_id: user.id,

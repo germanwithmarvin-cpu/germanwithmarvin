@@ -1,130 +1,139 @@
 // ============================================================================
-// Lern-Algorithmus (Spaced Repetition) — Anki-Stil, basierend auf SM-2.
+// Lern-Algorithmus: FSRS (Free Spaced Repetition Scheduler, v4.5).
 // ----------------------------------------------------------------------------
-// Idee: Karten, die du gut kannst, kommen in immer größeren Abständen wieder.
-// Karten, die du falsch hast, kommen schnell zurück. So lernst du effizient.
-//
-// Du kannst den "persönlichen Algorithmus" hier oben über die Konstanten
-// feinjustieren — keine andere Stelle im Code muss geändert werden.
+// FSRS modelliert das Gedächtnis mit zwei Werten pro Karte:
+//   • stability  – wie lange die Karte "hält" (in Tagen)
+//   • difficulty – wie zäh die Karte ist (1–10)
+// Daraus wird die Erinnerungswahrscheinlichkeit vorhergesagt und die nächste
+// Wiederholung genau auf die Ziel-Trefferquote (REQUEST_RETENTION) geplant.
+// Effizienter als das alte SM-2 (weniger Wiederholungen bei gleicher Merkleistung).
 // ============================================================================
 
 import type { CardState, Rating } from "@/lib/types";
 
-// ---- Stellschrauben (hier anpassen, um das Verhalten zu ändern) -----------
+// ---- Stellschrauben --------------------------------------------------------
 export const SRS = {
-  startEase: 2.5, // Start-"Leichtigkeit" einer neuen Karte
-  minEase: 1.3, // Leichtigkeit fällt nie darunter
-  againEase: -0.2, // Änderung der Leichtigkeit bei "Again"
-  hardEase: -0.15, // bei "Hard"
-  easyEase: 0.15, // bei "Easy"
-  hardMultiplier: 1.2, // Intervall × ... bei "Hard"
-  easyBonus: 1.3, // zusätzlicher Faktor bei "Easy"
-  firstIntervalDays: 1, // erstes Intervall nach erstem "Good"
-  secondIntervalDays: 6, // zweites Intervall
-  againIntervalMinutes: 10, // "Again": Karte kommt in ~10 Minuten zurück
+  requestRetention: 0.9, // Ziel-Trefferquote (0.9 = 90 %)
+  againIntervalMinutes: 10, // "Again": Karte kommt kurzfristig zurück
   fuzzPercent: 0.05, // ±5 % Streuung auf lange Intervalle (verhindert Karten-Stau)
+  maximumIntervalDays: 36500, // Deckel (100 Jahre)
 };
 
-// Streut größere Intervalle leicht zufällig, damit nicht alle Karten am selben
-// Tag zurückkommen (wie in Anki). Kleine Intervalle bleiben unangetastet.
-function fuzz(days: number): number {
-  if (days < 4) return days;
-  const spread = days * SRS.fuzzPercent;
-  return days + (Math.random() * 2 - 1) * spread;
-}
+// FSRS-4.5 Standard-Parameter (17 Gewichte). Später pro Nutzer optimierbar.
+const W = [0.4, 0.6, 2.4, 5.8, 4.93, 0.94, 0.86, 0.01, 1.49, 0.14, 0.94, 2.18, 0.05, 0.34, 1.26, 0.29, 2.61];
 
-// Frischer Lernzustand für eine neue Karte (sofort fällig).
+const DECAY = -0.5;
+const FACTOR = 19 / 81; // = 0.9^(1/DECAY) - 1  → Intervall = stability bei R=0.9
+const MIN_STABILITY = 0.1;
+
+const clamp = (x: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, x));
+const ratingNum = (r: Rating): number => ({ again: 1, hard: 2, good: 3, easy: 4 }[r]);
+
+// Frischer Lernzustand für eine neue Karte (sofort fällig, noch kein FSRS-Modell).
 export function newState(cardId: string): CardState {
   return {
     cardId,
-    ease: SRS.startEase,
+    ease: 2.5,
     intervalDays: 0,
     repetitions: 0,
     lapses: 0,
+    stability: 0,
+    difficulty: 0,
     dueAt: new Date().toISOString(),
     lastReviewedAt: null,
     flagged: false,
   };
 }
 
-function clampEase(ease: number): number {
-  return Math.max(SRS.minEase, ease);
-}
-
-function addDays(date: Date, days: number): Date {
-  const d = new Date(date);
-  d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
-  return d;
-}
-
 function addMinutes(date: Date, minutes: number): Date {
-  const d = new Date(date);
-  d.setTime(d.getTime() + minutes * 60 * 1000);
-  return d;
+  return new Date(date.getTime() + minutes * 60 * 1000);
+}
+function addDays(date: Date, days: number): Date {
+  return new Date(date.getTime() + days * 24 * 60 * 60 * 1000);
+}
+function daysBetween(fromISO: string | null, now: Date): number {
+  if (!fromISO) return 0;
+  return Math.max(0, (now.getTime() - new Date(fromISO).getTime()) / (24 * 60 * 60 * 1000));
 }
 
-// Kern: berechnet den neuen Lernzustand aus dem alten + der Bewertung.
-// `now` ist injizierbar (für Tests); Standard = jetzt.
+// Streut größere Intervalle leicht zufällig (wie in Anki).
+function fuzz(days: number): number {
+  if (days < 4) return days;
+  const spread = days * SRS.fuzzPercent;
+  return days + (Math.random() * 2 - 1) * spread;
+}
+
+// ---- FSRS-Formeln ----------------------------------------------------------
+function retrievability(elapsedDays: number, stability: number): number {
+  return Math.pow(1 + (FACTOR * elapsedDays) / stability, DECAY);
+}
+
+function initStability(g: number): number {
+  return clamp(W[g - 1], MIN_STABILITY, SRS.maximumIntervalDays);
+}
+function initDifficulty(g: number): number {
+  return clamp(W[4] - W[5] * (g - 3), 1, 10);
+}
+function nextDifficulty(d: number, g: number): number {
+  const delta = d - W[6] * (g - 3);
+  // Rückführung Richtung "Good"-Startschwierigkeit (Mean Reversion).
+  return clamp(W[7] * W[4] + (1 - W[7]) * delta, 1, 10);
+}
+function recallStability(d: number, s: number, r: number, g: number): number {
+  const hard = g === 2 ? W[15] : 1;
+  const easy = g === 4 ? W[16] : 1;
+  return s * (1 + Math.exp(W[8]) * (11 - d) * Math.pow(s, -W[9]) * (Math.exp((1 - r) * W[10]) - 1) * hard * easy);
+}
+function forgetStability(d: number, s: number, r: number): number {
+  return W[11] * Math.pow(d, -W[12]) * (Math.pow(s + 1, W[13]) - 1) * Math.exp((1 - r) * W[14]);
+}
+
+// Nächstes Intervall (Tage) aus der Stabilität für die Ziel-Trefferquote.
+function nextInterval(stability: number): number {
+  const raw = (stability / FACTOR) * (Math.pow(SRS.requestRetention, 1 / DECAY) - 1);
+  return clamp(Math.round(fuzz(raw)), 1, SRS.maximumIntervalDays);
+}
+
+// Kern: neuer Lernzustand aus altem + Bewertung. `now` injizierbar (Tests).
 export function schedule(state: CardState, rating: Rating, now: Date = new Date()): CardState {
-  let { ease, intervalDays, repetitions, lapses } = state;
+  const g = ratingNum(rating);
+  const firstTime = !state.stability || state.stability <= 0;
 
-  if (rating === "again") {
-    repetitions = 0;
-    lapses += 1;
-    ease = clampEase(ease + SRS.againEase);
-    intervalDays = 0; // kurzfristig zurück (Minuten)
-    return {
-      ...state,
-      ease,
-      intervalDays,
-      repetitions,
-      lapses,
-      dueAt: addMinutes(now, SRS.againIntervalMinutes).toISOString(),
-      lastReviewedAt: now.toISOString(),
-    };
-  }
-
-  // Richtig beantwortet (hard / good / easy)
-  repetitions += 1;
-
-  let nextInterval: number;
-  if (repetitions === 1) {
-    nextInterval = SRS.firstIntervalDays;
-  } else if (repetitions === 2) {
-    nextInterval = SRS.secondIntervalDays;
+  let stability: number;
+  let difficulty: number;
+  if (firstTime) {
+    stability = initStability(g);
+    difficulty = initDifficulty(g);
   } else {
-    nextInterval = intervalDays * ease;
+    const r = retrievability(daysBetween(state.lastReviewedAt, now), state.stability);
+    difficulty = nextDifficulty(state.difficulty, g);
+    stability = g === 1 ? forgetStability(difficulty, state.stability, r) : recallStability(difficulty, state.stability, r, g);
   }
+  stability = Math.max(MIN_STABILITY, stability);
 
-  if (rating === "hard") {
-    ease = clampEase(ease + SRS.hardEase);
-    // "Hard" wächst nur sanft – mindestens etwas mehr als das alte Intervall.
-    nextInterval = Math.max(intervalDays * SRS.hardMultiplier, SRS.firstIntervalDays);
-  } else if (rating === "easy") {
-    ease = clampEase(ease + SRS.easyEase);
-    nextInterval = nextInterval * SRS.easyBonus;
-  }
-  // "good": ease unverändert.
+  const lapses = state.lapses + (g === 1 ? 1 : 0);
+  const repetitions = g === 1 ? 0 : state.repetitions + 1;
+  const interval = nextInterval(stability);
 
-  nextInterval = Math.max(SRS.firstIntervalDays, Math.round(fuzz(nextInterval)));
+  // "Again" → kurzfristig zurück (Relearning, gilt in der Session als 0 Tage).
+  const dueAt = g === 1 ? addMinutes(now, SRS.againIntervalMinutes) : addDays(now, interval);
 
   return {
     ...state,
-    ease,
-    intervalDays: nextInterval,
+    stability,
+    difficulty,
+    intervalDays: g === 1 ? 0 : interval,
     repetitions,
     lapses,
-    dueAt: addDays(now, nextInterval).toISOString(),
+    dueAt: dueAt.toISOString(),
     lastReviewedAt: now.toISOString(),
   };
 }
 
-// Hübsche Vorschau, wie weit jede Antwort die Karte nach hinten schiebt
-// (für die Beschriftung der vier Knöpfe, z. B. "Good · 6d").
+// Vorschau der vier Knöpfe (z. B. "Good · 6d").
 export function intervalPreview(state: CardState, rating: Rating): string {
-  const next = schedule(state, rating);
   if (rating === "again") return `${SRS.againIntervalMinutes}m`;
-  const d = next.intervalDays;
+  const d = schedule(state, rating).intervalDays;
   if (d < 1) return "<1d";
   if (d < 30) return `${d}d`;
   if (d < 365) return `${Math.round(d / 30)}mo`;
