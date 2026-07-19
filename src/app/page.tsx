@@ -89,9 +89,9 @@ export default function Home() {
 
           <div className="mt-6 pt-5 border-t border-gold/15 text-sm text-cream-dim space-y-1">
             <p>
-              Learning with me on <a href={SITE.preplyUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Preply</a> or{" "}
+              Got a code from <a href={SITE.preplyUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Preply</a> or{" "}
               <a href={SITE.skoolUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Skool</a>?{" "}
-              <Link href="/redeem" className="text-gold-bright underline underline-offset-4">Redeem your code</Link>
+              <Link href="/register" className="text-gold-bright underline underline-offset-4">Create your account</Link> and redeem it inside.
             </p>
             <p>
               Already a member? <Link href="/login" className="text-gold-bright underline underline-offset-4">Sign in</Link>

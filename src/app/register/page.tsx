@@ -83,8 +83,8 @@ export default function RegisterPage() {
           </form>
 
           <p className="text-xs text-cream-dim text-center mt-4">
-            Have a code from Preply or Skool? Create your account, then go to{" "}
-            <Link href="/redeem" className="text-gold-bright underline underline-offset-4">Redeem code</Link>.
+            🎟️ Have a code from Preply or Skool? Create your account first — then unlock access with{" "}
+            <span className="text-gold-bright">“Redeem code”</span> inside the app.
           </p>
           <p className="text-xs text-cream-dim text-center mt-3">
             Haven’t joined yet?{" "}
