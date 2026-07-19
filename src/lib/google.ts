@@ -4,8 +4,8 @@ import { createClient } from "@supabase/supabase-js";
 // Nötige Env-Vars: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SUPABASE_SERVICE_ROLE_KEY
 
 export const GOOGLE_SCOPES = [
-  "https://www.googleapis.com/auth/calendar.events",
-  "https://www.googleapis.com/auth/calendar.freebusy",
+  "https://www.googleapis.com/auth/calendar.events", // Termine anlegen/löschen
+  "https://www.googleapis.com/auth/calendar.readonly", // alle Kalender lesen (belegte Zeiten)
   "openid",
   "email",
 ].join(" ");
@@ -87,30 +87,35 @@ async function accessToken(): Promise<string | null> {
   return res.ok ? (json.access_token as string) : null;
 }
 
-// Belegte Zeiten aus dem Google-Kalender (leer, wenn nicht verbunden).
-// Liest die Termine direkt (calendar.events-Scope) statt der freeBusy-API,
-// die einen eigenen Scope braucht. Termine, die als „frei"/abgesagt markiert
-// sind, werden übersprungen; Ganztags-Termine zählen als belegt.
+// IDs aller Kalender des Kontos (Fallback: nur "primary").
+async function calendarIds(token: string): Promise<string[]> {
+  try {
+    const res = await fetch(`${CAL}/users/me/calendarList?minAccessRole=reader`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) return ["primary"];
+    const json = await res.json();
+    const ids = ((json.items as Record<string, unknown>[]) ?? []).map((c) => c.id as string).filter(Boolean);
+    return ids.length ? ids : ["primary"];
+  } catch {
+    return ["primary"];
+  }
+}
+
+// Belegte Zeiten aus ALLEN Kalendern des Lehrers (leer, wenn nicht verbunden).
+// Nutzt freeBusy über alle Kalender – braucht calendar.readonly.
 export async function busyIntervals(fromISO: string, toISO: string): Promise<{ start: string; end: string }[]> {
   const token = await accessToken();
   if (!token) return [];
-  const url = new URL(`${CAL}/calendars/primary/events`);
-  url.searchParams.set("timeMin", fromISO);
-  url.searchParams.set("timeMax", toISO);
-  url.searchParams.set("singleEvents", "true");
-  url.searchParams.set("orderBy", "startTime");
-  url.searchParams.set("maxResults", "2500");
-  const res = await fetch(url.toString(), { headers: { Authorization: `Bearer ${token}` } });
+  const ids = await calendarIds(token);
+  const res = await fetch(`${CAL}/freeBusy`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ timeMin: fromISO, timeMax: toISO, items: ids.slice(0, 50).map((id) => ({ id })) }),
+  });
   if (!res.ok) return [];
   const json = await res.json();
   const out: { start: string; end: string }[] = [];
-  for (const e of (json.items as Record<string, unknown>[] | undefined) ?? []) {
-    if (e.status === "cancelled" || e.transparency === "transparent") continue;
-    const s = e.start as { dateTime?: string; date?: string } | undefined;
-    const en = e.end as { dateTime?: string; date?: string } | undefined;
-    const start = s?.dateTime ?? (s?.date ? `${s.date}T00:00:00Z` : null);
-    const end = en?.dateTime ?? (en?.date ? `${en.date}T00:00:00Z` : null);
-    if (start && end) out.push({ start, end });
+  for (const cal of Object.values((json.calendars as Record<string, { busy?: { start: string; end: string }[] }>) ?? {})) {
+    for (const b of cal.busy ?? []) out.push({ start: b.start, end: b.end });
   }
   return out;
 }
@@ -177,7 +182,12 @@ export async function diagnose(): Promise<Record<string, unknown>> {
       : { error: calJson.error?.message ?? calJson.error };
   } catch (e) { calendars = { error: String(e) }; }
 
+  // Reale Belegt-Abfrage (über alle Kalender) als Gegenprobe.
+  let busy: unknown;
+  try { const bi = await busyIntervals(now, to); busy = { count: bi.length, sample: bi.slice(0, 6) }; } catch (e) { busy = { error: String(e) }; }
+
   return {
+    busy,
     connected: true,
     connectedEmail: data.connected_email,
     tokenEmail,
