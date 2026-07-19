@@ -116,9 +116,15 @@ h1 { line-height: 1.08; }
 .trail-flow { animation: flowDash 1.15s linear infinite; }
 .floaty { animation: floaty 6s ease-in-out infinite; }
 .breathe { animation: breathe 2.6s ease-in-out infinite; }
+/* Driftende Wolken in der Panorama-Kulisse. */
+@keyframes cloudDrift { 0%,100% { transform: translateX(0); } 50% { transform: translateX(46px); } }
+.cloud-a { animation: cloudDrift 30s ease-in-out infinite; }
+.cloud-b { animation: cloudDrift 42s ease-in-out infinite reverse; }
+/* Halo, damit Knoten-Beschriftungen über der Kulisse gut lesbar bleiben. */
+.path-label { text-shadow: 0 1px 3px rgba(255,244,220,0.95), 0 0 6px rgba(255,244,220,0.85); }
 @media (prefers-reduced-motion: reduce) {
   .app-bg::before, .app-bg::after, .node-pop, .pulse-ring, .twinkle, .bob,
-  .trail-flow, .floaty, .breathe { animation: none !important; }
+  .trail-flow, .floaty, .breathe, .cloud-a, .cloud-b { animation: none !important; }
 }
 
 .card {
