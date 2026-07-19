@@ -9,7 +9,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   // Die Lernpfade (Flashcards & Lessons-Liste) nutzen die volle Breite
   // (Panorama bis zum Rand); alle anderen Seiten bleiben in der zentrierten,
   // lesefreundlichen Spalte – inkl. der einzelnen Lektion /lessons/[id].
-  const fullBleed = pathname === "/decks" || pathname === "/lessons";
+  const fullBleed = pathname === "/decks" || pathname === "/lessons" || pathname === "/stories";
   return (
     <div className="flex-1 flex flex-col md:flex-row">
       <AppNav />

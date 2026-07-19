@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import type { Story } from "@/lib/data";
 import { getStory } from "@/lib/stories";
+import { markStoryRead } from "@/lib/storyProgress";
 import { getAccess, canAccessVideoLevel } from "@/lib/access";
 import Paywall from "@/components/Paywall";
 
@@ -24,6 +25,7 @@ export default function StoryPage() {
         return;
       }
       setStory(s ?? null);
+      if (s) markStoryRead(s.id); // Lese-Fortschritt merken (für den Lese-Pfad)
     })();
     return () => { cancelled = true; };
   }, [params.id]);
