@@ -88,17 +88,31 @@ async function accessToken(): Promise<string | null> {
 }
 
 // Belegte Zeiten aus dem Google-Kalender (leer, wenn nicht verbunden).
+// Liest die Termine direkt (calendar.events-Scope) statt der freeBusy-API,
+// die einen eigenen Scope braucht. Termine, die als „frei"/abgesagt markiert
+// sind, werden übersprungen; Ganztags-Termine zählen als belegt.
 export async function busyIntervals(fromISO: string, toISO: string): Promise<{ start: string; end: string }[]> {
   const token = await accessToken();
   if (!token) return [];
-  const res = await fetch(`${CAL}/freeBusy`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ timeMin: fromISO, timeMax: toISO, items: [{ id: "primary" }] }),
-  });
+  const url = new URL(`${CAL}/calendars/primary/events`);
+  url.searchParams.set("timeMin", fromISO);
+  url.searchParams.set("timeMax", toISO);
+  url.searchParams.set("singleEvents", "true");
+  url.searchParams.set("orderBy", "startTime");
+  url.searchParams.set("maxResults", "2500");
+  const res = await fetch(url.toString(), { headers: { Authorization: `Bearer ${token}` } });
   if (!res.ok) return [];
   const json = await res.json();
-  return (json.calendars?.primary?.busy as { start: string; end: string }[]) ?? [];
+  const out: { start: string; end: string }[] = [];
+  for (const e of (json.items as Record<string, unknown>[] | undefined) ?? []) {
+    if (e.status === "cancelled" || e.transparency === "transparent") continue;
+    const s = e.start as { dateTime?: string; date?: string } | undefined;
+    const en = e.end as { dateTime?: string; date?: string } | undefined;
+    const start = s?.dateTime ?? (s?.date ? `${s.date}T00:00:00Z` : null);
+    const end = en?.dateTime ?? (en?.date ? `${en.date}T00:00:00Z` : null);
+    if (start && end) out.push({ start, end });
+  }
+  return out;
 }
 
 // Termin + Meet-Link anlegen. Gibt eventId + meetLink zurück (oder leer).
