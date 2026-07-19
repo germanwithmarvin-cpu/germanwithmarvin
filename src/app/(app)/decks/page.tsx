@@ -22,8 +22,13 @@ const TIERS = [
   { icon: "💎", name: "Crystal relic" },
 ];
 
-const ROW = 168; // vertikaler Abstand je Reihe
-const TOP = 76; // Abstand oben
+const ROW = 210; // vertikaler Abstand je Reihe (luftiger)
+const TOP = 120; // Abstand oben (Platz für die erste Level-Marke)
+
+// Kurz-Beschreibung je Niveau für die Level-Marken am Pfad.
+const LEVEL_LABEL: Record<string, string> = {
+  A1: "Beginner", A2: "Elementary", B1: "Intermediate", B2: "Upper-intermediate", C1: "Advanced", C2: "Mastery",
+};
 
 // Themen-Emoji anhand des Deck-Titels.
 function topicEmoji(title: string): string {
@@ -129,7 +134,8 @@ export default function DecksPage() {
   });
 
   // Serpentinen-Layout (Schlange): Reihen wechseln die Richtung. Spaltenzahl je Breite.
-  const cols = Math.max(2, Math.min(5, Math.floor((width || 320) / 150)));
+  // Bewusst wenige Spalten (max 3) für einen luftigen, gut lesbaren Pfad.
+  const cols = Math.max(2, Math.min(3, Math.floor((width || 320) / 240)));
   const colW = (width || 320) / cols;
   const pos = (i: number) => {
     const r = Math.floor(i / cols);
@@ -175,25 +181,64 @@ export default function DecksPage() {
           {!loading && ordered.length > 0 && width > 0 && (
             <>
               <svg className="absolute inset-0 pointer-events-none" width={width} height={totalH} viewBox={`0 0 ${width} ${totalH}`} fill="none" aria-hidden="true">
+                {/* Weiche Level-Auren + Boden-Schatten für Tiefe */}
+                {nodes.map((n, i) => {
+                  const { x, y } = points[i];
+                  if (n.kind === "deck" && n.firstOfLevel) return <ellipse key={`h${i}`} cx={x} cy={y} rx={Math.min(150, colW * 0.86)} ry={78} fill="color-mix(in srgb, var(--bordeaux-soft) 70%, transparent)" opacity={0.38} />;
+                  if (n.kind === "trophy") return <ellipse key={`h${i}`} cx={x} cy={y + 24} rx={70} ry={26} fill="color-mix(in srgb, var(--gold) 16%, transparent)" opacity={0.55} />;
+                  return null;
+                })}
+                {nodes.map((n, i) => {
+                  if (n.kind !== "deck") return null;
+                  const { x, y } = points[i];
+                  return <ellipse key={`s${i}`} cx={x} cy={y + NODE / 2 - 2} rx={30} ry={7} fill="rgba(59,41,34,0.13)" />;
+                })}
+
+                {/* Basis-Pfad: weiche "Straße" + zarte gestrichelte Richtungslinie */}
+                <path d={trackD} stroke="var(--gold)" strokeWidth={17} strokeLinecap="round" strokeLinejoin="round" opacity={0.17} />
+                <path d={trackD} stroke="var(--gold-bright)" strokeWidth={3} strokeLinecap="round" strokeDasharray="2 20" opacity={0.28} />
+
+                {/* Geschaffter Abschnitt: satt gold + darüber fließende Energie */}
+                {goldD && <path d={goldD} stroke="var(--gold-bright)" strokeWidth={15} strokeLinecap="round" strokeLinejoin="round" opacity={0.9} />}
+                {goldD && <path className="trail-flow" d={goldD} stroke="#fff" strokeWidth={4.5} strokeLinecap="round" strokeDasharray="3 24" opacity={0.7} />}
+
+                {/* Driftende Funken als lebendige Deko */}
                 {stars.map((st, k) => (
                   <circle key={k} className="twinkle" cx={st.x} cy={st.y} r={st.r} fill="var(--gold-bright)" style={{ animationDelay: `${st.delay}s` }} />
                 ))}
-                {nodes.map((n, i) => {
-                  const { x, y } = points[i];
-                  if (n.kind === "deck" && n.firstOfLevel) return <ellipse key={`h${i}`} cx={x} cy={y + 40} rx={Math.min(130, colW * 0.8)} ry={50} fill="color-mix(in srgb, var(--bordeaux-soft) 70%, transparent)" opacity={0.4} />;
-                  if (n.kind === "trophy") return <ellipse key={`h${i}`} cx={x} cy={y + 24} rx={64} ry={24} fill="color-mix(in srgb, var(--gold) 14%, transparent)" opacity={0.5} />;
-                  return null;
-                })}
-                <path d={trackD} stroke="var(--gold)" strokeWidth={14} strokeLinecap="round" strokeLinejoin="round" opacity={0.14} />
-                {goldD && <path d={goldD} stroke="var(--gold-bright)" strokeWidth={14} strokeLinecap="round" strokeLinejoin="round" opacity={0.9} />}
               </svg>
+
+              {/* Level-Marken: schicke Pill am Anfang jedes Niveaus */}
+              {nodes.map((node, i) => {
+                if (node.kind !== "deck" || !node.firstOfLevel) return null;
+                const { x, y } = points[i];
+                return (
+                  <div key={`lvl-${node.deck.id}`} className="absolute z-0" style={{ left: x, top: y - NODE / 2 - 30, transform: "translate(-50%, -100%)" }}>
+                    <div
+                      className="node-pop flex items-center gap-2 rounded-full px-4 py-1.5 whitespace-nowrap"
+                      style={{
+                        background: "color-mix(in srgb, var(--gold) 20%, var(--surface))",
+                        border: "1px solid color-mix(in srgb, var(--gold) 45%, transparent)",
+                        boxShadow: "0 6px 16px -10px rgba(59,41,34,0.4)",
+                        animationDelay: `${Math.min(i * 0.04, 1.2)}s`,
+                      }}
+                    >
+                      <span className="text-base font-bold" style={{ color: "var(--bordeaux)" }}>{node.deck.level}</span>
+                      <span className="text-xs font-medium" style={{ color: "var(--cream-dim)" }}>{LEVEL_LABEL[node.deck.level] ?? ""}</span>
+                    </div>
+                  </div>
+                );
+              })}
 
               {nodes.map((node, i) => {
                 const { x, y } = points[i];
+                const breathe = node.kind === "deck" && node.current ? "breathe" : "";
                 return (
-                  <div key={node.kind === "deck" ? node.deck.id : node.key} className="absolute" style={{ left: x, top: y, transform: "translate(-50%, -50%)" }}>
+                  <div key={node.kind === "deck" ? node.deck.id : node.key} className="absolute z-10" style={{ left: x, top: y, transform: "translate(-50%, -50%)" }}>
                     <div className="node-pop" style={{ animationDelay: `${Math.min(i * 0.04, 1.2)}s` }}>
-                      {node.kind === "trophy" ? <TrophyNodeView icon={node.icon} name={node.name} earned={node.earned} champion={node.champion} /> : <DeckNodeView node={node} maxLabel={colW * 0.92} />}
+                      <div className={breathe}>
+                        {node.kind === "trophy" ? <TrophyNodeView icon={node.icon} name={node.name} earned={node.earned} champion={node.champion} /> : <DeckNodeView node={node} maxLabel={colW * 0.92} />}
+                      </div>
                     </div>
                   </div>
                 );
@@ -258,8 +303,8 @@ export default function DecksPage() {
   );
 }
 
-const NODE = 80; // Knoten-Durchmesser
-const RING = 6; // Dicke des Fortschrittsrings
+const NODE = 92; // Knoten-Durchmesser
+const RING = 7; // Dicke des Fortschrittsrings
 
 function DeckNodeView({ node, maxLabel }: { node: DeckNode; maxLabel: number }) {
   const { deck, prog, done, current, locked } = node;
@@ -269,12 +314,12 @@ function DeckNodeView({ node, maxLabel }: { node: DeckNode; maxLabel: number }) 
   const dash = circ * frac;
 
   const fill = locked
-    ? { background: "color-mix(in srgb, var(--bordeaux) 14%, #fff)", color: "var(--cream-dim)" }
+    ? { background: "color-mix(in srgb, var(--bordeaux) 12%, #fff)", color: "var(--cream-dim)", glow: "rgba(59,41,34,0.28)" }
     : done
-    ? { background: "linear-gradient(160deg, var(--gold-bright), var(--gold))", color: "#3b2116" }
+    ? { background: "linear-gradient(160deg, var(--gold-bright), var(--gold))", color: "#3b2116", glow: "color-mix(in srgb, var(--gold) 55%, transparent)" }
     : current
-      ? { background: "var(--bordeaux)", color: "#fff" }
-      : { background: "var(--surface)", color: "var(--cream)" };
+      ? { background: "linear-gradient(160deg, color-mix(in srgb, var(--bordeaux) 82%, #fff), var(--bordeaux))", color: "#fff", glow: "color-mix(in srgb, var(--bordeaux) 45%, transparent)" }
+      : { background: "linear-gradient(160deg, #fff, var(--surface))", color: "var(--cream)", glow: "rgba(59,41,34,0.3)" };
 
   // Gesperrt (A2–B2 ohne Zugang) → führt zur Code-Einlöse-Seite statt zum Lernen.
   const href = locked ? "/redeem" : `/study/${deck.id}`;
@@ -293,8 +338,8 @@ function DeckNodeView({ node, maxLabel }: { node: DeckNode; maxLabel: number }) 
       </svg>
 
       <div
-        className={`absolute grid place-items-center rounded-full text-3xl transition group-hover:scale-105 ${locked ? "opacity-70" : ""}`}
-        style={{ inset: RING + 2, ...fill, boxShadow: "0 10px 22px -10px rgba(0,0,0,0.55)" }}
+        className={`absolute grid place-items-center rounded-full text-4xl transition-transform duration-200 group-hover:scale-110 group-hover:-translate-y-1 ${locked ? "opacity-70" : ""}`}
+        style={{ inset: RING + 2, background: fill.background, color: fill.color, boxShadow: `0 12px 24px -12px ${fill.glow}, inset 0 2px 3px rgba(255,255,255,0.35)` }}
       >
         {locked ? "🔒" : topicEmoji(deck.title)}
       </div>

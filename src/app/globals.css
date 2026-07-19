@@ -81,28 +81,44 @@ h1 { line-height: 1.08; }
   50% { transform: translate(26px, -18px); }
 }
 @keyframes nodePop {
-  from { opacity: 0; transform: scale(0.5); }
-  to { opacity: 1; transform: scale(1); }
+  0% { opacity: 0; transform: scale(0.4) translateY(16px); }
+  65% { transform: scale(1.08) translateY(-2px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 @keyframes pulseRing {
-  0% { transform: scale(0.85); opacity: 0.6; }
-  70% { transform: scale(1.5); opacity: 0; }
+  0% { transform: scale(0.85); opacity: 0.65; }
+  70% { transform: scale(1.55); opacity: 0; }
   100% { opacity: 0; }
 }
 @keyframes twinkle {
-  0%, 100% { opacity: 0.15; }
-  50% { opacity: 0.8; }
+  0%, 100% { opacity: 0.12; transform: scale(0.8); }
+  50% { opacity: 0.85; transform: scale(1.15); }
 }
 @keyframes bob {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
 }
-.node-pop { animation: nodePop 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
-.pulse-ring { animation: pulseRing 1.8s ease-out infinite; }
+/* Fließende "Energie" entlang des geschafften Pfad-Abschnitts. */
+@keyframes flowDash { to { stroke-dashoffset: -32; } }
+/* Sanftes Auf-und-ab für schwebende Deko + aktiven Knoten. */
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-9px); }
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.045); }
+}
+.node-pop { animation: nodePop 0.5s cubic-bezier(0.34, 1.56, 0.4, 1) both; }
+.pulse-ring { animation: pulseRing 1.9s ease-out infinite; }
 .twinkle { animation: twinkle 3.5s ease-in-out infinite; }
 .bob { animation: bob 2.6s ease-in-out infinite; }
+.trail-flow { animation: flowDash 1.15s linear infinite; }
+.floaty { animation: floaty 6s ease-in-out infinite; }
+.breathe { animation: breathe 2.6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) {
-  .app-bg::before, .app-bg::after, .node-pop, .pulse-ring, .twinkle, .bob { animation: none !important; }
+  .app-bg::before, .app-bg::after, .node-pop, .pulse-ring, .twinkle, .bob,
+  .trail-flow, .floaty, .breathe { animation: none !important; }
 }
 
 .card {
