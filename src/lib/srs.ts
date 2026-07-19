@@ -22,7 +22,16 @@ export const SRS = {
   firstIntervalDays: 1, // erstes Intervall nach erstem "Good"
   secondIntervalDays: 6, // zweites Intervall
   againIntervalMinutes: 10, // "Again": Karte kommt in ~10 Minuten zurück
+  fuzzPercent: 0.05, // ±5 % Streuung auf lange Intervalle (verhindert Karten-Stau)
 };
+
+// Streut größere Intervalle leicht zufällig, damit nicht alle Karten am selben
+// Tag zurückkommen (wie in Anki). Kleine Intervalle bleiben unangetastet.
+function fuzz(days: number): number {
+  if (days < 4) return days;
+  const spread = days * SRS.fuzzPercent;
+  return days + (Math.random() * 2 - 1) * spread;
+}
 
 // Frischer Lernzustand für eine neue Karte (sofort fällig).
 export function newState(cardId: string): CardState {
@@ -97,7 +106,7 @@ export function schedule(state: CardState, rating: Rating, now: Date = new Date(
   }
   // "good": ease unverändert.
 
-  nextInterval = Math.max(SRS.firstIntervalDays, Math.round(nextInterval));
+  nextInterval = Math.max(SRS.firstIntervalDays, Math.round(fuzz(nextInterval)));
 
   return {
     ...state,
