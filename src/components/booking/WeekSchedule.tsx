@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { Booking } from "@/lib/schedule";
+import type { Booking, ExternalEvent } from "@/lib/schedule";
 
 // Wochenansicht wie bei Preply: Mo–So × Uhrzeit, Buchungen als Blöcke.
 const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -19,7 +19,7 @@ function mondayOf(d: Date) {
 const sameDay = (a: Date, b: Date) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 const hm = (d: Date) => d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
 
-export default function WeekSchedule({ bookings, names }: { bookings: Booking[]; names: Record<string, string> }) {
+export default function WeekSchedule({ bookings, names, external = [] }: { bookings: Booking[]; names: Record<string, string>; external?: ExternalEvent[] }) {
   // Start bei der Woche der nächsten kommenden Buchung (sonst diese Woche).
   const [weekStart, setWeekStart] = useState(() => {
     const next = bookings
@@ -45,7 +45,11 @@ export default function WeekSchedule({ bookings, names }: { bookings: Booking[];
         <div className="font-semibold text-sm">{rangeLabel} <span className="text-cream-dim font-normal">· {tz}</span></div>
         <button onClick={() => shift(1)} className="btn-outline w-9 h-9 grid place-items-center" aria-label="Next week">›</button>
       </div>
-      {weekCount === 0 && <p className="text-xs text-cream-dim mb-2 text-center">No lessons booked this week — use ‹ › to browse other weeks.</p>}
+      <div className="flex items-center justify-center gap-4 text-[11px] text-cream-dim mb-2">
+        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm inline-block" style={{ background: "var(--bordeaux)" }} /> App lessons</span>
+        <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm inline-block" style={{ background: "color-mix(in srgb, var(--cream) 16%, transparent)", border: "1px solid color-mix(in srgb, var(--cream) 20%, transparent)" }} /> Your Google calendar</span>
+      </div>
+      {weekCount === 0 && <p className="text-xs text-cream-dim mb-2 text-center">No app bookings this week — use ‹ › to browse other weeks.</p>}
 
       <div className="overflow-x-auto">
         <div className="min-w-[720px]">
@@ -69,10 +73,19 @@ export default function WeekSchedule({ bookings, names }: { bookings: Booking[];
             {/* Tage */}
             {days.map((day, di) => {
               const items = active.filter((b) => sameDay(new Date(b.startsAt), day));
+              const ext = external.filter((e) => sameDay(new Date(e.start), day));
+              const topOf = (iso: string) => { const d = new Date(iso); return ((d.getHours() * 60 + d.getMinutes()) - START_H * 60) / 60 * HOUR_PX; };
+              const heightOf = (a: string, b: string) => Math.max(18, (new Date(b).getTime() - new Date(a).getTime()) / 60000 / 60 * HOUR_PX - 2);
               return (
                 <div key={di} className="relative border-l" style={{ height, borderLeftColor: "color-mix(in srgb, var(--cream) 8%, transparent)" }}>
                   {Array.from({ length: END_H - START_H }, (_, h) => (
                     <div key={h} className="absolute left-0 right-0 border-t" style={{ top: h * HOUR_PX, borderTopColor: "color-mix(in srgb, var(--cream) 6%, transparent)" }} />
+                  ))}
+                  {/* Google-Termine (grau, im Hintergrund) */}
+                  {ext.map((e, k) => (
+                    <div key={`x${k}`} className="absolute left-0.5 right-0.5 rounded-md px-1.5 py-0.5 overflow-hidden text-[10px] leading-tight" style={{ top: topOf(e.start), height: heightOf(e.start, e.end), background: "color-mix(in srgb, var(--cream) 14%, transparent)", color: "var(--cream-dim)", border: "1px solid color-mix(in srgb, var(--cream) 18%, transparent)" }} title={`${hm(new Date(e.start))}–${hm(new Date(e.end))} · ${e.summary}`}>
+                      <div className="truncate">{e.summary}</div>
+                    </div>
                   ))}
                   {items.map((b) => {
                     const s = new Date(b.startsAt), e = new Date(b.endsAt);

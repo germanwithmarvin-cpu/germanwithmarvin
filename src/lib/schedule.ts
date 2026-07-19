@@ -178,6 +178,19 @@ export async function cancelLesson(id: string): Promise<{ result?: string; error
   return { result: json.result };
 }
 
+export type ExternalEvent = { summary: string; start: string; end: string };
+
+// Alle Google-Termine des Lehrers (mit Titel) für die Wochenansicht.
+export async function getGoogleEvents(fromISO: string, toISO: string): Promise<ExternalEvent[]> {
+  try {
+    const res = await fetch(`/api/google/events?from=${encodeURIComponent(fromISO)}&to=${encodeURIComponent(toISO)}`);
+    const json = await res.json();
+    return (json.events as ExternalEvent[]) ?? [];
+  } catch {
+    return [];
+  }
+}
+
 // Belegte Zeiten aus dem Google-Kalender (leer, wenn nicht verbunden) als Blöcke.
 export async function getGoogleBusy(fromISO: string, toISO: string): Promise<{ starts_at: string; ends_at: string }[]> {
   try {

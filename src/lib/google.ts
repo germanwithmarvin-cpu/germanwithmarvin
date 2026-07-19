@@ -120,6 +120,38 @@ export async function busyIntervals(fromISO: string, toISO: string): Promise<{ s
   return out;
 }
 
+// Alle Termine (mit Titel) über alle Kalender – für die Lehrer-Wochenansicht.
+// Überspringt abgesagte/als frei markierte und unsere eigenen App-Termine
+// (die sind bereits als Buchung sichtbar).
+export async function listEvents(fromISO: string, toISO: string): Promise<{ summary: string; start: string; end: string }[]> {
+  const token = await accessToken();
+  if (!token) return [];
+  const ids = await calendarIds(token);
+  const out: { summary: string; start: string; end: string }[] = [];
+  for (const id of ids.slice(0, 50)) {
+    try {
+      const url = new URL(`${CAL}/calendars/${encodeURIComponent(id)}/events`);
+      url.searchParams.set("timeMin", fromISO);
+      url.searchParams.set("timeMax", toISO);
+      url.searchParams.set("singleEvents", "true");
+      url.searchParams.set("maxResults", "250");
+      const res = await fetch(url.toString(), { headers: { Authorization: `Bearer ${token}` } });
+      if (!res.ok) continue;
+      const json = await res.json();
+      for (const e of (json.items as Record<string, unknown>[] | undefined) ?? []) {
+        if (e.status === "cancelled" || e.transparency === "transparent") continue;
+        if (e.summary === "German lesson (1-on-1)") continue; // eigene App-Termine
+        const s = e.start as { dateTime?: string; date?: string } | undefined;
+        const en = e.end as { dateTime?: string; date?: string } | undefined;
+        const start = s?.dateTime ?? (s?.date ? `${s.date}T00:00:00Z` : null);
+        const end = en?.dateTime ?? (en?.date ? `${en.date}T00:00:00Z` : null);
+        if (start && end) out.push({ summary: (e.summary as string) ?? "Busy", start, end });
+      }
+    } catch { /* Kalender überspringen */ }
+  }
+  return out;
+}
+
 // Termin + Meet-Link anlegen. Gibt eventId + meetLink zurück (oder leer).
 export async function createEvent(opts: { startISO: string; endISO: string; attendeeEmail?: string | null; timezone: string }): Promise<{ eventId?: string; meetLink?: string }> {
   const token = await accessToken();
