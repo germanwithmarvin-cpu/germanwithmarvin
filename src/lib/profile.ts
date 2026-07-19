@@ -7,6 +7,7 @@ export type MyProfile = {
   email: string;
   fullName: string;
   avatarUrl: string;
+  memberSince: string; // ISO-Datum der Kontoerstellung
 };
 
 export async function getMyProfile(): Promise<MyProfile | null> {
@@ -19,7 +20,15 @@ export async function getMyProfile(): Promise<MyProfile | null> {
     email: user.email ?? "",
     fullName: (user.user_metadata?.full_name as string) ?? "",
     avatarUrl: (data?.avatar_url as string) ?? "",
+    memberSince: user.created_at ?? "",
   };
+}
+
+// Passwort ändern (der Schüler ändert sein eigenes Passwort im Profil).
+export async function changeMyPassword(newPassword: string): Promise<{ error?: string }> {
+  const supabase = createClient();
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
+  return { error: error?.message };
 }
 
 // Name ändern (im Konto gespeichert).
