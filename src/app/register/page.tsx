@@ -31,9 +31,9 @@ export default function RegisterPage() {
       setLoading(false);
       return;
     }
-    // Kein Abo: das kostenlose Konto startet automatisch die Gratis-Tage (über created_at).
+    // Zugang wird über die bezahlte E-Mail bzw. einen Code abgeleitet (my_access()).
     if (data.session) {
-      router.push("/welcome");
+      router.push("/dashboard");
       router.refresh();
       return;
     }
@@ -48,9 +48,9 @@ export default function RegisterPage() {
       </header>
       <main className="flex-1 grid place-items-center px-6 py-10">
         <div className="card p-8 w-full max-w-sm">
-          <h1 className="text-2xl font-bold text-center">Start learning free</h1>
+          <h1 className="text-2xl font-bold text-center">Create your account</h1>
           <p className="text-sm text-cream-dim text-center mt-1">
-            Create your account to redeem a Preply/Skool code or continue after your purchase.
+            Just paid? Use the <span className="text-cream">same email you paid with</span> — you’ll get instant access.
           </p>
 
           <form className="mt-6 space-y-4" onSubmit={handleRegister}>
@@ -71,15 +71,17 @@ export default function RegisterPage() {
             {info && <p className="text-sm text-cream bg-green-accent/20 rounded-lg p-3">{info}</p>}
 
             <button type="submit" disabled={loading} className="btn-gold w-full py-2.5 disabled:opacity-50">
-              {loading ? "Creating…" : "Start free"}
+              {loading ? "Creating…" : "Create account"}
             </button>
           </form>
 
           <p className="text-xs text-cream-dim text-center mt-4">
-            After the trial, A1 stays free. Unlock everything with a code from my Skool community (or Preply).
+            Have a code from Preply or Skool? Create your account, then go to{" "}
+            <Link href="/redeem" className="text-gold-bright underline underline-offset-4">Redeem code</Link>.
           </p>
           <p className="text-xs text-cream-dim text-center mt-3">
-            Got a code from Skool or Preply? Create your account, then go to <span className="text-gold-bright">Redeem code</span>.
+            Haven’t joined yet?{" "}
+            <Link href="/" className="text-gold-bright underline underline-offset-4">See the plan</Link>.
           </p>
           <p className="text-sm text-cream-dim text-center mt-4">
             Already have an account?{" "}
@@ -87,8 +89,8 @@ export default function RegisterPage() {
           </p>
           <p className="text-xs text-cream-dim text-center mt-4">
             By creating an account you agree to our{" "}
-            <Link href="/datenschutz" className="underline underline-offset-4">privacy policy</Link>.{" "}
-            <Link href="/impressum" className="underline underline-offset-4">Impressum</Link>
+            <Link href="/agb" className="underline underline-offset-4">terms</Link> and{" "}
+            <Link href="/datenschutz" className="underline underline-offset-4">privacy policy</Link>.
           </p>
         </div>
       </main>
