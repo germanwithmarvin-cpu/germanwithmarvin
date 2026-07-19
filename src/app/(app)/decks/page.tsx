@@ -136,7 +136,7 @@ export default function DecksPage() {
   // Serpentine (Schlange), randfüllend: wenige, große Knoten mit weiten Schwüngen,
   // die die volle Breite nutzen – 2 Spalten, ab sehr breit 3.
   const W = width || 320;
-  const cols = W >= 1280 ? 3 : 2;
+  const cols = W >= 680 ? 3 : 2; // 3 Decks pro Zeile auf Desktop/Tablet, 2 auf Mobil
   const PAD = 82; // Seitenrand, damit große Knoten nicht anschneiden
   const usable = Math.max(1, W - PAD * 2);
   const colW = W / cols; // nur für Label-Breite / Level-Auren
@@ -164,9 +164,9 @@ export default function DecksPage() {
   if (!loading && tier !== "full") return <Paywall title="Unlock the flashcard trainer" />;
 
   return (
-    <div className="space-y-6">
+    <div className="pb-6">
       {/* Kopf: Titel + kompakter Gesamtfortschritt */}
-      <div className="flex flex-wrap items-end justify-between gap-4">
+      <div className="px-6 pt-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold">Your learning path</h1>
           <p className="text-cream-dim mt-2">Climb from the streets of Munich all the way up to the Alps — one topic at a time.</p>
@@ -182,8 +182,10 @@ export default function DecksPage() {
         </div>
       </div>
 
-      {/* Panorama-Pfad mit München-Skyline & Alpen als Kulisse */}
-      <div ref={setRef} className="relative w-full rounded-[28px] border border-gold/25" style={{ height: loading || ordered.length === 0 ? 260 : totalH, overflowX: "clip" }}>
+      {/* Voll-Breite: Panorama links bis zum Rand + Grammatik/Wiederholen rechts */}
+      <div className="mt-6 grid lg:grid-cols-[1fr_16rem]">
+        {/* Panorama-Pfad mit München-Skyline & Alpen als Kulisse (füllt bis zum linken Rand) */}
+        <div ref={setRef} className="relative w-full border-y border-gold/25" style={{ height: loading || ordered.length === 0 ? 260 : totalH, overflowX: "clip" }}>
         {loading && <p className="text-cream-dim p-6">Loading…</p>}
         {!loading && ordered.length === 0 && (
           <div className="card p-6 text-cream-dim m-4">No decks yet. Your teacher will add some soon.</div>
@@ -192,7 +194,7 @@ export default function DecksPage() {
         {!loading && ordered.length > 0 && width > 0 && (
           <>
             {/* Persistente Kulisse – bleibt beim Scrollen im Blick */}
-            <div className="sticky top-0 h-screen w-full overflow-hidden rounded-[28px] pointer-events-none" style={{ marginBottom: "-100vh", zIndex: 0 }}>
+            <div className="sticky top-0 h-screen w-full overflow-hidden pointer-events-none" style={{ marginBottom: "-100vh", zIndex: 0 }}>
               <MunichScene />
             </div>
 
@@ -258,12 +260,12 @@ export default function DecksPage() {
             </div>
           </>
         )}
-      </div>
+        </div>
 
-      {/* Unter dem Pfad: Wiederholen + Grammatik */}
-      <div className="grid md:grid-cols-2 gap-4">
-        {/* Review – gehört zu den Flashcards (keine eigene Navigations-Kategorie) */}
-        <div className="card p-4">
+        {/* Rechte Spalte: Wiederholen + Grammatik-Decks */}
+        <aside className="px-6 pt-6 lg:px-4 lg:pt-6 lg:border-l lg:border-gold/15 space-y-4 lg:sticky lg:top-6 self-start h-max">
+          {/* Review – gehört zu den Flashcards (keine eigene Navigations-Kategorie) */}
+          <div className="card p-4">
           <div className="flex items-center gap-2 text-base mb-2"><span>🔁</span> Review</div>
           <p className="text-xs text-cream-dim mb-2">Freshen up cards you already know — all of them, by level, or just your marked ones.</p>
           <Link href="/review" className="flex items-center justify-between gap-2 px-2 py-1.5 rounded-lg text-sm text-cream-dim hover:bg-gold/10 transition">
@@ -299,6 +301,7 @@ export default function DecksPage() {
             </div>
           </div>
         )}
+        </aside>
       </div>
     </div>
   );
