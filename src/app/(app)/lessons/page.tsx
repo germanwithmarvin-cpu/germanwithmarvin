@@ -8,6 +8,7 @@ import { getLessons } from "@/lib/lessons";
 import { loadProgress } from "@/lib/progress";
 import { getAccess, type AccessTier } from "@/lib/access";
 import Paywall from "@/components/Paywall";
+import { youTubeId } from "@/components/VideoPlayer";
 
 // Level in fester Reihenfolge – "Intro" (Essentials) ganz oben.
 const LEVELS: Lesson["level"][] = ["Intro", "A1", "A2", "B1", "B2", "C1"];
@@ -96,14 +97,16 @@ export default function LessonsPage() {
 
 function LessonTile({ lesson, done, isNext }: { lesson: Lesson; done: boolean; isNext: boolean }) {
   const hasQuiz = lesson.quizEnabled && (lesson.exercises.length > 0 || lesson.quiz.length > 0);
-  const thumb = lesson.videoId ? `https://img.youtube.com/vi/${lesson.videoId}/mqdefault.jpg` : null;
+  const id = youTubeId(lesson.videoId);
+  const [broken, setBroken] = useState(false);
+  const thumb = id && !broken ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
 
   return (
     <Link href={`/lessons/${lesson.id}`} className="card overflow-hidden group transition hover:border-gold/50 flex flex-col">
       {/* Vorschaubild */}
       <div className="relative aspect-video bg-bordeaux-deep/50 overflow-hidden">
         {thumb ? (
-          <img src={thumb} alt="" className="w-full h-full object-cover transition group-hover:scale-105" loading="lazy" />
+          <img src={thumb} alt="" onError={() => setBroken(true)} className="w-full h-full object-cover transition group-hover:scale-105" loading="lazy" />
         ) : (
           <div className="w-full h-full grid place-items-center text-4xl">🎬</div>
         )}
