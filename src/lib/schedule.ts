@@ -153,23 +153,28 @@ function mapBooking(r: Record<string, unknown>): Booking {
   };
 }
 
+// Buchen/Absagen laufen über Server-Routen (DB-Funktion + Google-Kalender).
 export async function bookLesson(startISO: string): Promise<{ id?: string; error?: string }> {
-  const { data, error } = await createClient().rpc("book_lesson", { p_start: startISO });
-  if (error) return { error: friendly(error.message) };
-  return { id: data as string };
+  const res = await fetch("/api/lesson-book", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ start: startISO }) });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) return { error: json.error ?? "Booking failed" };
+  return { id: json.id };
 }
 
 export async function cancelLesson(id: string): Promise<{ result?: string; error?: string }> {
-  const { data, error } = await createClient().rpc("cancel_lesson", { p_booking: id });
-  if (error) return { error: friendly(error.message) };
-  return { result: data as string };
+  const res = await fetch("/api/lesson-cancel", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) return { error: json.error ?? "Cancel failed" };
+  return { result: json.result };
 }
 
-function friendly(msg: string): string {
-  if (msg.includes("no_credits")) return "You have no lesson hours left — top up your plan first.";
-  if (msg.includes("slot_taken")) return "That time was just taken — please pick another.";
-  if (msg.includes("too_soon")) return "That time is too soon — please book a bit further ahead.";
-  if (msg.includes("too_far")) return "That time is too far in the future.";
-  if (msg.includes("not_active")) return "This lesson can’t be cancelled anymore.";
-  return msg;
+// Belegte Zeiten aus dem Google-Kalender (leer, wenn nicht verbunden) als Blöcke.
+export async function getGoogleBusy(fromISO: string, toISO: string): Promise<{ starts_at: string; ends_at: string }[]> {
+  try {
+    const res = await fetch(`/api/google/busy?from=${encodeURIComponent(fromISO)}&to=${encodeURIComponent(toISO)}`);
+    const json = await res.json();
+    return ((json.busy as { start: string; end: string }[]) ?? []).map((b) => ({ starts_at: b.start, ends_at: b.end }));
+  } catch {
+    return [];
+  }
 }

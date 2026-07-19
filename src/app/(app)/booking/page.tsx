@@ -37,9 +37,12 @@ export default function BookingPage() {
     if (s && s.quantity >= LESSON.minHours) setHours(s.quantity);
     setLoading(false);
   }
+  const [googleState, setGoogleState] = useState<string | null>(null);
   useEffect(() => {
     refresh();
-    setCheckoutState(new URLSearchParams(window.location.search).get("checkout"));
+    const q = new URLSearchParams(window.location.search);
+    setCheckoutState(q.get("checkout"));
+    setGoogleState(q.get("google"));
   }, []);
 
   const active = sub && ["active", "past_due"].includes(sub.status);
@@ -82,6 +85,12 @@ export default function BookingPage() {
       )}
       {checkoutState === "cancel" && (
         <p className="text-sm text-cream-dim bg-bordeaux-deep/40 rounded-lg p-3">Checkout cancelled — no charge was made.</p>
+      )}
+      {googleState === "connected" && (
+        <p className="text-sm text-green-700 bg-green-accent/15 rounded-lg p-3">✓ Google Calendar connected.</p>
+      )}
+      {googleState === "error" && (
+        <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-3">Google Calendar connection failed — please try again.</p>
       )}
       {err && <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-3">{err}</p>}
 

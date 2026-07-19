@@ -6,12 +6,23 @@ import { getTeacherSettings, saveTeacherSettings, type TeacherSettings, type Wee
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const TZ_CHOICES = ["Europe/Berlin", "Europe/London", "America/New_York", "America/Chicago", "America/Los_Angeles", "Asia/Dubai", "Asia/Kolkata", "Asia/Singapore", "Australia/Sydney", "UTC"];
 
+type GoogleStatus = { connected: boolean; email: string | null; configured: boolean };
+
 export default function AvailabilityEditor() {
   const [s, setS] = useState<TeacherSettings | null>(null);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [google, setGoogle] = useState<GoogleStatus | null>(null);
 
   useEffect(() => { getTeacherSettings().then(setS); }, []);
+  useEffect(() => { fetch("/api/google/status").then((r) => r.json()).then(setGoogle).catch(() => {}); }, []);
+
+  async function disconnectGoogle() {
+    if (!confirm("Disconnect your Google Calendar? New bookings won’t create calendar events.")) return;
+    await fetch("/api/google/status", { method: "DELETE" });
+    setGoogle((g) => (g ? { ...g, connected: false, email: null } : g));
+  }
+
   if (!s) return <div className="card p-5 text-cream-dim text-sm">Loading availability…</div>;
 
   const set = <K extends keyof TeacherSettings>(k: K, v: TeacherSettings[K]) => setS({ ...s, [k]: v });
@@ -27,6 +38,23 @@ export default function AvailabilityEditor() {
   }
 
   return (
+    <>
+    {/* Google-Kalender */}
+    <div className="card p-5 flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <div className="font-semibold flex items-center gap-2">📅 Google Calendar</div>
+        <div className="text-sm text-cream-dim mt-0.5">
+          {!google ? "Checking…"
+            : !google.configured ? "Not set up yet (admin: add GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET)."
+            : google.connected ? <>Connected{google.email ? <> as <span className="text-cream">{google.email}</span></> : ""} — busy times are blocked and bookings create a Meet link.</>
+            : "Connect so busy times are hidden and each booking gets a Google Meet link."}
+        </div>
+      </div>
+      {google?.configured && (google.connected
+        ? <button onClick={disconnectGoogle} className="btn-outline px-4 py-2 text-sm shrink-0">Disconnect</button>
+        : <a href="/api/google/connect" className="btn-gold px-4 py-2 text-sm shrink-0">Connect Google Calendar</a>)}
+    </div>
+
     <div className="card p-5 space-y-4">
       <div className="font-semibold text-lg">Your availability</div>
 
@@ -76,6 +104,7 @@ export default function AvailabilityEditor() {
         {msg && <span className={`text-sm ${msg.startsWith("✓") ? "text-green-700" : "text-red-700"}`}>{msg}</span>}
       </div>
     </div>
+    </>
   );
 }
 

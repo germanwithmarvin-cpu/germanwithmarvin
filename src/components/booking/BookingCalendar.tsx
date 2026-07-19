@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getTeacherSettings, getBlocks, getTakenMs, generateSlots, bookLesson, type Slot } from "@/lib/schedule";
+import { getTeacherSettings, getBlocks, getTakenMs, getGoogleBusy, generateSlots, bookLesson, type Slot } from "@/lib/schedule";
 
 const studentTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -25,8 +25,12 @@ export default function BookingCalendar({ canBook, onBooked }: { canBook: boolea
     setSlotMin(settings.slotMinutes);
     const now = new Date();
     const to = new Date(now.getTime() + (settings.horizonDays + 1) * 86400e3);
-    const [blocks, taken] = await Promise.all([getBlocks(), getTakenMs(now.toISOString(), to.toISOString())]);
-    setSlots(generateSlots(settings, taken, blocks, now));
+    const [blocks, taken, gbusy] = await Promise.all([
+      getBlocks(),
+      getTakenMs(now.toISOString(), to.toISOString()),
+      getGoogleBusy(now.toISOString(), to.toISOString()),
+    ]);
+    setSlots(generateSlots(settings, taken, [...blocks, ...gbusy], now));
     setLoading(false);
   }, []);
   useEffect(() => { load(); }, [load]);
