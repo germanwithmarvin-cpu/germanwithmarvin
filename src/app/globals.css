@@ -1,18 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  /* Farbschema aus dem Logo "Marvin Graf — German Simplified" (etwas heller) */
-  --bordeaux: #7a2727;
-  --bordeaux-deep: #5c1a1a;
-  --bordeaux-soft: #93373a;
-  --gold: #e0902a;
-  --gold-bright: #f4a836;
-  --cream: #faf1e6;
-  --cream-dim: #e0cfb6;
-  --red-accent: #c0392b;
+  /* HELLES Farbschema (Logo "Marvin Graf — German Simplified").
+     Hinweis: Die Token-Namen sind historisch (dunkel), die Werte sind jetzt hell.
+     --cream = primärer (dunkler) Text, --bordeaux = Burgund-Akzent,
+     --bordeaux-deep/-soft = helle Flächen (Honig), --gold = Honiggold. */
+  --bordeaux: #8a3030;        /* Burgund (Buttons, Akzente) */
+  --bordeaux-deep: #f7dead;   /* Honig-Fläche (Inputs/Panels via bg-bordeaux-deep) */
+  --bordeaux-soft: #ecd3a0;   /* weiche Honig-Fläche */
+  --gold: #e3a12f;            /* Honiggold (Button-Flächen, Füllungen) */
+  --gold-bright: #c77d14;     /* tieferes Gold (Akzent-Text, auf Hell lesbar) */
+  --cream: #3b2922;           /* PRIMÄRER, dunkler Text */
+  --cream-dim: #7c6a5c;       /* gedämpfter Text */
+  --red-accent: #b23b2e;
   --green-accent: #2e7d4f;
 
-  --background: var(--bordeaux-deep);
+  --surface: #fbf2da;         /* Karten-Fläche (warmes Off-White) */
+  --background: #fff1d2;      /* Seiten-Hintergrund (Creme) */
   --foreground: var(--cream);
 }
 
@@ -32,7 +36,7 @@
 }
 
 body {
-  background: var(--bordeaux-deep);
+  background: var(--background);
   color: var(--cream);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -50,25 +54,25 @@ h1 { line-height: 1.08; }
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
-  background: radial-gradient(circle at 50% -10%, var(--bordeaux) 0%, var(--bordeaux-deep) 70%);
+  background: radial-gradient(circle at 50% -10%, #fff8e6 0%, var(--background) 72%);
 }
 .app-bg::before,
 .app-bg::after {
   content: "";
   position: absolute;
   border-radius: 50%;
-  filter: blur(60px);
+  filter: blur(70px);
 }
 .app-bg::before {
   width: 55vw; height: 55vw; left: -12vw; top: -12vw;
-  background: color-mix(in srgb, var(--gold) 18%, transparent);
-  opacity: 0.5;
+  background: color-mix(in srgb, var(--gold) 22%, transparent);
+  opacity: 0.28;
   animation: drift 18s ease-in-out infinite;
 }
 .app-bg::after {
   width: 60vw; height: 60vw; right: -18vw; bottom: -15vw;
-  background: color-mix(in srgb, var(--bordeaux-soft) 60%, transparent);
-  opacity: 0.6;
+  background: color-mix(in srgb, var(--bordeaux-soft) 70%, transparent);
+  opacity: 0.35;
   animation: drift 24s ease-in-out infinite reverse;
 }
 
@@ -102,32 +106,43 @@ h1 { line-height: 1.08; }
 }
 
 .card {
-  background: color-mix(in srgb, var(--bordeaux) 78%, #000);
-  border: 1px solid color-mix(in srgb, var(--cream) 11%, transparent);
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--cream) 8%, transparent);
   border-radius: 1.25rem;
-  box-shadow: 0 14px 36px -16px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 26px -18px rgba(59, 41, 34, 0.22);
 }
 
 .btn-gold {
   background: var(--gold);
-  color: #2a0808;
+  color: #3b2116;
   font-weight: 600;
   border-radius: 0.85rem;
-  box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--gold) 85%, transparent);
-  transition: background 0.15s ease, transform 0.05s ease;
+  box-shadow: 0 8px 20px -12px color-mix(in srgb, var(--gold) 80%, transparent);
+  transition: background 0.15s ease, filter 0.15s ease, transform 0.05s ease;
 }
-.btn-gold:hover { background: var(--gold-bright); }
+.btn-gold:hover { filter: brightness(1.06); }
 .btn-gold:active { transform: translateY(1px); }
 
+/* Primärer Button in Burgund (z. B. „Join now"-Stil) */
+.btn-primary {
+  background: var(--bordeaux);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 0.85rem;
+  transition: filter 0.15s ease, transform 0.05s ease;
+}
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-primary:active { transform: translateY(1px); }
+
 .btn-outline {
-  border: 1px solid color-mix(in srgb, var(--cream) 20%, transparent);
-  color: var(--cream);
+  border: 1px solid color-mix(in srgb, var(--bordeaux) 45%, transparent);
+  color: var(--bordeaux);
   border-radius: 0.85rem;
   transition: background 0.15s ease, border-color 0.15s ease;
 }
 .btn-outline:hover {
-  background: color-mix(in srgb, var(--cream) 7%, transparent);
-  border-color: color-mix(in srgb, var(--gold) 55%, transparent);
+  background: color-mix(in srgb, var(--bordeaux) 6%, transparent);
+  border-color: var(--bordeaux);
 }
 
 /* Die vier Bewertungs-Knöpfe der Lern-Session (wie Anki). */

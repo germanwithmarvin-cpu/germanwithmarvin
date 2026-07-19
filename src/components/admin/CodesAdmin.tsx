@@ -69,7 +69,7 @@ export default function CodesAdmin() {
             <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Preply July" className={`${inputCls} w-full`} />
           </div>
         </div>
-        {error && <p className="text-sm text-red-300 bg-red-accent/15 rounded-lg p-2">{error}</p>}
+        {error && <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-2">{error}</p>}
         <button onClick={generate} disabled={busy} className="btn-gold px-5 py-2.5 text-sm disabled:opacity-50">
           {busy ? "Creating…" : kind === "single" ? `Create ${count} code${count === 1 ? "" : "s"}` : "Create community code"}
         </button>
@@ -108,7 +108,7 @@ export default function CodesAdmin() {
               <div className="flex gap-2 shrink-0">
                 <button onClick={() => navigator.clipboard.writeText(c.code)} className="text-xs text-cream-dim hover:text-cream">Copy</button>
                 <button onClick={() => toggle(c)} className="text-xs text-cream-dim hover:text-cream">{c.active ? "Disable" : "Enable"}</button>
-                <button onClick={() => remove(c)} className="text-xs text-red-300 hover:text-red-200">Delete</button>
+                <button onClick={() => remove(c)} className="text-xs text-red-700 hover:text-red-700">Delete</button>
               </div>
             </div>
           ))}

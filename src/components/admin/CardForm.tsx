@@ -122,7 +122,7 @@ export default function CardForm({
           {d.imageUrl && (
             <div className="mt-2 flex items-center gap-2">
               <img src={d.imageUrl} alt="" className="h-12 rounded object-contain" />
-              <button onClick={() => set("imageUrl", null)} className="text-xs text-red-300">remove</button>
+              <button onClick={() => set("imageUrl", null)} className="text-xs text-red-700">remove</button>
             </div>
           )}
         </div>
@@ -133,7 +133,7 @@ export default function CardForm({
           {d.audioUrl && (
             <div className="mt-2 flex items-center gap-2">
               <audio controls src={d.audioUrl} className="h-8 max-w-[12rem]" />
-              <button onClick={() => set("audioUrl", null)} className="text-xs text-red-300">remove</button>
+              <button onClick={() => set("audioUrl", null)} className="text-xs text-red-700">remove</button>
             </div>
           )}
         </div>
@@ -170,7 +170,7 @@ export default function CardForm({
         </div>
       </div>
 
-      {error && <p className="text-sm text-red-300 bg-red-accent/15 rounded-lg p-2">{error}</p>}
+      {error && <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-2">{error}</p>}
 
       <div className="flex gap-2">
         <button onClick={handleSave} disabled={saving || uploading !== null} className="btn-gold px-4 py-2 text-sm disabled:opacity-50">

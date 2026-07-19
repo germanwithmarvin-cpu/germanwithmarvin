@@ -76,7 +76,7 @@ export default function ProfilePage() {
     <div className="max-w-2xl space-y-8">
       <h1 className="text-2xl font-bold">Your profile</h1>
 
-      {err && <p className="text-sm text-red-300 bg-red-accent/15 rounded-lg p-3">{err}</p>}
+      {err && <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-3">{err}</p>}
 
       {/* Kopf: Bild + Name */}
       <div className="card p-6 flex flex-col sm:flex-row items-center gap-6">
@@ -94,7 +94,7 @@ export default function ProfilePage() {
               {uploading ? "Uploading…" : profile.avatarUrl ? "Change photo" : "Upload photo"}
             </button>
             {profile.avatarUrl && (
-              <button onClick={removePhoto} className="text-xs text-red-300 hover:text-red-200">Remove photo</button>
+              <button onClick={removePhoto} className="text-xs text-red-700 hover:text-red-700">Remove photo</button>
             )}
           </div>
         </div>

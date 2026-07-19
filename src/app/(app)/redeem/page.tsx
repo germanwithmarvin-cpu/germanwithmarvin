@@ -49,7 +49,7 @@ export default function RedeemPage() {
           />
         </div>
 
-        {error && <p className="text-sm text-red-300 bg-red-accent/15 rounded-lg p-3">{error}</p>}
+        {error && <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-3">{error}</p>}
         {ok && <p className="text-sm text-cream bg-green-accent/20 rounded-lg p-3">✓ {ok} Redirecting…</p>}
 
         <button type="submit" disabled={loading || !!ok} className="btn-gold w-full py-2.5 disabled:opacity-50">

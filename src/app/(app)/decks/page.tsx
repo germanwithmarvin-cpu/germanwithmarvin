@@ -269,12 +269,12 @@ function DeckNodeView({ node, maxLabel }: { node: DeckNode; maxLabel: number }) 
   const dash = circ * frac;
 
   const fill = locked
-    ? { background: "color-mix(in srgb, var(--bordeaux) 84%, #000)", color: "var(--cream-dim)" }
+    ? { background: "color-mix(in srgb, var(--bordeaux) 14%, #fff)", color: "var(--cream-dim)" }
     : done
-    ? { background: "linear-gradient(160deg, var(--gold-bright), var(--gold))", color: "#2a0808" }
+    ? { background: "linear-gradient(160deg, var(--gold-bright), var(--gold))", color: "#3b2116" }
     : current
-      ? { background: "color-mix(in srgb, var(--bordeaux) 55%, #000)", color: "var(--cream)" }
-      : { background: "color-mix(in srgb, var(--bordeaux) 72%, #000)", color: "var(--cream)" };
+      ? { background: "var(--bordeaux)", color: "#fff" }
+      : { background: "var(--surface)", color: "var(--cream)" };
 
   // Gesperrt (A2–B2 ohne Zugang) → führt zur Code-Einlöse-Seite statt zum Lernen.
   const href = locked ? "/redeem" : `/study/${deck.id}`;
@@ -324,8 +324,8 @@ function TrophyNodeView({ icon, name, earned, champion }: { icon: string; name: 
           height: size,
           background: earned
             ? "radial-gradient(circle at 50% 30%, var(--gold-bright), var(--gold) 70%, color-mix(in srgb, var(--gold) 60%, #000))"
-            : "color-mix(in srgb, var(--bordeaux) 82%, #000)",
-          border: earned ? "1px solid color-mix(in srgb, #fff 30%, transparent)" : "1px solid color-mix(in srgb, var(--cream) 10%, transparent)",
+            : "color-mix(in srgb, var(--bordeaux) 12%, #fff)",
+          border: earned ? "1px solid color-mix(in srgb, #fff 30%, transparent)" : "1px solid color-mix(in srgb, var(--cream) 12%, transparent)",
           filter: earned ? "none" : "grayscale(0.8) brightness(0.8)",
           boxShadow: earned ? "0 0 22px -4px color-mix(in srgb, var(--gold) 70%, transparent), 0 8px 18px -8px rgba(0,0,0,0.5)" : "none",
         }}

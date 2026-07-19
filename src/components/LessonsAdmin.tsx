@@ -136,7 +136,7 @@ export default function LessonsAdmin() {
     return (
       <div className="space-y-4">
         <button onClick={startNew} className="btn-gold px-5 py-2.5">+ Add new lesson / video</button>
-        {error && <p className="text-sm text-red-300 bg-red-accent/15 rounded-lg p-3">{error}</p>}
+        {error && <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-3">{error}</p>}
         {loading && <p className="text-sm text-cream-dim">Loading…</p>}
         {!loading && lessons.length === 0 && <p className="text-sm text-cream-dim">No lessons yet — add your first one.</p>}
         {!loading && lessons.length > 0 && (
@@ -185,7 +185,7 @@ export default function LessonsAdmin() {
                       >▼</button>
                     </div>
                     <button onClick={() => startEdit(l)} className="btn-outline px-3 py-1.5 text-sm">Edit</button>
-                    <button onClick={() => remove(l)} className="btn-outline px-3 py-1.5 text-sm text-red-300">Delete</button>
+                    <button onClick={() => remove(l)} className="btn-outline px-3 py-1.5 text-sm text-red-700">Delete</button>
                   </div>
                 </div>
               ))}
@@ -204,7 +204,7 @@ export default function LessonsAdmin() {
         <button onClick={() => setEditing(null)} className="text-sm text-cream-dim hover:text-cream">← Back to list</button>
       </div>
 
-      {error && <p className="text-sm text-red-300 bg-red-accent/15 rounded-lg p-3">{error}</p>}
+      {error && <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-3">{error}</p>}
 
       {/* Grunddaten */}
       <div className="card p-5 space-y-3">
@@ -272,7 +272,7 @@ export default function LessonsAdmin() {
           <div key={mi} className="flex gap-2 items-center">
             <input className={inputClass} value={m.title} onChange={(e) => updateMaterial(mi, { title: e.target.value })} placeholder="Title shown to students" />
             <input className={inputClass} value={m.url} onChange={(e) => updateMaterial(mi, { url: e.target.value })} placeholder="https://… or uploaded file" />
-            <button onClick={() => removeMaterial(mi)} className="text-red-300 text-sm px-2 shrink-0">✕</button>
+            <button onClick={() => removeMaterial(mi)} className="text-red-700 text-sm px-2 shrink-0">✕</button>
           </div>
         ))}
       </div>
@@ -311,7 +311,7 @@ export default function LessonsAdmin() {
           <div key={qi} className="rounded-lg border border-gold/20 p-3 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs text-cream-dim">Question {qi + 1}</span>
-              <button onClick={() => removeQuestion(qi)} className="text-red-300 text-xs">Remove</button>
+              <button onClick={() => removeQuestion(qi)} className="text-red-700 text-xs">Remove</button>
             </div>
             <input className={inputClass} value={q.prompt} onChange={(e) => updateQuestion(qi, { prompt: e.target.value })} placeholder="Question text" />
             <div className="space-y-1.5">

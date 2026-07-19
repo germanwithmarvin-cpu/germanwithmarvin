@@ -87,7 +87,7 @@ export default function CsvImport({
         />
       </div>
 
-      {error && <p className="text-sm text-red-300 bg-red-accent/15 rounded-lg p-2">{error}</p>}
+      {error && <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-2">{error}</p>}
       {done !== null && <p className="text-sm text-cream bg-green-accent/20 rounded-lg p-2">✅ Imported {done} card{done === 1 ? "" : "s"}.</p>}
 
       {cards.length > 0 && (

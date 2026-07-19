@@ -142,12 +142,12 @@ export default function DecksAdmin() {
                     <span className="text-xs shrink-0">{d.isPublished ? "🟢" : "⚪️"}</span>
                   </span>
                   <span className="text-xs text-cream-dim">
-                    {d.level} · {count === undefined ? "…" : empty ? <span className="text-red-300">empty</span> : `${count} cards`}
+                    {d.level} · {count === undefined ? "…" : empty ? <span className="text-red-700">empty</span> : `${count} cards`}
                   </span>
                 </button>
                 <button
                   onClick={() => handleDeleteDeck(d)}
-                  className="px-2 text-cream-dim hover:text-red-300 shrink-0"
+                  className="px-2 text-cream-dim hover:text-red-700 shrink-0"
                   title="Delete this deck"
                   aria-label={`Delete ${d.title}`}
                 >
@@ -205,7 +205,7 @@ export default function DecksAdmin() {
                   />
                   Published (visible to students)
                 </label>
-                <button onClick={() => handleDeleteDeck(selectedDeck)} className="text-xs text-red-300 hover:text-red-200">Delete deck</button>
+                <button onClick={() => handleDeleteDeck(selectedDeck)} className="text-xs text-red-700 hover:text-red-700">Delete deck</button>
               </div>
             </div>
 
@@ -246,7 +246,7 @@ export default function DecksAdmin() {
                       </div>
                       <div className="flex gap-2 shrink-0">
                         <button onClick={() => setEditingCardId(c.id)} className="text-xs text-cream-dim hover:text-cream">Edit</button>
-                        <button onClick={() => handleDeleteCard(c.id)} className="text-xs text-red-300 hover:text-red-200">Delete</button>
+                        <button onClick={() => handleDeleteCard(c.id)} className="text-xs text-red-700 hover:text-red-700">Delete</button>
                       </div>
                     </div>
                   ),

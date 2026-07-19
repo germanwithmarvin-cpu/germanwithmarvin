@@ -40,7 +40,7 @@ export default function PdfUpload({
       >
         {busy ? "Uploading…" : label}
       </button>
-      {err && <span className="text-xs text-red-300">{err}</span>}
+      {err && <span className="text-xs text-red-700">{err}</span>}
     </span>
   );
 }

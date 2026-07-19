@@ -48,7 +48,7 @@ export default function ExamPage() {
           40 multiple-choice questions, from beginner to upper-intermediate. We&apos;ll estimate your
           vocabulary level (A1–B2). There&apos;s no time limit — just pick the best meaning.
         </p>
-        {error && <p className="text-sm text-red-300 bg-red-accent/15 rounded-lg p-3 mt-4">{error}</p>}
+        {error && <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-3 mt-4">{error}</p>}
         <button onClick={start} className="btn-gold px-6 py-3 mt-6">
           Start test
         </button>

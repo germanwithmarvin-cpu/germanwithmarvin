@@ -74,7 +74,7 @@ export default function RegisterPage() {
               <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" required minLength={6} placeholder="At least 6 characters" className="w-full rounded-lg bg-bordeaux-deep/60 border border-gold/25 px-3 py-2 outline-none focus:border-gold" />
             </div>
 
-            {error && <p className="text-sm text-red-300 bg-red-accent/15 rounded-lg p-3">{error}</p>}
+            {error && <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-3">{error}</p>}
             {info && <p className="text-sm text-cream bg-green-accent/20 rounded-lg p-3">{info}</p>}
 
             <button type="submit" disabled={loading} className="btn-gold w-full py-2.5 disabled:opacity-50">

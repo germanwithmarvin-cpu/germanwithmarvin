@@ -70,7 +70,7 @@ export default function StoriesAdmin() {
     return (
       <div className="space-y-4">
         <button onClick={startNew} className="btn-gold px-5 py-2.5">+ Add new story</button>
-        {error && <p className="text-sm text-red-300 bg-red-accent/15 rounded-lg p-3">{error}</p>}
+        {error && <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-3">{error}</p>}
         {loading && <p className="text-sm text-cream-dim">Loading…</p>}
         {!loading && stories.length === 0 && <p className="text-sm text-cream-dim">No stories yet — add your first one.</p>}
         {stories.map((s, i) => (
@@ -87,7 +87,7 @@ export default function StoriesAdmin() {
             </div>
             <div className="flex gap-2 shrink-0">
               <button onClick={() => startEdit(s)} className="btn-outline px-3 py-1.5 text-sm">Edit</button>
-              <button onClick={() => remove(s)} className="btn-outline px-3 py-1.5 text-sm text-red-300">Delete</button>
+              <button onClick={() => remove(s)} className="btn-outline px-3 py-1.5 text-sm text-red-700">Delete</button>
             </div>
           </div>
         ))}
@@ -103,7 +103,7 @@ export default function StoriesAdmin() {
         <button onClick={() => setEditing(null)} className="text-sm text-cream-dim hover:text-cream">← Back to list</button>
       </div>
 
-      {error && <p className="text-sm text-red-300 bg-red-accent/15 rounded-lg p-3">{error}</p>}
+      {error && <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-3">{error}</p>}
 
       <div className="card p-5 space-y-3">
         <div>
@@ -136,7 +136,7 @@ export default function StoriesAdmin() {
           {editing.fileUrl ? (
             <div className="flex items-center gap-3 text-sm">
               <a href={editing.fileUrl} target="_blank" rel="noreferrer" className="text-gold-bright underline underline-offset-4">📕 View uploaded file</a>
-              <button onClick={() => setField("fileUrl", "")} className="text-red-300 text-xs">Remove</button>
+              <button onClick={() => setField("fileUrl", "")} className="text-red-700 text-xs">Remove</button>
             </div>
           ) : (
             <PdfUpload folder="story-books" label="⬆ Upload book (PDF/PNG/JPG)" onUploaded={(url) => setField("fileUrl", url)} />

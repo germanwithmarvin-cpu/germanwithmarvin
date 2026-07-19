@@ -184,7 +184,7 @@ export default function Exercises({ items, onDone }: { items: Exercise[]; onDone
               )
             ))}
           </div>
-          {checked && !lastCorrect && <p className="text-sm text-green-300">✓ {ex.correct.join(" ")}</p>}
+          {checked && !lastCorrect && <p className="text-sm text-green-700">✓ {ex.correct.join(" ")}</p>}
         </div>
       )}
 
@@ -207,7 +207,7 @@ export default function Exercises({ items, onDone }: { items: Exercise[]; onDone
                   <option value="" disabled>Choose…</option>
                   {matchRights.map((r) => <option key={r} value={r}>{r}</option>)}
                 </select>
-                {checked && wrong && <span className="text-xs text-green-300 shrink-0">✓ {p.right}</span>}
+                {checked && wrong && <span className="text-xs text-green-700 shrink-0">✓ {p.right}</span>}
               </div>
             );
           })}
@@ -235,7 +235,7 @@ export default function Exercises({ items, onDone }: { items: Exercise[]; onDone
                     </button>
                   ))}
                 </div>
-                {checked && wrong && <span className="text-xs text-green-300 shrink-0">✓ {it.category}</span>}
+                {checked && wrong && <span className="text-xs text-green-700 shrink-0">✓ {it.category}</span>}
               </div>
             );
           })}
@@ -247,14 +247,14 @@ export default function Exercises({ items, onDone }: { items: Exercise[]; onDone
         <div className={`rounded-xl p-4 border-2 ${lastCorrect ? "border-green-400/60 bg-green-400/15" : "border-red-accent bg-red-accent/20"}`}>
           <div className="flex items-center gap-2 font-bold">
             <span className="text-2xl">{lastCorrect ? "✅" : "❌"}</span>
-            <span className={lastCorrect ? "text-green-300" : "text-red-300"}>
+            <span className={lastCorrect ? "text-green-700" : "text-red-700"}>
               {lastCorrect ? "Correct!" : "Not quite"}
             </span>
           </div>
           {!lastCorrect && (
             <p className="mt-2 text-sm">
               <span className="text-cream-dim">Correct answer: </span>
-              <span className="text-green-300 font-semibold">{solutionText()}</span>
+              <span className="text-green-700 font-semibold">{solutionText()}</span>
             </p>
           )}
           {ex.explanation && <p className="mt-2 text-sm text-cream-dim">💡 {ex.explanation}</p>}

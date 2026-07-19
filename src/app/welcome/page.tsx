@@ -171,14 +171,14 @@ export default function WelcomePage() {
                       <div className="text-sm font-medium">Corrections:</div>
                       {aiFeedback.issues.map((it, i) => (
                         <div key={i} className="text-sm rounded-lg bg-bordeaux-deep/50 p-3">
-                          <span className="line-through text-red-300">{it.original}</span>{" "}
-                          → <span className="text-green-300">{it.correction}</span>
+                          <span className="line-through text-red-700">{it.original}</span>{" "}
+                          → <span className="text-green-700">{it.correction}</span>
                           <p className="text-cream-dim mt-1">{it.explanation}</p>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-green-300">No mistakes found — excellent! 🎉</p>
+                    <p className="text-sm text-green-700">No mistakes found — excellent! 🎉</p>
                   )}
 
                   <div>
