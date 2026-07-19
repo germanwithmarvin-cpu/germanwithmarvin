@@ -1,5 +1,6 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -12,6 +13,7 @@ const links = [
   { href: "/decks", label: "Flashcards", icon: "🗂️" },
   { href: "/stories", label: "Stories", icon: "📖" },
   { href: "/stats", label: "Statistics", icon: "📊" },
+  { href: "/profile", label: "Profile", icon: "👤" },
 ];
 
 // Nur für Lehrer sichtbar:
@@ -21,13 +23,15 @@ export default function AppNav() {
   const path = usePathname();
   const router = useRouter();
   const [isTeacher, setIsTeacher] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState("");
 
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return;
-      const { data } = await supabase.from("profiles").select("is_teacher").eq("id", user.id).single();
+      const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
       setIsTeacher(Boolean(data?.is_teacher));
+      setAvatarUrl((data?.avatar_url as string) ?? "");
     });
   }, []);
 
@@ -57,7 +61,11 @@ export default function AppNav() {
                   : "text-cream-dim hover:bg-gold/10"
               }`}
             >
-              <span className="text-xl">{l.icon}</span>
+              {l.href === "/profile" && avatarUrl ? (
+                <img src={avatarUrl} alt="" className="w-6 h-6 rounded-full object-cover" />
+              ) : (
+                <span className="text-xl">{l.icon}</span>
+              )}
               <span>{l.label}</span>
             </Link>
           );
