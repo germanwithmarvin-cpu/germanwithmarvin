@@ -160,6 +160,17 @@ h1 { line-height: 1.08; }
   box-shadow: 0 10px 26px -18px rgba(59, 41, 34, 0.22);
 }
 
+/* Trainer-Karte: hebt sich deutlich vom Hintergrund ab (erhaben, goldkantig). */
+.study-card {
+  background: linear-gradient(180deg, #ffffff, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--gold) 34%, transparent);
+  border-radius: 1.5rem;
+  box-shadow:
+    0 28px 56px -22px rgba(59, 41, 34, 0.45),
+    0 10px 22px -12px rgba(59, 41, 34, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
 .btn-gold {
   background: var(--gold);
   color: #3b2116;

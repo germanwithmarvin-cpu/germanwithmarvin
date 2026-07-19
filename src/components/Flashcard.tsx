@@ -45,7 +45,7 @@ export default function Flashcard({
   const promptText = promptIsGerman ? german : english;
   const answerText = promptIsGerman ? english : german;
 
-  const faceCls = "flip-face card p-8 w-full min-h-[19rem] flex flex-col items-center justify-center gap-4 text-center";
+  const faceCls = "flip-face card study-card p-8 w-full min-h-[19rem] flex flex-col items-center justify-center gap-4 text-center";
   const fbCls = feedback === "correct" ? "fb-correct" : feedback === "wrong" ? "fb-wrong" : "";
 
   return (
