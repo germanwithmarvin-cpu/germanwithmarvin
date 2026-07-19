@@ -142,6 +142,16 @@ export async function getAllBookings(): Promise<Booking[]> {
   return (data ?? []).map(mapBooking);
 }
 
+// Schülernamen zu IDs (für die Lehrer-Wochenansicht).
+export async function getStudentNames(ids: string[]): Promise<Record<string, string>> {
+  const unique = [...new Set(ids)];
+  if (unique.length === 0) return {};
+  const { data } = await createClient().from("profiles").select("id, full_name").in("id", unique);
+  const map: Record<string, string> = {};
+  for (const r of data ?? []) map[r.id as string] = (r.full_name as string) || "Student";
+  return map;
+}
+
 function mapBooking(r: Record<string, unknown>): Booking {
   return {
     id: r.id as string,

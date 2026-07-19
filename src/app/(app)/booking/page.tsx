@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import { LESSON, lessonPriceLabel } from "@/lib/config";
 import { getMySubscription, getMyCredits, startLessonCheckout, manageLessonSubscription, type LessonSubscription, type CreditInfo } from "@/lib/booking";
-import { getMyBookings, getAllBookings, type Booking } from "@/lib/schedule";
+import { getMyBookings, getAllBookings, getStudentNames, type Booking } from "@/lib/schedule";
 import { createClient } from "@/lib/supabase/client";
 import AvailabilityEditor from "@/components/booking/AvailabilityEditor";
 import BookingCalendar from "@/components/booking/BookingCalendar";
 import LessonsList from "@/components/booking/LessonsList";
 import LessonCalendar from "@/components/booking/LessonCalendar";
+import WeekSchedule from "@/components/booking/WeekSchedule";
 
 export default function BookingPage() {
   const [checkoutState, setCheckoutState] = useState<string | null>(null);
@@ -20,6 +21,7 @@ export default function BookingPage() {
   const [err, setErr] = useState<string | null>(null);
   const [isTeacher, setIsTeacher] = useState(false);
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [names, setNames] = useState<Record<string, string>>({});
 
   async function refresh() {
     const supabase = createClient();
@@ -34,6 +36,7 @@ export default function BookingPage() {
     setSub(s);
     setCredits(c);
     setBookings(b);
+    if (teacher && b.length) setNames(await getStudentNames(b.map((x) => x.studentId)));
     if (s && s.quantity >= LESSON.minHours) setHours(s.quantity);
     setLoading(false);
   }
@@ -101,8 +104,8 @@ export default function BookingPage() {
         <>
           <AvailabilityEditor />
           <div className="space-y-3">
-            <div className="font-semibold text-lg">Upcoming lessons</div>
-            <LessonCalendar bookings={bookings} />
+            <div className="font-semibold text-lg">Your schedule</div>
+            <WeekSchedule bookings={bookings} names={names} />
             <LessonsList bookings={bookings} onChange={refresh} teacher />
           </div>
         </>

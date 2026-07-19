@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getTeacherSettings, saveTeacherSettings, type TeacherSettings, type WeeklyWindow } from "@/lib/schedule";
+import { getTeacherSettings, saveTeacherSettings, type TeacherSettings } from "@/lib/schedule";
+import AvailabilityGrid from "@/components/booking/AvailabilityGrid";
 
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const TZ_CHOICES = ["Europe/Berlin", "Europe/London", "America/New_York", "America/Chicago", "America/Los_Angeles", "Asia/Dubai", "Asia/Kolkata", "Asia/Singapore", "Australia/Sydney", "UTC"];
 
 type GoogleStatus = { connected: boolean; email: string | null; configured: boolean };
@@ -26,9 +26,6 @@ export default function AvailabilityEditor() {
   if (!s) return <div className="card p-5 text-cream-dim text-sm">Loading availability…</div>;
 
   const set = <K extends keyof TeacherSettings>(k: K, v: TeacherSettings[K]) => setS({ ...s, [k]: v });
-  const setWindow = (i: number, patch: Partial<WeeklyWindow>) => set("weekly", s.weekly.map((w, j) => (j === i ? { ...w, ...patch } : w)));
-  const addWindow = () => set("weekly", [...s.weekly, { weekday: 1, start: "09:00", end: "17:00" }]);
-  const removeWindow = (i: number) => set("weekly", s.weekly.filter((_, j) => j !== i));
 
   async function save() {
     setSaving(true); setMsg(null);
@@ -79,24 +76,8 @@ export default function AvailabilityEditor() {
       </div>
 
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <div className="text-sm font-medium">Weekly hours <span className="text-cream-dim">(in your timezone)</span></div>
-          <button onClick={addWindow} className="btn-outline px-3 py-1.5 text-sm">+ Add window</button>
-        </div>
-        {s.weekly.length === 0 && <p className="text-sm text-cream-dim">No windows yet — add when you’re available for lessons.</p>}
-        <div className="space-y-2">
-          {s.weekly.map((w, i) => (
-            <div key={i} className="flex items-center gap-2 flex-wrap">
-              <select value={w.weekday} onChange={(e) => setWindow(i, { weekday: +e.target.value })} className={inp}>
-                {WEEKDAYS.map((d, k) => <option key={k} value={k}>{d}</option>)}
-              </select>
-              <input type="time" value={w.start} onChange={(e) => setWindow(i, { start: e.target.value })} className={inp} />
-              <span className="text-cream-dim">–</span>
-              <input type="time" value={w.end} onChange={(e) => setWindow(i, { end: e.target.value })} className={inp} />
-              <button onClick={() => removeWindow(i)} className="text-red-700 text-sm px-2">Remove</button>
-            </div>
-          ))}
-        </div>
+        <div className="text-sm font-medium mb-2">Weekly availability <span className="text-cream-dim">(in {s.timezone})</span></div>
+        <AvailabilityGrid value={s.weekly} onChange={(w) => set("weekly", w)} />
       </div>
 
       <div className="flex items-center gap-3">
