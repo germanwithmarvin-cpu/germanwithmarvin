@@ -3,7 +3,7 @@
 
 export type Review = { name: string; date: string; text: string };
 
-export const PREPLY_STATS = { rating: 4.9, reviews: 44, lessons: 1925 };
+export const PREPLY_STATS = { rating: 4.9, reviews: 44, lessons: 3000 };
 
 export const REVIEWS: Review[] = [
   { name: "Doron", date: "Apr 2026", text: "Marvin is an easy going tutor that makes lessons enjoyable and fun." },
