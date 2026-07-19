@@ -135,6 +135,50 @@ export async function createEvent(opts: { startISO: string; endISO: string; atte
   return { eventId: json.id, meetLink: json.hangoutLink ?? json.conferenceData?.entryPoints?.find((e: { entryPointType: string; uri: string }) => e.entryPointType === "video")?.uri };
 }
 
+// Diagnose: welches Konto ist verbunden, funktioniert der Zugriff, welche
+// Rechte/Termine sind da. Nur für die Fehlersuche.
+export async function diagnose(): Promise<Record<string, unknown>> {
+  const { data } = await admin().from("teacher_google").select("refresh_token, connected_email").eq("id", 1).maybeSingle();
+  if (!data?.refresh_token) return { connected: false };
+
+  const tokRes = await fetch(TOKEN_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      client_id: process.env.GOOGLE_CLIENT_ID!,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+      refresh_token: data.refresh_token,
+      grant_type: "refresh_token",
+    }),
+  });
+  const tok = await tokRes.json();
+  if (!tokRes.ok) return { connected: true, connectedEmail: data.connected_email, tokenRefresh: false, error: tok.error_description || tok.error };
+
+  const at = tok.access_token as string;
+  let scope: string | undefined, tokenEmail: string | undefined;
+  try {
+    const ti = await (await fetch(`https://oauth2.googleapis.com/tokeninfo?access_token=${at}`)).json();
+    scope = ti.scope; tokenEmail = ti.email;
+  } catch { /* egal */ }
+
+  const now = new Date().toISOString();
+  const to = new Date(Date.now() + 14 * 86400e3).toISOString();
+  const evRes = await fetch(`${CAL}/calendars/primary/events?timeMin=${now}&timeMax=${to}&singleEvents=true&maxResults=10`, { headers: { Authorization: `Bearer ${at}` } });
+  const evJson = await evRes.json();
+  const items = (evJson.items as Record<string, unknown>[]) ?? [];
+  return {
+    connected: true,
+    connectedEmail: data.connected_email,
+    tokenEmail,
+    tokenRefresh: true,
+    scope,
+    eventsOk: evRes.ok,
+    eventsError: evRes.ok ? undefined : evJson.error?.message ?? evJson.error,
+    eventCount: items.length,
+    sample: items.slice(0, 6).map((e) => ({ summary: e.summary, start: e.start, transparency: e.transparency, status: e.status })),
+  };
+}
+
 export async function deleteEvent(eventId: string): Promise<void> {
   const token = await accessToken();
   if (!token) return;
