@@ -20,10 +20,19 @@ const sameDay = (a: Date, b: Date) => a.getFullYear() === b.getFullYear() && a.g
 const hm = (d: Date) => d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
 
 export default function WeekSchedule({ bookings, names }: { bookings: Booking[]; names: Record<string, string> }) {
-  const [weekStart, setWeekStart] = useState(() => mondayOf(new Date()));
+  // Start bei der Woche der nächsten kommenden Buchung (sonst diese Woche).
+  const [weekStart, setWeekStart] = useState(() => {
+    const next = bookings
+      .filter((b) => b.status === "booked" && new Date(b.startsAt).getTime() > Date.now())
+      .sort((a, b) => a.startsAt.localeCompare(b.startsAt))[0];
+    return mondayOf(next ? new Date(next.startsAt) : new Date());
+  });
 
   const active = useMemo(() => bookings.filter((b) => b.status === "booked"), [bookings]);
   const days = useMemo(() => Array.from({ length: 7 }, (_, i) => { const d = new Date(weekStart); d.setDate(d.getDate() + i); return d; }), [weekStart]);
+
+  const weekEnd = new Date(weekStart); weekEnd.setDate(weekEnd.getDate() + 7);
+  const weekCount = active.filter((b) => { const t = new Date(b.startsAt).getTime(); return t >= weekStart.getTime() && t < weekEnd.getTime(); }).length;
 
   const shift = (w: number) => { const d = new Date(weekStart); d.setDate(d.getDate() + w * 7); setWeekStart(d); };
   const rangeLabel = `${days[0].toLocaleDateString(undefined, { day: "numeric", month: "short" })} – ${days[6].toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}`;
@@ -36,6 +45,7 @@ export default function WeekSchedule({ bookings, names }: { bookings: Booking[];
         <div className="font-semibold text-sm">{rangeLabel} <span className="text-cream-dim font-normal">· {tz}</span></div>
         <button onClick={() => shift(1)} className="btn-outline w-9 h-9 grid place-items-center" aria-label="Next week">›</button>
       </div>
+      {weekCount === 0 && <p className="text-xs text-cream-dim mb-2 text-center">No lessons booked this week — use ‹ › to browse other weeks.</p>}
 
       <div className="overflow-x-auto">
         <div className="min-w-[720px]">
