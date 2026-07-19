@@ -32,3 +32,28 @@ export const APP_CURRENCY = "USD";
 export function priceLabel(): string {
   return `$${APP_PRICE % 1 === 0 ? APP_PRICE : APP_PRICE.toFixed(2)}`;
 }
+
+// ---- 1-zu-1 Stunden: Monats-Abo mit Stunden-Guthaben ------------------------
+export const LESSON = {
+  stripePriceId: "price_1TurQzEsa6rPVhI2C2QoyaeH", // Volume-Staffel: bis 7 = $59, ab 8 = $56,05
+  pricePerHour: 59, // USD, 50-Min-Stunde
+  discountedPerHour: 56.05, // ab discountThreshold Stunden (−5 %)
+  discountThreshold: 8, // ab 8 Stunden/Monat gilt der Rabatt
+  minHours: 4, // Mindestpaket
+  maxHours: 40, // Obergrenze (Sicherheit)
+  currency: "USD",
+  durationMin: 50,
+  cancelHours: 24, // spätestens 24 h vorher absagen
+  creditValidityDays: 35, // Guthaben 5 Wochen gültig
+};
+
+// Monatspreis für eine gewählte Stundenzahl (inkl. 5 % ab 8 Stunden).
+export function lessonMonthlyPrice(hours: number): number {
+  const per = hours >= LESSON.discountThreshold ? LESSON.discountedPerHour : LESSON.pricePerHour;
+  return Math.round(per * hours * 100) / 100;
+}
+
+// z. B. "$236.00" oder "$448.40".
+export function lessonPriceLabel(hours: number): string {
+  return `$${lessonMonthlyPrice(hours).toFixed(2)}`;
+}

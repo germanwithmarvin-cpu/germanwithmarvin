@@ -12,6 +12,7 @@ const links = [
   { href: "/lessons", label: "Lessons", icon: "🎬" },
   { href: "/decks", label: "Flashcards", icon: "🗂️" },
   { href: "/stories", label: "Stories", icon: "📖" },
+  { href: "/booking", label: "1-on-1 lessons", icon: "🗓️" },
   { href: "/profile", label: "Profile", icon: "👤" },
 ];
 
