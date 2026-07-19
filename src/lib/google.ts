@@ -162,20 +162,32 @@ export async function diagnose(): Promise<Record<string, unknown>> {
   } catch { /* egal */ }
 
   const now = new Date().toISOString();
-  const to = new Date(Date.now() + 14 * 86400e3).toISOString();
+  const to = new Date(Date.now() + 35 * 86400e3).toISOString();
   const evRes = await fetch(`${CAL}/calendars/primary/events?timeMin=${now}&timeMax=${to}&singleEvents=true&maxResults=10`, { headers: { Authorization: `Bearer ${at}` } });
   const evJson = await evRes.json();
   const items = (evJson.items as Record<string, unknown>[]) ?? [];
+
+  // Alle Kalender des Kontos auflisten (zeigt, ob Termine woanders liegen).
+  let calendars: unknown = "n/a";
+  try {
+    const calRes = await fetch(`${CAL}/users/me/calendarList`, { headers: { Authorization: `Bearer ${at}` } });
+    const calJson = await calRes.json();
+    calendars = calRes.ok
+      ? (calJson.items as Record<string, unknown>[] ?? []).map((c) => ({ id: c.id, summary: c.summary, primary: c.primary ?? false, accessRole: c.accessRole }))
+      : { error: calJson.error?.message ?? calJson.error };
+  } catch (e) { calendars = { error: String(e) }; }
+
   return {
     connected: true,
     connectedEmail: data.connected_email,
     tokenEmail,
     tokenRefresh: true,
     scope,
-    eventsOk: evRes.ok,
-    eventsError: evRes.ok ? undefined : evJson.error?.message ?? evJson.error,
-    eventCount: items.length,
-    sample: items.slice(0, 6).map((e) => ({ summary: e.summary, start: e.start, transparency: e.transparency, status: e.status })),
+    primaryEventsOk: evRes.ok,
+    primaryEventsError: evRes.ok ? undefined : evJson.error?.message ?? evJson.error,
+    primaryEventCount35d: items.length,
+    primarySample: items.slice(0, 6).map((e) => ({ summary: e.summary, start: e.start, transparency: e.transparency, status: e.status })),
+    calendars,
   };
 }
 
