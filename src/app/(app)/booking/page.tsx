@@ -95,81 +95,83 @@ export default function BookingPage() {
             <LessonsList bookings={bookings} onChange={refresh} teacher />
           </div>
         </>
-      ) : active ? (
-        // -------- Aktives Abo: Guthaben + Verwaltung --------
+      ) : (
+        // -------- Schüler: Guthaben + Kalender (falls Abo ODER Guthaben) + Paket --------
         <>
-          <div className="card study-card p-6">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <div className="text-sm text-cream-dim">Lesson hours available now</div>
-                <div className="text-5xl font-bold text-gold-bright leading-none mt-1">{credits.balance}</div>
-                {credits.nextExpiry && credits.balance > 0 && (
-                  <div className="text-xs text-cream-dim mt-2">Use them by {fmtDate(credits.nextExpiry)} (hours expire after 5 weeks).</div>
+          {(active || credits.balance > 0) && (
+            <>
+              <div className="card study-card p-6">
+                <div className="flex flex-wrap items-end justify-between gap-4">
+                  <div>
+                    <div className="text-sm text-cream-dim">Lesson hours available now</div>
+                    <div className="text-5xl font-bold text-gold-bright leading-none mt-1">{credits.balance}</div>
+                    {credits.nextExpiry && credits.balance > 0 && (
+                      <div className="text-xs text-cream-dim mt-2">Use them by {fmtDate(credits.nextExpiry)} (hours expire after 5 weeks).</div>
+                    )}
+                  </div>
+                  {active && sub && (
+                    <div className="text-right text-sm">
+                      <div className="text-cream-dim">Your plan</div>
+                      <div className="font-semibold">{sub.quantity} h / month · {lessonPriceLabel(sub.quantity)}</div>
+                      <div className="text-xs text-cream-dim mt-1">
+                        {sub.cancelAtPeriodEnd ? <span className="text-red-700">Ends on {fmtDate(sub.currentPeriodEnd)}</span> : <>Renews on {fmtDate(sub.currentPeriodEnd)}</>}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {!active && credits.balance > 0 && (
+                  <div className="text-xs text-cream-dim mt-3">No active plan — you’re using leftover hours. Subscribe below to top up.</div>
                 )}
               </div>
-              <div className="text-right text-sm">
-                <div className="text-cream-dim">Your plan</div>
-                <div className="font-semibold">{sub!.quantity} h / month · {lessonPriceLabel(sub!.quantity)}</div>
-                <div className="text-xs text-cream-dim mt-1">
-                  {sub!.cancelAtPeriodEnd ? <span className="text-red-700">Ends on {fmtDate(sub!.currentPeriodEnd)}</span> : <>Renews on {fmtDate(sub!.currentPeriodEnd)}</>}
+
+              <BookingCalendar canBook={credits.balance > 0} onBooked={refresh} />
+
+              <div>
+                <div className="font-semibold mb-2">Your upcoming lessons</div>
+                <LessonsList bookings={bookings} onChange={refresh} />
+              </div>
+
+              {active && sub && (
+                <>
+                  <div className="card p-5 space-y-3">
+                    <div className="font-semibold">Change your monthly hours</div>
+                    <p className="text-xs text-cream-dim">Increases apply right away (charged pro-rata, hours added now). Decreases take effect next month — you keep your current hours.</p>
+                    <HourStepper value={hours} onChange={setHours} />
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="text-sm text-cream-dim">{lessonPriceLabel(hours)}/mo{hours >= LESSON.discountThreshold && <span className="text-gold-bright"> · 5% off</span>}</div>
+                      <button onClick={() => changeHours(hours)} disabled={busy || hours === sub.quantity} className="btn-gold px-5 py-2.5 text-sm disabled:opacity-40">
+                        {hours > sub.quantity ? "Add hours now" : hours < sub.quantity ? "Lower from next month" : "No change"}
+                      </button>
+                    </div>
+                  </div>
+                  <button onClick={toggleCancel} disabled={busy} className="text-sm text-cream-dim hover:text-cream underline underline-offset-4">
+                    {sub.cancelAtPeriodEnd ? "↩ Resume my plan" : "Cancel my plan (keeps access until period end)"}
+                  </button>
+                </>
+              )}
+            </>
+          )}
+
+          {!active && (
+            <div className="card study-card p-6 space-y-4">
+              <div className="font-semibold text-lg">{credits.balance > 0 ? "Get more lesson hours" : "Choose your monthly lesson plan"}</div>
+              <HourStepper value={hours} onChange={setHours} />
+              <div className="rounded-xl p-4" style={{ background: "color-mix(in srgb, var(--gold) 10%, var(--surface))", border: "1px solid color-mix(in srgb, var(--gold) 22%, transparent)" }}>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-bold text-gold-bright">{lessonPriceLabel(hours)}</span>
+                  <span className="text-cream-dim">/ month</span>
+                </div>
+                <div className="text-sm text-cream-dim mt-1">
+                  {hours} lessons × {LESSON.durationMin} min · ${perHour.toFixed(2)} per lesson
+                  {hours >= LESSON.discountThreshold ? <span className="text-gold-bright"> (5% off — 8+ hours)</span> : <span> · reach 8 h for 5% off</span>}
                 </div>
               </div>
-            </div>
-          </div>
-
-          {/* Buchungs-Kalender */}
-          <BookingCalendar canBook={credits.balance > 0} onBooked={refresh} />
-
-          <div>
-            <div className="font-semibold mb-2">Your upcoming lessons</div>
-            <LessonsList bookings={bookings} onChange={refresh} />
-          </div>
-
-          {/* Stundenzahl ändern */}
-          <div className="card p-5 space-y-3">
-            <div className="font-semibold">Change your monthly hours</div>
-            <p className="text-xs text-cream-dim">Increases apply right away (charged pro-rata, hours added now). Decreases take effect next month — you keep your current hours.</p>
-            <HourStepper value={hours} onChange={setHours} />
-            <div className="flex items-center justify-between gap-3">
-              <div className="text-sm text-cream-dim">{lessonPriceLabel(hours)}/mo{hours >= LESSON.discountThreshold && <span className="text-gold-bright"> · 5% off</span>}</div>
-              <button onClick={() => changeHours(hours)} disabled={busy || hours === sub!.quantity} className="btn-gold px-5 py-2.5 text-sm disabled:opacity-40">
-                {hours > sub!.quantity ? "Add hours now" : hours < sub!.quantity ? "Lower from next month" : "No change"}
+              <button onClick={subscribe} disabled={busy} className="btn-gold w-full py-3 disabled:opacity-50">
+                {busy ? "Redirecting to checkout…" : `Subscribe — ${lessonPriceLabel(hours)}/mo`}
               </button>
+              <p className="text-xs text-cream-dim text-center">Secure payment via Stripe · cancel anytime · monthly, renews automatically.</p>
             </div>
-          </div>
-
-          <button onClick={toggleCancel} disabled={busy} className="text-sm text-cream-dim hover:text-cream underline underline-offset-4">
-            {sub!.cancelAtPeriodEnd ? "↩ Resume my plan" : "Cancel my plan (keeps access until period end)"}
-          </button>
-        </>
-      ) : (
-        // -------- Kein Abo: Paket wählen --------
-        <>
-          <div className="card study-card p-6 space-y-4">
-            <div className="font-semibold text-lg">Choose your monthly lesson plan</div>
-            <HourStepper value={hours} onChange={setHours} />
-            <div className="rounded-xl p-4" style={{ background: "color-mix(in srgb, var(--gold) 10%, var(--surface))", border: "1px solid color-mix(in srgb, var(--gold) 22%, transparent)" }}>
-              <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-bold text-gold-bright">{lessonPriceLabel(hours)}</span>
-                <span className="text-cream-dim">/ month</span>
-              </div>
-              <div className="text-sm text-cream-dim mt-1">
-                {hours} lessons × {LESSON.durationMin} min · ${perHour.toFixed(2)} per lesson
-                {hours >= LESSON.discountThreshold ? <span className="text-gold-bright"> (5% off — 8+ hours)</span> : <span> · reach 8 h for 5% off</span>}
-              </div>
-            </div>
-            <button onClick={subscribe} disabled={busy} className="btn-gold w-full py-3 disabled:opacity-50">
-              {busy ? "Redirecting to checkout…" : `Subscribe — ${lessonPriceLabel(hours)}/mo`}
-            </button>
-            <p className="text-xs text-cream-dim text-center">Secure payment via Stripe · cancel anytime · monthly, renews automatically.</p>
-          </div>
-
-          <ul className="text-sm text-cream-dim space-y-1.5">
-            <li>✓ {LESSON.durationMin}-minute private lessons, one-on-one with me</li>
-            <li>✓ Book your own times (calendar coming very soon)</li>
-            <li>✓ Free cancellation up to {LESSON.cancelHours} h before a lesson</li>
-            <li>✓ Unused hours stay valid for 5 weeks</li>
-          </ul>
+          )}
         </>
       )}
     </div>
