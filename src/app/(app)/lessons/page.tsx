@@ -1,12 +1,13 @@
 "use client";
 
+/* eslint-disable @next/next/no-img-element */
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import type { Lesson } from "@/lib/data";
 import { getLessons } from "@/lib/lessons";
 import { loadProgress } from "@/lib/progress";
 import { getAccess, type AccessTier } from "@/lib/access";
 import Paywall from "@/components/Paywall";
-import { PathMap, topicEmoji, type PathItem } from "@/components/PathMap";
 
 // Level in fester Reihenfolge – "Intro" (Essentials) ganz oben.
 const LEVELS: Lesson["level"][] = ["Intro", "A1", "A2", "B1", "B2", "C1"];
@@ -34,78 +35,98 @@ export default function LessonsPage() {
     });
   }, []);
 
-  // Alle Lektionen in Level-Reihenfolge aneinandergereiht = ein Pfad.
   const ordered = LEVELS.flatMap((lv) => lessons.filter((l) => l.level === lv));
   const doneSet = new Set(completed);
-  const firstIncomplete = ordered.findIndex((l) => !doneSet.has(l.id));
-
-  // PathItems: Lektions-Knoten + 👑-Pokal am Ende jedes Levels.
-  const items: PathItem[] = [];
-  let prevLevel: Lesson["level"] | null = null;
-  ordered.forEach((l, i) => {
-    const done = doneSet.has(l.id);
-    items.push({
-      kind: "node",
-      id: l.id,
-      href: `/lessons/${l.id}`,
-      emoji: topicEmoji(l.topic || l.title),
-      title: l.title,
-      sub: `${l.durationMin} min`,
-      state: done ? "done" : i === firstIncomplete ? "current" : "normal",
-      frac: done ? 1 : 0,
-      firstOfLevel: l.level !== prevLevel,
-      level: l.level === "Intro" ? "⭐" : l.level,
-      levelLabel: LEVEL_LABEL[l.level],
-    });
-    prevLevel = l.level;
-    const next = ordered[i + 1];
-    const levelEnds = !next || next.level !== l.level;
-    if (levelEnds) {
-      items.push({
-        kind: "trophy",
-        id: `t-${i}`,
-        earned: ordered.slice(0, i + 1).every((x) => doneSet.has(x.id)),
-        icon: "👑",
-        name: l.level === "Intro" ? "Essentials done" : `${l.level} Master`,
-        champion: true,
-      });
-    }
-  });
-
   const doneCount = ordered.filter((l) => doneSet.has(l.id)).length;
   const pct = ordered.length ? Math.round((doneCount / ordered.length) * 100) : 0;
+  const nextId = ordered.find((l) => !doneSet.has(l.id))?.id;
 
   if (!loading && tier !== "full") return <Paywall title="Unlock all video lessons" />;
 
   return (
-    <div className="pb-6">
-      {/* Kopf: Titel + kompakter Fortschritt */}
-      <div className="px-6 pt-6 flex flex-wrap items-end justify-between gap-4">
+    <div className="space-y-8">
+      {/* Kopf + Fortschritt */}
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Video lessons</h1>
-          <p className="text-cream-dim mt-2">Follow the trail of lessons from the very basics up to advanced German — jump in anywhere.</p>
+          <h1 className="text-2xl font-bold">Video lessons 🎬</h1>
+          <p className="text-cream-dim text-sm mt-1">Browse lessons by level — watch in any order.</p>
         </div>
-        <div className="flex items-center gap-4 card px-5 py-3">
-          <div>
-            <div className="text-3xl font-bold text-gold-bright leading-none">{pct}%</div>
-            <div className="text-xs text-cream-dim mt-1">{doneCount}/{ordered.length} lessons done</div>
+        {ordered.length > 0 && (
+          <div className="flex items-center gap-3 card px-4 py-2.5">
+            <div>
+              <div className="text-2xl font-bold text-gold-bright leading-none">{pct}%</div>
+              <div className="text-[11px] text-cream-dim mt-0.5">{doneCount}/{ordered.length} done</div>
+            </div>
+            <div className="w-20 h-2 rounded-full bg-bordeaux-deep/60 self-center">
+              <div className="h-2 rounded-full bg-gold-bright transition-all" style={{ width: `${pct}%` }} />
+            </div>
           </div>
-          <div className="w-24 h-2.5 rounded-full bg-bordeaux-deep/60 self-center">
-            <div className="h-2.5 rounded-full bg-gold-bright transition-all" style={{ width: `${pct}%` }} />
-          </div>
-        </div>
-      </div>
-
-      {/* Panorama-Pfad über die volle Breite */}
-      <div className="mt-6">
-        {loading ? (
-          <p className="text-cream-dim px-6 py-10">Loading lessons…</p>
-        ) : ordered.length === 0 ? (
-          <div className="card p-6 text-cream-dim m-6">No lessons yet. Check back soon!</div>
-        ) : (
-          <PathMap items={items} />
         )}
       </div>
+
+      {loading && <p className="text-sm text-cream-dim">Loading lessons…</p>}
+      {!loading && ordered.length === 0 && <p className="text-sm text-cream-dim">No lessons yet — check back soon!</p>}
+
+      {LEVELS.map((lv) => {
+        const items = lessons.filter((l) => l.level === lv);
+        if (items.length === 0) return null;
+        return (
+          <section key={lv}>
+            {/* Level-Überschrift */}
+            <div className="flex items-center gap-3 mb-3">
+              <span className="grid place-items-center rounded-lg px-2.5 py-1 text-sm font-extrabold" style={{ background: "linear-gradient(160deg, var(--gold-bright), var(--gold))", color: "#3b2116" }}>
+                {lv === "Intro" ? "⭐" : lv}
+              </span>
+              <span className="font-semibold text-cream">{LEVEL_LABEL[lv]}</span>
+              <span className="text-xs text-cream-dim">{items.length} {items.length === 1 ? "lesson" : "lessons"}</span>
+              <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, color-mix(in srgb, var(--gold) 40%, transparent), transparent)" }} />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {items.map((l) => (
+                <LessonTile key={l.id} lesson={l} done={doneSet.has(l.id)} isNext={l.id === nextId} />
+              ))}
+            </div>
+          </section>
+        );
+      })}
     </div>
+  );
+}
+
+function LessonTile({ lesson, done, isNext }: { lesson: Lesson; done: boolean; isNext: boolean }) {
+  const hasQuiz = lesson.quizEnabled && (lesson.exercises.length > 0 || lesson.quiz.length > 0);
+  const thumb = lesson.videoId ? `https://img.youtube.com/vi/${lesson.videoId}/mqdefault.jpg` : null;
+
+  return (
+    <Link href={`/lessons/${lesson.id}`} className="card overflow-hidden group transition hover:border-gold/50 flex flex-col">
+      {/* Vorschaubild */}
+      <div className="relative aspect-video bg-bordeaux-deep/50 overflow-hidden">
+        {thumb ? (
+          <img src={thumb} alt="" className="w-full h-full object-cover transition group-hover:scale-105" loading="lazy" />
+        ) : (
+          <div className="w-full h-full grid place-items-center text-4xl">🎬</div>
+        )}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 55%, rgba(59,41,34,0.55))" }} />
+        {/* Play-Overlay */}
+        <div className="absolute inset-0 grid place-items-center">
+          <span className="w-12 h-12 rounded-full grid place-items-center text-xl transition group-hover:scale-110" style={{ background: "rgba(255,255,255,0.9)", color: "var(--bordeaux)" }}>▶</span>
+        </div>
+        {/* Dauer */}
+        <span className="absolute bottom-2 right-2 text-[11px] font-medium px-1.5 py-0.5 rounded" style={{ background: "rgba(59,41,34,0.8)", color: "#fff" }}>{lesson.durationMin} min</span>
+        {/* Status */}
+        {done && <span className="absolute top-2 left-2 w-6 h-6 grid place-items-center rounded-full text-xs" style={{ background: "var(--green-accent)", color: "#fff" }}>✓</span>}
+        {isNext && !done && <span className="absolute top-2 left-2 text-[11px] font-bold px-2 py-0.5 rounded-full btn-gold">▶ Up next</span>}
+      </div>
+      {/* Text */}
+      <div className="p-3 flex-1 flex flex-col">
+        <div className="flex items-center gap-2 flex-wrap text-[11px] text-cream-dim">
+          <span>{lesson.topic}</span>
+          {hasQuiz && <span className="text-gold-bright">⚡ exercises</span>}
+        </div>
+        <div className="font-semibold mt-1 leading-tight group-hover:text-cream">{lesson.title}</div>
+        {lesson.description && <div className="text-xs text-cream-dim mt-1 line-clamp-2">{lesson.description}</div>}
+      </div>
+    </Link>
   );
 }
