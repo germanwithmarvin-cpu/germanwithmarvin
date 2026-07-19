@@ -93,17 +93,27 @@ export function PathMap({ items }: { items: PathItem[] }) {
   const PAD = 82;
   const usable = Math.max(1, W - PAD * 2);
   const colW = W / cols;
-  const pos = (i: number) => {
-    const r = Math.floor(i / cols);
-    const p = i % cols;
-    const c = r % 2 === 0 ? p : cols - 1 - p; // ungerade Reihen rückwärts
-    const x = PAD + usable * (c / (cols - 1));
-    return { x, y: TOP + r * ROW };
-  };
-  const rowsCount = Math.max(1, Math.ceil(items.length / cols));
-  const totalH = TOP + rowsCount * ROW;
+  const SECTION_GAP = 140; // Abstand zwischen Kategorien + Platz für das Trennband
 
-  const points = items.map((_, i) => pos(i));
+  // Layout mit klarer Kategorie-Trennung: jede Kategorie (Level) beginnt in einer
+  // neuen Zeile links und bekommt oberhalb einen Abstand für das Trennband.
+  let row = 0, col = 0, section = 0;
+  const slots = items.map((it, i) => {
+    if (it.kind === "node" && it.firstOfLevel && i !== 0) {
+      if (col !== 0) row++; // aktuelle Zeile abschließen
+      section++; // neue Kategorie
+      col = 0;
+    }
+    const c = row % 2 === 0 ? col : cols - 1 - col; // ungerade Reihen rückwärts
+    const s = { row, c, section };
+    col++;
+    if (col >= cols) { col = 0; row++; }
+    return s;
+  });
+  const rowsCount = Math.max(1, row + (col > 0 ? 1 : 0));
+  const maxSection = slots.length ? slots[slots.length - 1].section : 0;
+  const points = slots.map((s) => ({ x: PAD + usable * (s.c / (cols - 1)), y: TOP + s.row * ROW + s.section * SECTION_GAP }));
+  const totalH = TOP + rowsCount * ROW + maxSection * SECTION_GAP + 40;
   const currentIndex = items.findIndex((n) => n.kind === "node" && n.state === "current");
   const goneTo = currentIndex === -1 ? items.length - 1 : currentIndex;
   const trackD = smoothPath(points);
@@ -144,23 +154,21 @@ export function PathMap({ items }: { items: PathItem[] }) {
               {goldD && <path className="trail-flow" d={goldD} stroke="#fff" strokeWidth={4.5} strokeLinecap="round" strokeDasharray="3 24" opacity={0.7} />}
             </svg>
 
-            {/* Level-Marken am Anfang jedes Niveaus */}
+            {/* Kategorie-Trennbänder über die volle Breite am Anfang jedes Levels */}
             {items.map((node, i) => {
               if (node.kind !== "node" || !node.firstOfLevel) return null;
-              const { x, y } = points[i];
+              const y = points[i].y;
               return (
-                <div key={`lvl-${node.id}`} className="absolute z-0" style={{ left: x, top: y - NODE / 2 - 30, transform: "translate(-50%, -100%)" }}>
-                  <div
-                    className="node-pop flex items-center gap-2 rounded-full px-4 py-1.5 whitespace-nowrap"
-                    style={{
-                      background: "color-mix(in srgb, var(--gold) 20%, var(--surface))",
-                      border: "1px solid color-mix(in srgb, var(--gold) 45%, transparent)",
-                      boxShadow: "0 6px 16px -10px rgba(59,41,34,0.4)",
-                      animationDelay: `${Math.min(i * 0.04, 1.2)}s`,
-                    }}
-                  >
-                    {node.level && <span className="text-base font-bold" style={{ color: "var(--bordeaux)" }}>{node.level}</span>}
-                    <span className="text-xs font-medium" style={{ color: "var(--cream-dim)" }}>{node.levelLabel ?? ""}</span>
+                <div key={`lvl-${node.id}`} className="absolute left-0 right-0 px-6" style={{ top: y - NODE / 2 - 54, transform: "translateY(-50%)" }}>
+                  <div className="node-pop flex items-center gap-3" style={{ animationDelay: `${Math.min(i * 0.04, 1.2)}s` }}>
+                    <span
+                      className="grid place-items-center rounded-xl px-3.5 py-1.5 text-xl font-extrabold shrink-0"
+                      style={{ background: "linear-gradient(160deg, var(--gold-bright), var(--gold))", color: "#3b2116", boxShadow: "0 6px 16px -8px rgba(59,41,34,0.55)" }}
+                    >
+                      {node.level}
+                    </span>
+                    <span className="path-label text-lg font-bold text-cream shrink-0 whitespace-nowrap">{node.levelLabel ?? ""}</span>
+                    <div className="flex-1 h-[3px] rounded-full" style={{ background: "linear-gradient(90deg, color-mix(in srgb, var(--gold) 60%, transparent), transparent)" }} />
                   </div>
                 </div>
               );
