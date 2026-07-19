@@ -31,7 +31,7 @@ export default function Home() {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto w-full">
         <Link href="/" className="flex items-center">
-          <img src="/logo-light.png" alt="Marvin Graf — German Simplified" className="h-14 md:h-16 w-auto object-contain" />
+          <img src="/logo-light.png" alt="Marvin Graf — German Simplified" className="h-20 md:h-24 w-auto object-contain" />
         </Link>
         <nav className="flex items-center gap-3">
           <Link href="/login" className="px-4 py-2 text-sm rounded-lg border border-[#8A3030] text-[#8A3030] hover:bg-[#8A3030]/5 transition">Sign in</Link>
@@ -40,7 +40,7 @@ export default function Home() {
       </header>
 
       {/* Hero */}
-      <section className="max-w-6xl mx-auto px-6 pt-6 pb-14 grid lg:grid-cols-2 gap-10 items-center">
+      <section className="max-w-6xl mx-auto px-6 pt-6 pb-14 grid lg:grid-cols-[1fr_1.3fr] gap-10 items-center">
         <div>
           <span className="inline-block text-xs tracking-[0.3em] text-[#E3A12F] uppercase font-semibold mb-4">German Simplified</span>
           <h1 className="text-4xl sm:text-5xl font-bold leading-[1.1]">
@@ -64,14 +64,14 @@ export default function Home() {
 
         {/* Video + schwebende Badges */}
         <div className="relative">
-          <div className="rounded-2xl bg-white p-3 shadow-lg border border-black/5">
+          <div className="rounded-2xl bg-[#FFFBF2] p-3 shadow-lg border border-black/5">
             <VideoPlayer videoId={SITE.introVideoId} title="German Simplified — Marvin Graf" />
           </div>
-          <div className="absolute -right-2 top-6 bg-white rounded-xl shadow-md border border-black/5 px-4 py-3 flex items-center gap-2">
+          <div className="absolute -right-2 top-6 bg-[#FFFBF2] rounded-xl shadow-md border border-black/5 px-4 py-3 flex items-center gap-2">
             <span className="text-xl">📊</span>
             <div className="leading-tight"><div className="font-bold text-sm">A1–B2</div><div className="text-xs text-[#3B2922]/60">All levels</div></div>
           </div>
-          <div className="absolute -right-2 top-28 bg-white rounded-xl shadow-md border border-black/5 px-4 py-3 flex items-center gap-2">
+          <div className="absolute -right-2 top-28 bg-[#FFFBF2] rounded-xl shadow-md border border-black/5 px-4 py-3 flex items-center gap-2">
             <span className="text-xl">🗂️</span>
             <div className="leading-tight"><div className="font-bold text-sm">1,800+</div><div className="text-xs text-[#3B2922]/60">cards</div></div>
           </div>
@@ -84,7 +84,7 @@ export default function Home() {
           <h2 className="text-2xl sm:text-3xl font-bold text-center mb-9">Everything you need to make German stick</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {benefits.map((b) => (
-              <div key={b.title} className="bg-white rounded-2xl p-6 shadow-sm border border-black/5">
+              <div key={b.title} className="bg-[#FFFBF2] rounded-2xl p-6 shadow-sm border border-black/5">
                 <div className="text-3xl mb-3">{b.icon}</div>
                 <h3 className="text-lg font-bold">{b.title}</h3>
                 <p className="mt-2 text-sm text-[#3B2922]/70">{b.text}</p>
@@ -102,7 +102,7 @@ export default function Home() {
         </div>
         <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 [column-fill:_balance]">
           {REVIEWS.map((r, i) => (
-            <div key={i} className="bg-white rounded-2xl p-5 mb-4 break-inside-avoid shadow-sm border border-black/5">
+            <div key={i} className="bg-[#FFFBF2] rounded-2xl p-5 mb-4 break-inside-avoid shadow-sm border border-black/5">
               <Stars />
               <p className="mt-2 text-sm text-[#3B2922]/90 italic">“{r.text}”</p>
               <p className="mt-3 text-xs font-semibold">{r.name} <span className="text-[#3B2922]/50 font-normal">· {r.date}</span></p>
@@ -113,7 +113,7 @@ export default function Home() {
 
       {/* Preis / Abschluss-CTA */}
       <section className="max-w-2xl mx-auto px-6 pb-16">
-        <div className="bg-white rounded-2xl p-8 sm:p-10 text-center shadow-md border border-[#E3A12F]/40">
+        <div className="bg-[#FFFBF2] rounded-2xl p-8 sm:p-10 text-center shadow-md border border-[#E3A12F]/40">
           <h2 className="text-2xl font-bold">German Simplified — All-Access</h2>
           <div className="mt-3">
             <span className="text-5xl font-bold text-[#8A3030]">{priceLabel()}</span>
