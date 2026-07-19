@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import { LESSON, lessonPriceLabel } from "@/lib/config";
 import { getMySubscription, getMyCredits, startLessonCheckout, manageLessonSubscription, type LessonSubscription, type CreditInfo } from "@/lib/booking";
+import { getMyBookings, getAllBookings, type Booking } from "@/lib/schedule";
+import { createClient } from "@/lib/supabase/client";
+import AvailabilityEditor from "@/components/booking/AvailabilityEditor";
+import BookingCalendar from "@/components/booking/BookingCalendar";
+import LessonsList from "@/components/booking/LessonsList";
 
 export default function BookingPage() {
   const [checkoutState, setCheckoutState] = useState<string | null>(null);
@@ -12,11 +17,22 @@ export default function BookingPage() {
   const [hours, setHours] = useState(LESSON.minHours);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [isTeacher, setIsTeacher] = useState(false);
+  const [bookings, setBookings] = useState<Booking[]>([]);
 
   async function refresh() {
-    const [s, c] = await Promise.all([getMySubscription(), getMyCredits()]);
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    let teacher = false;
+    if (user) {
+      const { data } = await supabase.from("profiles").select("is_teacher").eq("id", user.id).single();
+      teacher = Boolean(data?.is_teacher);
+    }
+    setIsTeacher(teacher);
+    const [s, c, b] = await Promise.all([getMySubscription(), getMyCredits(), teacher ? getAllBookings() : getMyBookings()]);
     setSub(s);
     setCredits(c);
+    setBookings(b);
     if (s && s.quantity >= LESSON.minHours) setHours(s.quantity);
     setLoading(false);
   }
@@ -70,6 +86,15 @@ export default function BookingPage() {
 
       {loading ? (
         <p className="text-cream-dim">Loading…</p>
+      ) : isTeacher ? (
+        // -------- Lehrer: Verfügbarkeit + alle Termine --------
+        <>
+          <AvailabilityEditor />
+          <div className="card p-5">
+            <div className="font-semibold text-lg mb-3">Upcoming lessons</div>
+            <LessonsList bookings={bookings} onChange={refresh} teacher />
+          </div>
+        </>
       ) : active ? (
         // -------- Aktives Abo: Guthaben + Verwaltung --------
         <>
@@ -92,9 +117,12 @@ export default function BookingPage() {
             </div>
           </div>
 
-          {/* Kalender folgt in Phase 2 */}
-          <div className="rounded-xl px-4 py-3 text-sm" style={{ background: "color-mix(in srgb, var(--gold) 12%, var(--surface))", border: "1px solid color-mix(in srgb, var(--gold) 25%, transparent)" }}>
-            📅 <span className="text-cream font-medium">Booking calendar is coming next.</span> <span className="text-cream-dim">For now your monthly hours are secured — soon you’ll pick exact times here.</span>
+          {/* Buchungs-Kalender */}
+          <BookingCalendar canBook={credits.balance > 0} onBooked={refresh} />
+
+          <div>
+            <div className="font-semibold mb-2">Your upcoming lessons</div>
+            <LessonsList bookings={bookings} onChange={refresh} />
           </div>
 
           {/* Stundenzahl ändern */}
