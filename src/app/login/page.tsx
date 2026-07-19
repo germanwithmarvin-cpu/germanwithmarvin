@@ -73,8 +73,8 @@ export default function LoginPage() {
 
           <p className="text-sm text-cream-dim text-center mt-6">
             No account yet?{" "}
-            <Link href="/subscribe" className="text-gold-bright underline underline-offset-4">
-              Become a member
+            <Link href="/" className="text-gold-bright underline underline-offset-4">
+              Join now
             </Link>
           </p>
         </div>
