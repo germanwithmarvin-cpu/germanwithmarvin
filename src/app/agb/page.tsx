@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
-import { SITE, priceLabel } from "@/lib/config";
+import { SITE, priceLabel, LESSON } from "@/lib/config";
 
 // AGB + Widerrufsbelehrung (zweisprachig). Bitte anwaltlich prüfen lassen (Hinweis am Ende).
 export default function TermsPage() {
@@ -80,19 +80,44 @@ function TermsEN() {
           withdrawal</strong> once performance has begun.
         </p>
       </Section>
-      <Section title="7. Content & fair use">
+      <Section title="7. Live 1-on-1 lessons (optional)">
+        <p>
+          Separately from the app subscription, you can subscribe to a monthly package of private 1-on-1 lessons
+          ({LESSON.durationMin} minutes each). You choose how many lessons per month (minimum {LESSON.minHours}). The
+          price is ${LESSON.pricePerHour} per lesson; from {LESSON.discountThreshold} lessons per month a 5% discount
+          applies. This lesson subscription renews automatically each month and is billed via Stripe.
+        </p>
+        <p className="mt-2">
+          Each monthly payment credits the matching number of lesson hours to your account. You book specific times
+          via the in-app calendar; each booking uses one lesson hour.
+        </p>
+        <p className="mt-2"><span className="font-medium text-cream">Validity of lesson hours:</span> unused lesson
+          hours expire 5 weeks after they are credited and are not refunded.</p>
+        <p className="mt-2"><span className="font-medium text-cream">Cancelling a booked lesson:</span> you may cancel
+          free of charge up to {LESSON.cancelHours} hours before the lesson starts — the hour is returned to your
+          balance. If you cancel later than that, or do not attend (no-show), the lesson hour is forfeited.</p>
+        <p className="mt-2"><span className="font-medium text-cream">Changing or cancelling your package:</span> you
+          can increase your monthly hours at any time (charged pro-rata; hours added immediately). A decrease takes
+          effect from the next billing period; your current hours remain. You may cancel the lesson subscription at
+          any time with effect from the end of the current billing period; already-credited hours stay valid until
+          they expire.</p>
+        <p className="mt-2"><span className="font-medium text-cream">Right of withdrawal:</span> the 14-day withdrawal
+          right applies to the lesson subscription until performance begins. By booking and attending a lesson you
+          request its immediate performance and thereby lose the withdrawal right for any lesson already provided.</p>
+      </Section>
+      <Section title="8. Content & fair use">
         <p>
           All content (videos, exercises, texts) is protected and provided for your personal learning only.
           Sharing your account or redistributing content is not permitted.
         </p>
       </Section>
-      <Section title="8. Liability">
+      <Section title="9. Liability">
         <p>
           We provide the service with reasonable care but do not guarantee specific learning outcomes.
           Liability is limited to intent and gross negligence, except for damages to life, body or health.
         </p>
       </Section>
-      <Section title="9. Changes & governing law">
+      <Section title="10. Changes & governing law">
         <p>
           We may update these terms; material changes will be announced with reasonable notice. Statutory
           consumer-protection rules of your country of residence remain unaffected.
@@ -155,20 +180,46 @@ function TermsDE() {
           <strong>Widerrufsrecht verlierst</strong>, sobald mit der Ausführung begonnen wurde.
         </p>
       </Section>
-      <Section title="7. Inhalte & Nutzung">
+      <Section title="7. Live-Einzelstunden (optional)">
+        <p>
+          Unabhängig vom App-Abo kannst du ein Monatspaket für private Einzelstunden ({LESSON.durationMin} Minuten je
+          Stunde) abschließen. Du wählst die Anzahl der Stunden pro Monat (mindestens {LESSON.minHours}). Der Preis
+          beträgt ${LESSON.pricePerHour} pro Stunde; ab {LESSON.discountThreshold} Stunden pro Monat gilt ein Rabatt
+          von 5 %. Dieses Stunden-Abo verlängert sich automatisch monatlich und wird über Stripe abgerechnet.
+        </p>
+        <p className="mt-2">
+          Jede Monatszahlung schreibt dir die entsprechende Anzahl an Stunden-Guthaben gut. Konkrete Termine buchst
+          du über den Kalender in der App; jede Buchung verbraucht eine Stunde Guthaben.
+        </p>
+        <p className="mt-2"><span className="font-medium text-cream">Gültigkeit des Guthabens:</span> Nicht genutztes
+          Stunden-Guthaben verfällt 5 Wochen nach der Gutschrift und wird nicht erstattet.</p>
+        <p className="mt-2"><span className="font-medium text-cream">Absage einer gebuchten Stunde:</span> Bis
+          {" "}{LESSON.cancelHours} Stunden vor Beginn kannst du kostenfrei absagen — die Stunde geht zurück ins
+          Guthaben. Bei späterer Absage oder Nichterscheinen (No-Show) verfällt die Stunde.</p>
+        <p className="mt-2"><span className="font-medium text-cream">Paket ändern oder kündigen:</span> Du kannst die
+          monatliche Stundenzahl jederzeit erhöhen (anteilig berechnet, Stunden sofort gutgeschrieben). Eine
+          Verringerung wirkt ab dem nächsten Abrechnungszeitraum; dein aktuelles Guthaben bleibt. Das Stunden-Abo
+          ist jederzeit zum Ende des laufenden Abrechnungszeitraums kündbar; bereits gutgeschriebene Stunden bleiben
+          bis zu ihrem Verfall gültig.</p>
+        <p className="mt-2"><span className="font-medium text-cream">Widerrufsrecht:</span> Das 14-tägige
+          Widerrufsrecht gilt für das Stunden-Abo bis zum Beginn der Leistung. Mit Buchung und Wahrnehmung einer
+          Stunde verlangst du deren sofortige Ausführung und verlierst für bereits erbrachte Stunden das
+          Widerrufsrecht.</p>
+      </Section>
+      <Section title="8. Inhalte & Nutzung">
         <p>
           Alle Inhalte (Videos, Aufgaben, Texte) sind geschützt und ausschließlich für dein persönliches Lernen
           bestimmt. Das Teilen deines Kontos oder Weiterverbreiten von Inhalten ist nicht gestattet.
         </p>
       </Section>
-      <Section title="8. Haftung">
+      <Section title="9. Haftung">
         <p>
           Wir erbringen die Leistung mit angemessener Sorgfalt, garantieren aber keinen bestimmten Lernerfolg.
           Die Haftung ist auf Vorsatz und grobe Fahrlässigkeit beschränkt, außer bei Schäden an Leben, Körper
           oder Gesundheit.
         </p>
       </Section>
-      <Section title="9. Änderungen & Recht">
+      <Section title="10. Änderungen & Recht">
         <p>
           Wir können diese Bedingungen anpassen; wesentliche Änderungen kündigen wir mit angemessener Frist an.
           Zwingende Verbraucherschutzregeln deines Wohnsitzlandes bleiben unberührt.
