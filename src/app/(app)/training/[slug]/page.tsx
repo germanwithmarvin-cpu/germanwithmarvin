@@ -47,10 +47,14 @@ function RichText({ text, size = "base" }: { text: string; size?: "base" | "larg
                 );
               }
               if (part.startsWith("*") && part.endsWith("*") && part.length > 2) {
+                const chip = part.slice(1, -1);
                 return (
-                  <span key={k} className="font-bold rounded px-1.5 py-0.5 whitespace-nowrap"
+                  // Kurze Chips (Verbformen) bleiben zusammen. Lange Chips - etwa
+                  // eine ganze Konnektoren-Liste - duerfen umbrechen, sonst
+                  // schieben sie auf dem Handy die Seite seitlich auseinander.
+                  <span key={k} className={`font-bold rounded px-1.5 py-0.5 ${chip.length <= 24 ? "whitespace-nowrap" : ""}`}
                     style={{ background: "var(--bordeaux)", color: "#fff" }}>
-                    {part.slice(1, -1)}
+                    {chip}
                   </span>
                 );
               }
