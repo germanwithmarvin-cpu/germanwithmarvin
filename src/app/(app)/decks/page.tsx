@@ -152,9 +152,10 @@ export default function DecksPage() {
         </aside>
       </div>
 
-      {/* Grammatik-Decks: eigene, gut sichtbare Sektion in voller Breite */}
+      {/* Grammatik-Decks: eigene, gut sichtbare Sektion in voller Breite.
+          relative+z-10 sorgt dafür, dass sie garantiert über der Panorama-Kulisse liegt. */}
       {grammarDecks.length > 0 && (
-        <section className="px-6 mt-10">
+        <section className="relative z-10 px-6 mt-10">
           <div className="flex flex-wrap items-end justify-between gap-3 mb-4">
             <div>
               <h2 className="text-2xl font-bold flex items-center gap-2"><span>🧩</span> Grammar packs</h2>

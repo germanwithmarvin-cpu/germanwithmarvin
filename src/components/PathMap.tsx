@@ -125,9 +125,16 @@ export function PathMap({ items }: { items: PathItem[] }) {
 
       {items.length > 0 && width > 0 && (
         <>
-          {/* Persistente Kulisse – bleibt beim Scrollen im Blick */}
-          <div className="sticky top-0 h-screen w-full overflow-hidden pointer-events-none" style={{ marginBottom: "-100vh", zIndex: 0 }}>
-            <MunichScene />
+          {/* Persistente Kulisse – bleibt beim Scrollen im Blick.
+              Die Kulisse ist 100vh hoch und "hängt" per negativem Margin, damit sie
+              keinen Platz einnimmt. Dadurch ragte sie bis zu einer Bildschirmhöhe
+              ÜBER das Pfad-Ende hinaus und verdeckte nachfolgende Abschnitte.
+              Die Hüll-Ebene schneidet sie sauber am Pfad-Ende ab; `clip` erzeugt
+              (anders als `hidden`) keinen Scroll-Container, der Sticky-Effekt bleibt. */}
+          <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0, overflow: "clip" }}>
+            <div className="sticky top-0 h-screen w-full" style={{ marginBottom: "-100vh" }}>
+              <MunichScene />
+            </div>
           </div>
 
           <div className="absolute inset-0" style={{ zIndex: 1 }}>
