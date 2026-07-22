@@ -27,6 +27,17 @@ export async function loadProgress(): Promise<Progress> {
   };
 }
 
+// XP direkt gutschreiben (z. B. aus dem Wort-Rakete-Spiel). Gibt den neuen Stand zurück.
+export async function addXp(amount: number): Promise<number> {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user || amount <= 0) return 0;
+  const { data: profile } = await supabase.from("profiles").select("xp").eq("id", user.id).single();
+  const next = (profile?.xp ?? 0) + amount;
+  await supabase.from("profiles").update({ xp: next }).eq("id", user.id);
+  return next;
+}
+
 export async function completeLesson(lessonId: string, xp: number): Promise<void> {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
