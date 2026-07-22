@@ -129,7 +129,10 @@ with d as (
     E'Prepositions \u00b7 mixed challenge', 'Which case? accusative, dative, genitive, two-way or fixed', 'B1', true, 'grammar', 14)
   returning id)
 insert into public.fc_cards (deck_id, front, back, notes, tags, example, example_en, sort_order)
-select d.id, v.front, v.back, v.notes, v.tags::text[], v.example, v.example_en, v.ord
+-- Vorder-/Rueckseite bewusst getauscht: der Trainer zeigt standardmaessig
+-- die Rueckseite als Frage. So ist die Frage die Praeposition und die
+-- Antwort der Fall - sonst stuende die Loesung schon in der Frage.
+select d.id, v.back, v.front, v.notes, v.tags::text[], v.example, v.example_en, v.ord
 from d, (values
   (E'f\u00fcr', E'\U0001F3AF Akkusativ \u2014 for', 'always accusative', '{mixed}', E'Das ist f\u00fcr meinen Bruder.', 'That is for my brother.', 1),
   ('ohne', E'\U0001F3AF Akkusativ \u2014 without', 'always accusative', '{mixed}', 'Ich gehe ohne dich.', 'I am going without you.', 2),
