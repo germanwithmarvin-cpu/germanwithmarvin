@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getUnits, getMyProgress, type Unit, type UnitProgress } from "@/lib/training";
 import { getAccess } from "@/lib/access";
+import { createClient } from "@/lib/supabase/client";
 import Paywall from "@/components/Paywall";
 import Lena from "@/components/training/Lena";
 
@@ -14,6 +15,7 @@ export default function TrainingPage() {
   const [progress, setProgress] = useState<Record<string, UnitProgress>>({});
   const [loading, setLoading] = useState(true);
   const [blocked, setBlocked] = useState(false);
+  const [isTeacher, setIsTeacher] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -23,6 +25,13 @@ export default function TrainingPage() {
       const [u, p] = await Promise.all([getUnits(), getMyProgress()]);
       if (cancelled) return;
       setUnits(u); setProgress(p); setLoading(false);
+
+      // Der Lehrer sieht alles – sonst könnte Marvin neue Einheiten nicht prüfen.
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || cancelled) return;
+      const { data } = await supabase.from("profiles").select("is_teacher").eq("id", user.id).single();
+      if (!cancelled) setIsTeacher(Boolean(data?.is_teacher));
     })();
     return () => { cancelled = true; };
   }, []);
@@ -30,6 +39,14 @@ export default function TrainingPage() {
   if (blocked) return <Paywall title="Unlock the training course" />;
 
   const mastered = units.filter((u) => (progress[u.id]?.mastery ?? 0) >= 80).length;
+
+  // Schritt für Schritt: eine Einheit öffnet sich erst, wenn die davor sitzt.
+  // So kann niemand die Verbposition üben, bevor die Konjugation durch ist.
+  const firstOpen = units.findIndex((u) => (progress[u.id]?.mastery ?? 0) < 80);
+  const isLocked = (u: Unit) => {
+    if (isTeacher || firstOpen < 0) return false;
+    return units.indexOf(u) > firstOpen;
+  };
 
   return (
     <div className="space-y-8">
@@ -72,22 +89,47 @@ export default function TrainingPage() {
               {items.map((u) => {
                 const m = progress[u.id]?.mastery ?? 0;
                 const done = m >= 80;
-                return (
-                  <Link key={u.id} href={`/training/${u.slug}`} className="card p-4 flex flex-col gap-2 transition hover:border-gold/50">
+                const locked = isLocked(u);
+                const previous = units[units.indexOf(u) - 1];
+
+                const body = (
+                  <>
                     <div className="flex items-start justify-between gap-2">
                       <div className="font-semibold leading-tight">{u.title}</div>
                       {done && <span className="shrink-0 w-6 h-6 grid place-items-center rounded-full text-xs" style={{ background: "var(--green-accent)", color: "#fff" }}>✓</span>}
+                      {locked && <span className="shrink-0 text-base leading-none opacity-70">🔒</span>}
                     </div>
                     {u.subtitle && <p className="text-xs text-cream-dim line-clamp-2">{u.subtitle}</p>}
                     <div className="mt-auto pt-2">
-                      <div className="flex items-center justify-between text-[11px] text-cream-dim mb-1">
-                        <span>{m === 0 ? "Not started" : done ? "Mastered" : "In progress"}</span>
-                        <span className="text-gold-bright font-semibold">{m}%</span>
-                      </div>
-                      <div className="h-1.5 rounded-full bg-bordeaux-deep/60">
-                        <div className="h-1.5 rounded-full transition-all" style={{ width: `${m}%`, background: done ? "var(--green-accent)" : "var(--gold-bright)" }} />
-                      </div>
+                      {locked ? (
+                        <p className="text-[11px] text-cream-dim">
+                          Finish <b className="text-cream">{previous?.title}</b> first
+                        </p>
+                      ) : (
+                        <>
+                          <div className="flex items-center justify-between text-[11px] text-cream-dim mb-1">
+                            <span>{m === 0 ? "Not started" : done ? "Mastered" : "In progress"}</span>
+                            <span className="text-gold-bright font-semibold">{m}%</span>
+                          </div>
+                          <div className="h-1.5 rounded-full bg-bordeaux-deep/60">
+                            <div className="h-1.5 rounded-full transition-all" style={{ width: `${m}%`, background: done ? "var(--green-accent)" : "var(--gold-bright)" }} />
+                          </div>
+                        </>
+                      )}
                     </div>
+                  </>
+                );
+
+                if (locked) {
+                  return (
+                    <div key={u.id} className="card p-4 flex flex-col gap-2 opacity-55 cursor-not-allowed" aria-disabled>
+                      {body}
+                    </div>
+                  );
+                }
+                return (
+                  <Link key={u.id} href={`/training/${u.slug}`} className="card p-4 flex flex-col gap-2 transition hover:border-gold/50">
+                    {body}
                   </Link>
                 );
               })}

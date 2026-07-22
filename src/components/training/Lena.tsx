@@ -26,10 +26,12 @@ const ASSET_VERSION = 2;
 
 export default function Lena({
   mood = "neutral",
-  size = 120,
+  size,
   className = "",
 }: {
   mood?: LenaMood;
+  /** Feste Breite in Pixeln. Ohne Angabe bestimmt die CSS-Klasse die Breite
+   *  (z. B. `w-20 sm:w-[150px]`) - so kann sie auf dem Handy mitschrumpfen. */
   size?: number;
   className?: string;
 }) {
@@ -40,11 +42,11 @@ export default function Lena({
     <img
       src={`/lena/${mood}.png?v=${ASSET_VERSION}`}
       alt=""
-      width={size}
-      height={size}
+      width={size ?? 300}
+      height={size ?? 300}
       onError={() => setMissing(true)}
       className={`object-contain object-bottom select-none ${className}`}
-      style={{ width: size, height: "auto" }}
+      style={size ? { width: size, height: "auto" } : { height: "auto" }}
       draggable={false}
     />
   );

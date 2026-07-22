@@ -26,7 +26,12 @@ export type SeedUnit = {
   title: string;
   subtitle: string;
   level: string;
+  /** Feste Kennung der Videolektion, falls bekannt. */
   lessonId: string | null;
+  /** Ersatzweise: Textstück aus dem Titel der Lektion. Der Seeder sucht damit
+   *  die passende Lektion – so zeigt keine Einheit auf ein Video, das es nicht
+   *  (mehr) gibt. */
+  lessonMatch?: string;
   sortOrder: number;
   theory: string;
   exercises: SeedExercise[];
@@ -34,7 +39,118 @@ export type SeedUnit = {
 
 export const TRAINING_UNITS: SeedUnit[] = [
   // ─────────────────────────────────────────────────────────────────────────
-  // 1) KONJUGATION – Voraussetzung: Alphabet, Begrüßungen, Artikel
+  // 1) ARTIKEL – erste Grammatik nach Alphabet und Begrüßungen.
+  //    Setzt NUR "ist" voraus (kommt aus den Begrüßungen), noch KEINE
+  //    Konjugation, keine Verbposition, keine Fälle.
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    slug: "articles",
+    title: "der, die, das",
+    subtitle: "Every German noun has a gender",
+    level: "A1",
+    lessonId: null,
+    lessonMatch: "der, die, das",
+    sortOrder: 1,
+    theory: [
+      "In English there is one word for all of them: the. In German there are **three**, because every noun has a gender:",
+      "*der* Mann (masculine) — *die* Frau (feminine) — *das* Kind (neuter)",
+      "The gender belongs to the **word**, not to the meaning. Das Mädchen (the girl) is neuter — the grammar does not care that a girl is female. So never try to work it out by logic.",
+      "This is why the golden rule is: **learn the article together with the noun.** Not Tisch, but der Tisch. If you learn the word alone, you will have to guess forever.",
+      "The good news: in the **plural** there is only one article for everything — **die**.\ndie Männer — die Frauen — die Kinder",
+      "And a few endings are reliable. These are always *die*: **-ung, -heit, -keit, -schaft** (die Wohnung, die Freiheit, die Möglichkeit, die Freundschaft).\nThis one is always *das*: **-chen** (das Mädchen, das Brötchen).",
+    ].join("\n\n"),
+    exercises: [
+      {
+        kind: "choice",
+        prompt: "How many articles for the does German have in the singular?",
+        data: { options: ["One", "Two", "Three", "Four"] },
+        solution: { correct: 2 },
+        explanation: "**Three**: *der* (masculine), *die* (feminine), *das* (neuter). Every noun carries one of them.",
+      },
+      {
+        kind: "gap",
+        prompt: "___ Mann ist hier.",
+        data: {},
+        solution: { answers: ["Der", "der"] },
+        explanation: "Mann is masculine: **der Mann**.",
+      },
+      {
+        kind: "gap",
+        prompt: "___ Frau ist nett.",
+        data: {},
+        solution: { answers: ["Die", "die"] },
+        explanation: "Frau is feminine: **die Frau**.",
+      },
+      {
+        kind: "gap",
+        prompt: "___ Kind ist klein.",
+        data: {},
+        solution: { answers: ["Das", "das"] },
+        explanation: "Kind is neuter: **das Kind**.",
+      },
+      {
+        kind: "choice",
+        prompt: "Which one is correct?",
+        data: { options: ["der Auto", "die Auto", "das Auto", "den Auto"] },
+        solution: { correct: 2 },
+        explanation: "Auto is neuter: **das Auto**. There is no rule that tells you this — it is learnt with the word.",
+      },
+      {
+        kind: "choice",
+        prompt: "Which article do ALL nouns take in the plural?",
+        data: { options: ["der", "die", "das", "It stays the same as in the singular"] },
+        solution: { correct: 1 },
+        explanation: "In the plural everything takes **die**: die Männer, die Frauen, die Kinder. One article, no exceptions.",
+      },
+      {
+        kind: "gap",
+        prompt: "___ Wohnung ist groß.",
+        data: {},
+        solution: { answers: ["Die", "die"] },
+        explanation: "Words ending in **-ung** are always feminine: **die Wohnung**. Same for -heit, -keit and -schaft.",
+        hint: "Look at the ending of the noun.",
+      },
+      {
+        kind: "gap",
+        prompt: "___ Mädchen ist meine Schwester.",
+        data: {},
+        solution: { answers: ["Das", "das"] },
+        explanation: "Words ending in **-chen** are always neuter: **das Mädchen** — even though a Mädchen is a girl. The ending beats the meaning.",
+        hint: "The ending decides, not the meaning.",
+      },
+      {
+        kind: "error",
+        prompt: "Correct this sentence: Die Buch ist neu.",
+        data: {},
+        solution: { answers: ["Das Buch ist neu.", "Das Buch ist neu"] },
+        explanation: "Buch is neuter: **das Buch** ist neu.",
+      },
+      {
+        kind: "choice",
+        prompt: "Sonne, Blume, Zeitung — which article do all three take?",
+        data: { options: ["der", "die", "das", "They are all different"] },
+        solution: { correct: 1 },
+        explanation: "All three are feminine: **die** Sonne, **die** Blume, **die** Zeitung.",
+      },
+      {
+        kind: "gap",
+        prompt: "___ Freundschaft ist wichtig.",
+        data: {},
+        solution: { answers: ["Die", "die"] },
+        explanation: "**-schaft** is always feminine: **die Freundschaft**.",
+      },
+      {
+        kind: "error",
+        prompt: "Correct this sentence: Das Blume ist schön.",
+        data: {},
+        solution: { answers: ["Die Blume ist schön.", "Die Blume ist schön"] },
+        explanation: "Blume is feminine: **die Blume** ist schön.",
+      },
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // 2) KONJUGATION – Voraussetzung: Alphabet, Begrüßungen, Artikel
   // ─────────────────────────────────────────────────────────────────────────
   {
     slug: "present-tense",
@@ -42,7 +158,8 @@ export const TRAINING_UNITS: SeedUnit[] = [
     subtitle: "How German verbs change with the person",
     level: "A1",
     lessonId: "german-conjugation-how-german-verbs-chan-z9wd",
-    sortOrder: 1,
+    lessonMatch: "conjugation",
+    sortOrder: 2,
     theory: [
       "A German verb has two parts: the **stem** and the **ending**. Take the infinitive lernen, cut off **-en**, and the stem is left: lern-.",
       "Now you only add the ending for the person:\nich *lerne* — du *lernst* — er/sie/es *lernt*\nwir *lernen* — ihr *lernt* — sie/Sie *lernen*",
@@ -141,7 +258,7 @@ export const TRAINING_UNITS: SeedUnit[] = [
   },
 
   // ─────────────────────────────────────────────────────────────────────────
-  // 2) VERBPOSITION – nutzt NUR Konjugation, Artikel und Begrüßungs-Wortschatz.
+  // 3) VERBPOSITION – nutzt NUR Konjugation, Artikel und Begrüßungs-Wortschatz.
   //    Bewusst OHNE: trennbare Verben, Modalverben, Nebensätze, Fragen.
   // ─────────────────────────────────────────────────────────────────────────
   {
@@ -150,7 +267,8 @@ export const TRAINING_UNITS: SeedUnit[] = [
     subtitle: "The conjugated verb always comes second",
     level: "A1",
     lessonId: "a1-german-sentence-structure-the-verbpos-rvmk",
-    sortOrder: 2,
+    lessonMatch: "verbposition",
+    sortOrder: 3,
     theory: [
       "In a German statement the conjugated verb always stands in **second place**. Not the second word — the second **position**. One position can be a single word (Ich) or a small group of words (Am Montag).",
       "@Ich|lerne*|heute Deutsch",
@@ -248,6 +366,125 @@ export const TRAINING_UNITS: SeedUnit[] = [
         solution: { answers: ["Ich lerne Deutsch.", "Ich lerne Deutsch"] },
         explanation: "In a statement the verb never goes to the end. It belongs in **second place**: Ich *lerne* Deutsch.",
         hint: "Where does the verb belong?",
+      },
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // 4) ZAHLEN & UHRZEIT – nutzt Artikel, Konjugation und Verbposition.
+  //    Die Zeitangabe auf Position 1 wiederholt bewusst die Verbposition.
+  //    Bewusst OHNE: Fragen ("Wie spät ist es?"), Fälle, Modalverben.
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    slug: "numbers-time",
+    title: "Numbers, time and days",
+    subtitle: "Saying when — and why German numbers run backwards",
+    level: "A1",
+    lessonId: null,
+    lessonMatch: "number",
+    sortOrder: 4,
+    theory: [
+      "0–12 you simply learn: null, eins, zwei, drei, vier, fünf, sechs, sieben, acht, neun, zehn, elf, zwölf.",
+      "From 13 to 19 you glue the unit onto **zehn**: drei + zehn = *dreizehn*, sech + zehn = *sechzehn*, sieb + zehn = *siebzehn*.",
+      "The tens end in **-zig**: zwanzig, vierzig, fünfzig, sechzig, siebzig, achtzig, neunzig. Only one is odd: 30 is **dreißig**, not dreizig.",
+      "Now the part that feels wrong to English speakers. From 21 on, German says the **unit first**, then und, then the ten — and writes it as **one single word**:",
+      "21 = **ein-und-zwanzig** (one-and-twenty)\n67 = **siebenundsechzig** (seven-and-sixty)",
+      "So you hear the small number first. That is why German phone numbers are hard at the start — you have to hold the number and turn it around.",
+      "For the clock you say: **Es ist acht Uhr.** For half hours German counts **forwards to the next hour**: *halb neun* is 8:30, not 9:30. Think half way to nine.",
+      "And the quarters: **Viertel nach acht** = 8:15, **Viertel vor neun** = 8:45.",
+      "Days take **am**: am Montag, am Dienstag, am Mittwoch, am Donnerstag, am Freitag, am Samstag, am Sonntag.",
+      "Careful: a time in first place is still just **position 1** — so the verb stays second and the subject moves behind it:",
+      "@Am Montag|lerne*|ich Deutsch",
+    ].join("\n\n"),
+    exercises: [
+      {
+        kind: "choice",
+        prompt: "How do you say 21 in German?",
+        data: { options: ["zwanzigeins", "einundzwanzig", "zwanzig und eins", "einzwanzig"] },
+        solution: { correct: 1 },
+        explanation: "Unit first, then und, then the ten — as one word: **einundzwanzig**.",
+      },
+      {
+        kind: "gap",
+        prompt: "Write 13 in words: ___",
+        data: {},
+        solution: { answers: ["dreizehn"] },
+        explanation: "13 to 19 are the unit plus **zehn**: drei + zehn = **dreizehn**.",
+      },
+      {
+        kind: "gap",
+        prompt: "Write 40 in words: ___",
+        data: {},
+        solution: { answers: ["vierzig"] },
+        explanation: "The tens end in **-zig**: vier + zig = **vierzig**.",
+      },
+      {
+        kind: "choice",
+        prompt: "Which is 30?",
+        data: { options: ["dreizig", "dreißig", "dreizehn", "drittzig"] },
+        solution: { correct: 1 },
+        explanation: "30 is the one exception in the tens: **dreißig** with ß, not dreizig. And watch out — dreizehn is 13.",
+        hint: "One of the tens is spelt differently from all the others.",
+      },
+      {
+        kind: "gap",
+        prompt: "Write 67 in words: ___",
+        data: {},
+        solution: { answers: ["siebenundsechzig"] },
+        explanation: "Seven-and-sixty: **siebenundsechzig**. Unit first, one word, no spaces.",
+        hint: "Say the small number first.",
+      },
+      {
+        kind: "error",
+        prompt: "Correct this number: zwanzigfünf (25)",
+        data: {},
+        solution: { answers: ["fünfundzwanzig", "fuenfundzwanzig"] },
+        explanation: "German goes the other way round: **fünfundzwanzig** — five-and-twenty, written as one word.",
+      },
+      {
+        kind: "choice",
+        prompt: "It is 8:30. What do Germans say?",
+        data: { options: ["halb acht", "halb neun", "acht halb", "halb nach acht"] },
+        solution: { correct: 1 },
+        explanation: "German counts **forwards to the next hour**: at 8:30 you are half way to nine, so it is **halb neun**. This one catches almost everybody.",
+        hint: "Which hour are you heading towards?",
+      },
+      {
+        kind: "gap",
+        prompt: "It is 9:00. Es ist ___ Uhr.",
+        data: {},
+        solution: { answers: ["neun"] },
+        explanation: "Full hours are easy: **Es ist neun Uhr.**",
+      },
+      {
+        kind: "choice",
+        prompt: "It is 8:45. What do you say?",
+        data: { options: ["Viertel nach acht", "Viertel vor neun", "halb neun", "Viertel vor acht"] },
+        solution: { correct: 1 },
+        explanation: "**Viertel vor neun** — a quarter before nine. And 8:15 would be *Viertel nach acht*.",
+      },
+      {
+        kind: "order",
+        prompt: "Build the sentence: On Monday I learn German.",
+        data: { tokens: ["ich", "Am Montag", "Deutsch", "lerne"] },
+        solution: { order: ["Am Montag", "lerne", "ich", "Deutsch"], verb: 1 },
+        explanation: "**Am Montag** is one single position — position 1. So the verb *lerne* is second and ich moves behind it.",
+        hint: "Am Montag counts as one position, not two words.",
+      },
+      {
+        kind: "gap",
+        prompt: "Am ___ trinke ich Kaffee. (Sunday)",
+        data: {},
+        solution: { answers: ["Sonntag", "sonntag"] },
+        explanation: "Days take **am**: am **Sonntag**. Note that days are written with a capital letter.",
+      },
+      {
+        kind: "error",
+        prompt: "Correct this sentence: Am Montag ich lerne Deutsch.",
+        data: {},
+        solution: { answers: ["Am Montag lerne ich Deutsch.", "Am Montag lerne ich Deutsch"] },
+        explanation: "A time expression in first place changes nothing about the rule: the verb keeps **second place**. Am Montag *lerne* ich Deutsch.",
+        hint: "Remember the verb position.",
       },
     ],
   },
