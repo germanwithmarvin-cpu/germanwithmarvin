@@ -98,18 +98,38 @@ export default function LessonsPage() {
 function LessonTile({ lesson, done, isNext }: { lesson: Lesson; done: boolean; isNext: boolean }) {
   const hasQuiz = lesson.quizEnabled && (lesson.exercises.length > 0 || lesson.quiz.length > 0);
   const id = youTubeId(lesson.videoId);
-  const [broken, setBroken] = useState(false);
-  const thumb = id && !broken ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
+  // Quellen-Kette: hqdefault ist fast immer da; fehlt es, liefert YouTube ein
+  // graues 120px-Platzhalterbild (kein Fehler!) – dann auf mqdefault ausweichen.
+  const srcs = id
+    ? [`https://img.youtube.com/vi/${id}/hqdefault.jpg`, `https://img.youtube.com/vi/${id}/mqdefault.jpg`]
+    : [];
+  const [srcIdx, setSrcIdx] = useState(0);
+  const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const thumb = !failed ? srcs[srcIdx] : undefined;
+  const nextSrc = () => (srcIdx < srcs.length - 1 ? setSrcIdx(srcIdx + 1) : setFailed(true));
 
   return (
     <Link href={`/lessons/${lesson.id}`} className="card overflow-hidden group transition hover:border-gold/50 flex flex-col">
       {/* Vorschaubild */}
       <div className="relative aspect-video bg-bordeaux-deep/50 overflow-hidden">
-        {thumb ? (
-          <img src={thumb} alt="" onError={() => setBroken(true)} className="w-full h-full object-cover transition group-hover:scale-105" loading="lazy" />
-        ) : (
-          <div className="w-full h-full grid place-items-center text-4xl">🎬</div>
+        {thumb && (
+          <img
+            src={thumb}
+            alt=""
+            /* eager: die Bilder sollen sofort da sein, nicht erst beim Scrollen */
+            loading="eager"
+            decoding="async"
+            onLoad={(e) => (e.currentTarget.naturalWidth <= 120 ? nextSrc() : setLoaded(true))}
+            onError={nextSrc}
+            className={`w-full h-full object-cover transition duration-300 group-hover:scale-105 ${loaded ? "opacity-100" : "opacity-0"}`}
+          />
         )}
+        {/* sanfter Platzhalter, solange geladen wird – wirkt nicht wie "kaputt" */}
+        {!loaded && !failed && (
+          <div className="absolute inset-0 animate-pulse" style={{ background: "linear-gradient(100deg, var(--bordeaux-deep), var(--bordeaux-soft), var(--bordeaux-deep))" }} />
+        )}
+        {failed && <div className="absolute inset-0 grid place-items-center text-4xl">🎬</div>}
         <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 55%, rgba(59,41,34,0.55))" }} />
         {/* Play-Overlay */}
         <div className="absolute inset-0 grid place-items-center">
