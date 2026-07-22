@@ -14,8 +14,12 @@ export default function WelcomePage() {
   const [saving, setSaving] = useState(false);
 
   // Wer das Willkommen schon gesehen hat, landet direkt im Dashboard.
+  // Ausnahme: /start?again=1 zeigt es erneut – zum Testen und damit Schüler
+  // sich das Video später nochmal ansehen können.
   useEffect(() => {
     let cancelled = false;
+    const again = new URLSearchParams(window.location.search).get("again") === "1";
+    if (again) { setStep("video"); return; }
     hasBeenWelcomed().then((seen) => {
       if (cancelled) return;
       if (seen) router.replace("/dashboard");
