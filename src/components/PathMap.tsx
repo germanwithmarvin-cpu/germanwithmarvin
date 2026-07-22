@@ -30,7 +30,7 @@ export type PathTrophyItem = {
 export type PathItem = PathNodeItem | PathTrophyItem;
 
 const ROW = 258; // vertikaler Abstand je Reihe
-const TOP = 150; // Abstand oben (Platz für die erste Level-Marke)
+const TOP = 196; // Abstand oben (Platz für die erste Kapitel-Leiste)
 const NODE = 116; // Knoten-Durchmesser
 const RING = 9; // Dicke des Fortschrittsrings
 
@@ -93,7 +93,7 @@ export function PathMap({ items }: { items: PathItem[] }) {
   const PAD = 82;
   const usable = Math.max(1, W - PAD * 2);
   const colW = W / cols;
-  const SECTION_GAP = 140; // Abstand zwischen Kategorien + Platz für das Trennband
+  const SECTION_GAP = 230; // Luft zwischen den Kapiteln + Platz für die Kapitel-Leiste
 
   // Layout mit klarer Kategorie-Trennung: jede Kategorie (Level) beginnt in einer
   // neuen Zeile links und bekommt oberhalb einen Abstand für das Trennband.
@@ -114,6 +114,11 @@ export function PathMap({ items }: { items: PathItem[] }) {
   const maxSection = slots.length ? slots[slots.length - 1].section : 0;
   const points = slots.map((s) => ({ x: PAD + usable * (s.c / (cols - 1)), y: TOP + s.row * ROW + s.section * SECTION_GAP }));
   const totalH = TOP + rowsCount * ROW + maxSection * SECTION_GAP + 40;
+  // Themen je Level – wird in der Kapitel-Leiste angezeigt ("12 topics").
+  const levelCounts = items.reduce<Record<string, number>>((acc, it) => {
+    if (it.kind === "node" && it.level) acc[it.level] = (acc[it.level] ?? 0) + 1;
+    return acc;
+  }, {});
   const currentIndex = items.findIndex((n) => n.kind === "node" && n.state === "current");
   const goneTo = currentIndex === -1 ? items.length - 1 : currentIndex;
   const trackD = smoothPath(points);
@@ -133,17 +138,30 @@ export function PathMap({ items }: { items: PathItem[] }) {
               (anders als `hidden`) keinen Scroll-Container, der Sticky-Effekt bleibt. */}
           <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 0, overflow: "clip" }}>
             <div className="sticky top-0 h-screen w-full" style={{ marginBottom: "-100vh" }}>
-              <MunichScene />
+              {/* Kulisse bewusst zurückgenommen: entsättigt + aufgehellt, damit sie
+                  Stimmung macht, aber nicht mit den Knoten um Aufmerksamkeit ringt. */}
+              <div className="absolute inset-0" style={{ filter: "saturate(0.5) brightness(1.1)", opacity: 0.55 }}>
+                <MunichScene />
+              </div>
+              {/* Creme-Schleier in der Seitenfarbe – nach unten dichter, damit unter
+                  dem Pfad eine ruhige Fläche entsteht. */}
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(180deg, color-mix(in srgb, var(--background) 55%, transparent) 0%, color-mix(in srgb, var(--background) 72%, transparent) 55%, color-mix(in srgb, var(--background) 88%, transparent) 100%)",
+                }}
+              />
             </div>
           </div>
 
           <div className="absolute inset-0" style={{ zIndex: 1 }}>
             <svg className="absolute inset-0 pointer-events-none" width={width} height={totalH} viewBox={`0 0 ${width} ${totalH}`} fill="none" aria-hidden="true">
-              {/* Level-Auren + Boden-Schatten für Tiefe */}
+              {/* Boden-Schatten für Tiefe. (Die früheren großen Level-Auren sind
+                  bewusst entfallen – sie haben das Bild unruhig gemacht.) */}
               {items.map((n, i) => {
                 const { x, y } = points[i];
-                if (n.kind === "node" && n.firstOfLevel) return <ellipse key={`h${i}`} cx={x} cy={y} rx={Math.min(150, colW * 0.86)} ry={78} fill="color-mix(in srgb, var(--bordeaux-soft) 70%, transparent)" opacity={0.38} />;
-                if (n.kind === "trophy") return <ellipse key={`h${i}`} cx={x} cy={y + 24} rx={70} ry={26} fill="color-mix(in srgb, var(--gold) 16%, transparent)" opacity={0.55} />;
+                if (n.kind === "trophy") return <ellipse key={`h${i}`} cx={x} cy={y + 24} rx={70} ry={26} fill="color-mix(in srgb, var(--gold) 16%, transparent)" opacity={0.5} />;
                 return null;
               })}
               {items.map((n, i) => {
@@ -161,21 +179,34 @@ export function PathMap({ items }: { items: PathItem[] }) {
               {goldD && <path className="trail-flow" d={goldD} stroke="#fff" strokeWidth={4.5} strokeLinecap="round" strokeDasharray="3 24" opacity={0.7} />}
             </svg>
 
-            {/* Kategorie-Trennbänder über die volle Breite am Anfang jedes Levels */}
+            {/* Kapitel-Leiste am Anfang jedes Levels: deckende, ruhige Fläche als
+                Ankerpunkt für das Auge – trennt die Level klar voneinander. */}
             {items.map((node, i) => {
               if (node.kind !== "node" || !node.firstOfLevel) return null;
               const y = points[i].y;
+              const count = node.level ? levelCounts[node.level] ?? 0 : 0;
               return (
-                <div key={`lvl-${node.id}`} className="absolute left-0 right-0 px-6" style={{ top: y - NODE / 2 - 54, transform: "translateY(-50%)" }}>
-                  <div className="node-pop flex items-center gap-3" style={{ animationDelay: `${Math.min(i * 0.04, 1.2)}s` }}>
+                <div key={`lvl-${node.id}`} className="absolute left-0 right-0 px-6" style={{ top: y - NODE / 2 - 112 }}>
+                  <div
+                    className="node-pop flex items-center gap-3 rounded-2xl px-4 py-3"
+                    style={{
+                      animationDelay: `${Math.min(i * 0.04, 1.2)}s`,
+                      background: "color-mix(in srgb, var(--background) 90%, transparent)",
+                      border: "1px solid color-mix(in srgb, var(--gold) 28%, transparent)",
+                      boxShadow: "0 12px 28px -22px rgba(59,41,34,0.6)",
+                    }}
+                  >
                     <span
                       className="grid place-items-center rounded-xl px-3.5 py-1.5 text-xl font-extrabold shrink-0"
-                      style={{ background: "linear-gradient(160deg, var(--gold-bright), var(--gold))", color: "#3b2116", boxShadow: "0 6px 16px -8px rgba(59,41,34,0.55)" }}
+                      style={{ background: "linear-gradient(160deg, var(--gold-bright), var(--gold))", color: "#3b2116" }}
                     >
                       {node.level}
                     </span>
-                    <span className="path-label text-lg font-bold text-cream shrink-0 whitespace-nowrap">{node.levelLabel ?? ""}</span>
-                    <div className="flex-1 h-[3px] rounded-full" style={{ background: "linear-gradient(90deg, color-mix(in srgb, var(--gold) 60%, transparent), transparent)" }} />
+                    <div className="min-w-0">
+                      <div className="text-lg font-bold text-cream leading-tight truncate">{node.levelLabel ?? ""}</div>
+                      <div className="text-xs text-cream-dim">{count} {count === 1 ? "topic" : "topics"}</div>
+                    </div>
+                    <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, color-mix(in srgb, var(--gold) 45%, transparent), transparent)" }} />
                   </div>
                 </div>
               );
