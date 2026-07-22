@@ -144,9 +144,19 @@ function Order({ ex, value, onChange, locked, correct }: { ex: Exercise; value: 
       )}
 
       {locked && !correct && (
-        <div className="space-y-2">
-          <p className="text-sm text-cream-dim">Correct:</p>
-          <SentenceSlots tokens={ex.order} verb={ex.verb >= 0 ? ex.verb : undefined} size="small" />
+        <div className="space-y-3">
+          <div className="space-y-1.5">
+            <p className="text-sm text-cream-dim">Your answer — the marked positions are in the wrong place:</p>
+            <SentenceSlots
+              tokens={chosen}
+              wrong={chosen.map((t, i) => (t === ex.order[i] ? -1 : i)).filter((i) => i >= 0)}
+              size="small"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <p className="text-sm text-cream-dim">Correct:</p>
+            <SentenceSlots tokens={ex.order} verb={ex.verb >= 0 ? ex.verb : undefined} size="small" />
+          </div>
         </div>
       )}
     </div>

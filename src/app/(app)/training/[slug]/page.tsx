@@ -79,6 +79,8 @@ export default function TrainingUnitPage() {
   const [ok, setOk] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [wrongIds, setWrongIds] = useState<string[]>([]);
+  const [combo, setCombo] = useState(0);   // Serie richtiger Antworten
+  const [bestCombo, setBestCombo] = useState(0);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
@@ -103,8 +105,13 @@ export default function TrainingUnitPage() {
     const right = checkAnswer(ex, given);
     setOk(right);
     setLocked(true);
-    if (right) setCorrectCount((c) => c + 1);
-    else setWrongIds((w) => [...w, ex.id]);
+    if (right) {
+      setCorrectCount((c) => c + 1);
+      setCombo((c) => { const n = c + 1; setBestCombo((b) => Math.max(b, n)); return n; });
+    } else {
+      setWrongIds((w) => [...w, ex.id]);
+      setCombo(0);
+    }
     void saveAttempt(ex.id, right, given);
   }, [ex, locked, given]);
 
@@ -127,7 +134,7 @@ export default function TrainingUnitPage() {
 
   const restart = () => {
     setIdx(0); setGiven(""); setLocked(false); setOk(false);
-    setCorrectCount(0); setWrongIds([]); setSaved(false); setPhase("practice");
+    setCorrectCount(0); setWrongIds([]); setCombo(0); setBestCombo(0); setSaved(false); setPhase("practice");
   };
 
   if (phase === "loading") return <p className="text-sm text-cream-dim">Loading…</p>;
@@ -143,7 +150,15 @@ export default function TrainingUnitPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
         <Link href="/training" className="text-sm text-cream-dim hover:text-cream">← Training</Link>
-        {phase === "practice" && <span className="text-sm text-cream-dim">{idx + 1} / {list.length}</span>}
+        <div className="flex items-center gap-3">
+          {phase === "practice" && combo >= 2 && (
+            <span key={combo} className="combo-pulse text-sm font-bold px-3 py-1 rounded-full"
+              style={{ background: "var(--bordeaux)", color: "#fff" }}>
+              🔥 {combo} in a row
+            </span>
+          )}
+          {phase === "practice" && <span className="text-sm text-cream-dim">{idx + 1} / {list.length}</span>}
+        </div>
       </div>
 
       {/* Theorie */}
@@ -174,8 +189,27 @@ export default function TrainingUnitPage() {
             <div className="h-2 rounded-full transition-all" style={{ width: `${(idx / list.length) * 100}%`, background: "var(--gold-bright)" }} />
           </div>
 
-          <div className="card p-6">
+          <div className={`card p-6 relative ${locked ? (ok ? "fb-correct" : "fb-wrong") : ""}`}>
             <ExerciseView ex={ex} value={given} onChange={setGiven} locked={locked} correct={ok} />
+            {locked && ok && (
+              <div className="pointer-events-none absolute inset-0 overflow-visible">
+                {Array.from({ length: 10 }, (_, i) => {
+                  const ang = (i / 10) * Math.PI * 2;
+                  const dist = 70 + (i % 3) * 26;
+                  return (
+                    <span key={i} className="spark absolute text-lg"
+                      style={{
+                        left: "50%", top: "42%",
+                        ["--sx" as string]: `${Math.cos(ang) * dist}px`,
+                        ["--sy" as string]: `${Math.sin(ang) * dist - 18}px`,
+                        animationDelay: `${(i % 4) * 0.04}s`,
+                      }}>
+                      {["✨", "⭐", "🎉"][i % 3]}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Rückmeldung mit Begründung */}
@@ -225,11 +259,18 @@ export default function TrainingUnitPage() {
                     ? "Unit mastered — the verb position is sitting where it belongs."
                     : `Almost there. You need 80% to master this unit${wrongIds.length ? ` — ${wrongIds.length} exercise${wrongIds.length === 1 ? "" : "s"} still tripped you up.` : "."}`}
                 </p>
-                {correctCount > 0 && (
-                  <div className="text-sm inline-block px-4 py-2 rounded-full" style={{ background: "var(--bordeaux-deep)" }}>
-                    <b className="text-gold-bright">+{correctCount} XP</b>
-                  </div>
-                )}
+                <div className="flex items-center justify-center gap-2 flex-wrap">
+                  {correctCount > 0 && (
+                    <div className="text-sm px-4 py-2 rounded-full" style={{ background: "var(--bordeaux-deep)" }}>
+                      <b className="text-gold-bright">+{correctCount} XP</b>
+                    </div>
+                  )}
+                  {bestCombo >= 2 && (
+                    <div className="text-sm px-4 py-2 rounded-full" style={{ background: "var(--bordeaux-deep)" }}>
+                      🔥 best run: <b className="text-gold-bright">{bestCombo}</b>
+                    </div>
+                  )}
+                </div>
                 <div className="flex items-center justify-center gap-3 pt-1">
                   <button onClick={restart} className="btn-gold px-6 py-3 font-bold">Practice again</button>
                   <Link href="/training" className="btn-outline px-6 py-3">Back to course</Link>
