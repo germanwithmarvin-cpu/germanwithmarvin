@@ -1,0 +1,117 @@
+insert into public.tr_units (slug, title, subtitle, level, lesson_id, sort_order, theory)
+values (
+  'verb-position',
+  'Verb position',
+  'Where the verb goes - and why it moves',
+  'A1',
+  'a1-german-sentence-structure-the-verbpos-rvmk',
+  1,
+  E'In a German main clause the conjugated verb always stands in **position 2**. Not the second word - the second *position*. One position can be a single word (\u0022Ich\u0022) or a whole phrase (\u0022Am n\u00e4chsten Montag\u0022).\n\n**Ich** *gehe* heute ins Kino.\n**Heute** *gehe* ich ins Kino.\n**Am Montag** *gehe* ich ins Kino.\n\nWhatever you put first, the verb stays second and the subject simply moves behind it. English does not do this - that is why \u0022Heute ich gehe\u0022 feels natural to learners and is still wrong.\n\n**Separable verbs and modal verbs** build a bracket: the conjugated part stays in second place, the rest goes to the very end.\n\nAnna *steht* um 7 Uhr **auf**.\nIch *kann* heute nicht **kommen**.\n\n**Subordinate clauses** (weil, dass, wenn, ob, obwohl ...) work differently: there the conjugated verb moves to the **very end**.\n\nIch bleibe zu Hause, weil ich m\u00fcde **bin**.\nIch wei\u00df, dass er morgen **kommt**.'
+);
+
+insert into public.tr_exercises (unit_id, kind, prompt, data, solution, explanation, hint, sort_order)
+values
+((select id from public.tr_units where slug = 'verb-position'), 'choice',
+ 'In a German main clause, where does the conjugated verb stand?',
+ E'{\u0022options\u0022:[\u0022In first place\u0022,\u0022In second place\u0022,\u0022At the very end\u0022,\u0022Anywhere you like\u0022]}'::jsonb,
+ E'{\u0022correct\u0022:1}'::jsonb,
+ 'The conjugated verb always stands in second place in a main clause - no matter what comes first.',
+ '', 1),
+
+((select id from public.tr_units where slug = 'verb-position'), 'order',
+ 'Build the sentence: I am going to the cinema today.',
+ E'{\u0022tokens\u0022:[\u0022ins Kino\u0022,\u0022heute\u0022,\u0022gehe\u0022,\u0022Ich\u0022]}'::jsonb,
+ E'{\u0022order\u0022:[\u0022Ich\u0022,\u0022gehe\u0022,\u0022heute\u0022,\u0022ins Kino\u0022]}'::jsonb,
+ 'Subject first, verb second: Ich gehe heute ins Kino.',
+ 'Start with the subject.', 2),
+
+((select id from public.tr_units where slug = 'verb-position'), 'order',
+ 'Now start with the time: Today I am going to the cinema.',
+ E'{\u0022tokens\u0022:[\u0022ich\u0022,\u0022Heute\u0022,\u0022ins Kino\u0022,\u0022gehe\u0022]}'::jsonb,
+ E'{\u0022order\u0022:[\u0022Heute\u0022,\u0022gehe\u0022,\u0022ich\u0022,\u0022ins Kino\u0022]}'::jsonb,
+ 'The time phrase comes first, so the verb still has to be second and the subject moves behind it: Heute gehe ich ins Kino.',
+ 'The verb keeps its second place.', 3),
+
+((select id from public.tr_units where slug = 'verb-position'), 'error',
+ 'Correct this sentence: Heute ich gehe ins Kino.',
+ '{}'::jsonb,
+ E'{\u0022answers\u0022:[\u0022Heute gehe ich ins Kino.\u0022,\u0022Heute gehe ich ins Kino\u0022]}'::jsonb,
+ E'With \u0022Heute\u0022 in first place the verb has to follow immediately: Heute *gehe* ich ins Kino. This is the most common mistake for English speakers.',
+ 'What has to come second?', 4),
+
+((select id from public.tr_units where slug = 'verb-position'), 'gap',
+ E'Am Montag ___ wir nach M\u00fcnchen. (fahren)',
+ '{}'::jsonb,
+ E'{\u0022answers\u0022:[\u0022fahren\u0022]}'::jsonb,
+ E'\u0022Am Montag\u0022 fills the first place, so the conjugated verb follows immediately.',
+ '', 5),
+
+((select id from public.tr_units where slug = 'verb-position'), 'choice',
+ 'Which sentence is correct?',
+ E'{\u0022options\u0022:[\u0022Morgen ich besuche meine Oma.\u0022,\u0022Morgen besuche ich meine Oma.\u0022,\u0022Morgen besuchen ich meine Oma.\u0022,\u0022Ich morgen besuche meine Oma.\u0022]}'::jsonb,
+ E'{\u0022correct\u0022:1}'::jsonb,
+ E'\u0022Morgen\u0022 comes first, so the verb \u0022besuche\u0022 must be second, then the subject \u0022ich\u0022.',
+ '', 6),
+
+((select id from public.tr_units where slug = 'verb-position'), 'order',
+ 'Separable verb: Anna gets up at seven.',
+ E'{\u0022tokens\u0022:[\u0022auf\u0022,\u0022steht\u0022,\u0022Anna\u0022,\u0022um 7 Uhr\u0022]}'::jsonb,
+ E'{\u0022order\u0022:[\u0022Anna\u0022,\u0022steht\u0022,\u0022um 7 Uhr\u0022,\u0022auf\u0022]}'::jsonb,
+ E'Separable verbs split: \u0022steht\u0022 stays in second place, the prefix \u0022auf\u0022 jumps to the very end.',
+ 'Where does the prefix go?', 7),
+
+((select id from public.tr_units where slug = 'verb-position'), 'gap',
+ 'Der Zug ___ um 8 Uhr an. (ankommen)',
+ '{}'::jsonb,
+ E'{\u0022answers\u0022:[\u0022kommt\u0022]}'::jsonb,
+ E'The prefix \u0022an\u0022 is already at the end, so only the conjugated part \u0022kommt\u0022 goes into second place.',
+ 'The prefix is already placed.', 8),
+
+((select id from public.tr_units where slug = 'verb-position'), 'order',
+ 'Modal verb: I cannot come today.',
+ E'{\u0022tokens\u0022:[\u0022kommen\u0022,\u0022kann\u0022,\u0022nicht\u0022,\u0022Ich\u0022,\u0022heute\u0022]}'::jsonb,
+ E'{\u0022order\u0022:[\u0022Ich\u0022,\u0022kann\u0022,\u0022heute\u0022,\u0022nicht\u0022,\u0022kommen\u0022]}'::jsonb,
+ E'The modal verb \u0022kann\u0022 takes second place, the main verb \u0022kommen\u0022 goes to the end as an infinitive.',
+ 'Where does the infinitive go?', 9),
+
+((select id from public.tr_units where slug = 'verb-position'), 'choice',
+ 'Which sentence is correct?',
+ E'{\u0022options\u0022:[\u0022Ich muss heute arbeiten.\u0022,\u0022Ich muss arbeiten heute.\u0022,\u0022Ich arbeiten muss heute.\u0022,\u0022Heute ich muss arbeiten.\u0022]}'::jsonb,
+ E'{\u0022correct\u0022:0}'::jsonb,
+ 'Modal verb second, infinitive at the end: Ich muss heute arbeiten.',
+ '', 10),
+
+((select id from public.tr_units where slug = 'verb-position'), 'order',
+ 'Subordinate clause: ... because I am tired.',
+ E'{\u0022tokens\u0022:[\u0022bin\u0022,\u0022weil\u0022,\u0022m\u00fcde\u0022,\u0022ich\u0022]}'::jsonb,
+ E'{\u0022order\u0022:[\u0022weil\u0022,\u0022ich\u0022,\u0022m\u00fcde\u0022,\u0022bin\u0022]}'::jsonb,
+ E'After \u0022weil\u0022 the conjugated verb moves to the very end: weil ich m\u00fcde bin.',
+ 'Where does the verb go after weil?', 11),
+
+((select id from public.tr_units where slug = 'verb-position'), 'error',
+ E'Correct this sentence: Ich bleibe zu Hause, weil ich bin m\u00fcde.',
+ '{}'::jsonb,
+ E'{\u0022answers\u0022:[\u0022Ich bleibe zu Hause, weil ich m\u00fcde bin.\u0022,\u0022Ich bleibe zu Hause weil ich m\u00fcde bin.\u0022]}'::jsonb,
+ E'\u0022weil\u0022 starts a subordinate clause, so the verb \u0022bin\u0022 has to go to the very end.',
+ 'The verb belongs at the end.', 12),
+
+((select id from public.tr_units where slug = 'verb-position'), 'gap',
+ E'Ich wei\u00df, dass er morgen ___. (kommen)',
+ '{}'::jsonb,
+ E'{\u0022answers\u0022:[\u0022kommt\u0022]}'::jsonb,
+ E'After \u0022dass\u0022 the conjugated verb stands at the very end.',
+ '', 13),
+
+((select id from public.tr_units where slug = 'verb-position'), 'error',
+ 'Correct this sentence: Ich denke, dass er kommt morgen.',
+ '{}'::jsonb,
+ E'{\u0022answers\u0022:[\u0022Ich denke, dass er morgen kommt.\u0022,\u0022Ich denke dass er morgen kommt.\u0022]}'::jsonb,
+ E'In a \u0022dass\u0022 clause the verb goes last, the time phrase comes before it.',
+ '', 14),
+
+((select id from public.tr_units where slug = 'verb-position'), 'order',
+ 'Question: When are you coming home?',
+ E'{\u0022tokens\u0022:[\u0022nach Hause\u0022,\u0022Wann\u0022,\u0022du\u0022,\u0022kommst\u0022]}'::jsonb,
+ E'{\u0022order\u0022:[\u0022Wann\u0022,\u0022kommst\u0022,\u0022du\u0022,\u0022nach Hause\u0022]}'::jsonb,
+ 'In W-questions the question word comes first and the verb still follows immediately.',
+ '', 15);
