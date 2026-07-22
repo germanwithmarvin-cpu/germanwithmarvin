@@ -35,7 +35,7 @@ export default function TrainingPage() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="shrink-0 hidden sm:block"><Lena mood="wave" size={92} /></div>
+          <div className="shrink-0 hidden sm:block"><Lena mood="wave" size={150} /></div>
           <div>
             <h1 className="text-2xl font-bold">Training 🎓</h1>
             <p className="text-cream-dim text-sm mt-1">

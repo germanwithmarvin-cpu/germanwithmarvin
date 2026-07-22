@@ -133,7 +133,7 @@ export default function Dashboard() {
       {/* Lena mit dem Tipp des Tages – eine Figur, die mitlernt, wirkt anders als ein Hinweiskasten */}
       {tip && (
         <div className="flex items-end gap-3 sm:gap-4">
-          <Lena mood="wave" size={112} className="shrink-0 -mb-1" />
+          <Lena mood="wave" size={190} className="shrink-0 -mb-1" />
           <div className="relative flex-1 rounded-2xl px-4 py-3.5 mb-3"
             style={{ background: "color-mix(in srgb, var(--gold) 14%, var(--surface))", border: "1px solid color-mix(in srgb, var(--gold) 28%, transparent)" }}>
             {/* Sprechblasen-Zipfel nach links */}

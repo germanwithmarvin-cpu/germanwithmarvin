@@ -172,7 +172,7 @@ export default function TrainingUnitPage() {
             <p className="text-cream-dim text-sm mt-1">{unit.subtitle}</p>
           </div>
           <div className="card p-6 sm:p-7 flex gap-5 items-start">
-            <div className="shrink-0 hidden md:block -mt-2"><Lena mood="explain" size={104} /></div>
+            <div className="shrink-0 hidden md:block -mt-2"><Lena mood="explain" size={172} /></div>
             <div className="min-w-0 flex-1"><RichText text={unit.theory} size="large" /></div>
           </div>
           <div className="flex items-center gap-3">
@@ -223,7 +223,7 @@ export default function TrainingUnitPage() {
                     Bei Fehlern immer (da hilft sie), bei Treffern nur an Combo-Marken. */}
                 {(!ok || combo === 3 || combo === 5 || (combo >= 8 && combo % 4 === 0)) && (
                   <div className="shrink-0 hidden sm:block -mt-6">
-                    <Lena mood={ok ? (combo >= 5 ? "cheer" : "encourage") : "oops"} size={110} />
+                    <Lena mood={ok ? (combo >= 5 ? "cheer" : "encourage") : "oops"} size={158} />
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
@@ -253,7 +253,7 @@ export default function TrainingUnitPage() {
             const passed = pct >= 80;
             return (
               <>
-                <div className="flex justify-center"><Lena mood={passed ? "cheer" : "encourage"} size={130} /></div>
+                <div className="flex justify-center"><Lena mood={passed ? "cheer" : "encourage"} size={215} /></div>
                 <div>
                   <div className="text-5xl font-extrabold" style={{ color: "var(--bordeaux)" }}>{pct}%</div>
                   <p className="text-cream-dim text-sm mt-1">{correctCount} of {list.length} correct</p>
