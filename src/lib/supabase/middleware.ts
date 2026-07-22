@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 // Geschützte Bereiche: nur für eingeloggte Schüler.
-const PROTECTED = ["/dashboard", "/lessons", "/stories", "/admin", "/welcome", "/decks", "/study", "/stats", "/exam", "/redeem", "/review", "/profile", "/booking", "/training", "/game"];
+const PROTECTED = ["/dashboard", "/lessons", "/stories", "/admin", "/welcome", "/decks", "/study", "/stats", "/exam", "/redeem", "/review", "/profile", "/booking", "/training", "/game", "/start"];
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });

@@ -13,6 +13,8 @@ import { getAccess, type Access } from "@/lib/access";
 import { createClient } from "@/lib/supabase/client";
 import { checkoutUrl, priceLabel } from "@/lib/config";
 import Lena from "@/components/training/Lena";
+import { hasBeenWelcomed } from "@/lib/onboarding";
+import { useRouter } from "next/navigation";
 
 // Rang anhand gelernter Karten (wie im Profil) – spielerische Stufe im Hero.
 const RANKS: [number, string, string][] = [
@@ -61,10 +63,16 @@ export default function Dashboard() {
   const [due, setDue] = useState<number | null>(null);
   const [firstName, setFirstName] = useState("");
   const [tip, setTip] = useState<string | null>(null);
+  const router = useRouter();
   const [email, setEmail] = useState<string | undefined>();
   const [streak, setStreak] = useState(0);
   const [learned, setLearned] = useState(0);
   const [avatarUrl, setAvatarUrl] = useState("");
+
+  // Beim allerersten Besuch zuerst das Willkommen zeigen.
+  useEffect(() => {
+    hasBeenWelcomed().then((seen) => { if (!seen) router.replace("/start"); });
+  }, [router]);
 
   useEffect(() => {
     loadProgress().then(setProgress);
