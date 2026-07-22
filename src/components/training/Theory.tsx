@@ -119,7 +119,9 @@ function Examples({ items, compact }: { items: Example[]; compact: boolean }) {
           <div className={compact ? "text-[15px] font-semibold" : "text-[17px] font-semibold leading-relaxed"}>
             <Inline text={ex.de} />
           </div>
-          {ex.en && <div className="text-[13px] text-cream-dim mt-0.5">{ex.en}</div>}
+          {/* Auch die Übersetzung darf Auszeichnung tragen – dort steht oft der
+              eigentliche Kontrast ("You **must not** come"). */}
+          {ex.en && <div className="text-[13px] text-cream-dim mt-0.5"><Inline text={ex.en} /></div>}
         </div>
       ))}
     </div>
