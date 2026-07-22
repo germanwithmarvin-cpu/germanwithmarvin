@@ -8,6 +8,7 @@ import { getLessons } from "@/lib/lessons";
 import { completeLesson } from "@/lib/progress";
 import VideoPlayer from "@/components/VideoPlayer";
 import Exercises from "@/components/Exercises";
+import { getUnitForLesson, type Unit as TrainingUnit } from "@/lib/training";
 
 // Alte Multiple-Choice-Quizze weiter unterstützen: in Aufgaben umwandeln.
 function quizToExercises(quiz: Lesson["quiz"]): Exercise[] {
@@ -31,6 +32,8 @@ export default function LessonPage() {
   const [watched, setWatched] = useState(false);
   const [finished, setFinished] = useState(false);
   const [score, setScore] = useState<{ correct: number; total: number } | null>(null);
+  // Passende Übungs-Einheit im Trainer (falls es zu diesem Video eine gibt).
+  const [trainingUnit, setTrainingUnit] = useState<TrainingUnit | null>(null);
 
   useEffect(() => {
     getLessons().then((all) => {
@@ -39,6 +42,11 @@ export default function LessonPage() {
       setNextLesson(i >= 0 ? all[i + 1] : undefined);
       setLoading(false);
     });
+  }, [params.id]);
+
+  useEffect(() => {
+    if (!params.id) return;
+    getUnitForLesson(params.id).then(setTrainingUnit).catch(() => setTrainingUnit(null));
   }, [params.id]);
 
   // Aufgabenliste: neue Aufgaben bevorzugt, sonst altes MC-Quiz.
@@ -130,6 +138,18 @@ export default function LessonPage() {
       {/* Aufgabenteil */}
       {watched && !finished && exercisesOn && (
         <Exercises items={items} onDone={onExercisesDone} />
+      )}
+
+      {/* Weiterführung in den Trainer – nur wenn es zum Thema eine Einheit gibt */}
+      {trainingUnit && (
+        <Link href={`/training/${trainingUnit.slug}`} className="card p-4 flex items-center gap-4 transition hover:border-gold/50">
+          <div className="text-3xl shrink-0">🎓</div>
+          <div className="min-w-0 flex-1">
+            <div className="font-semibold">Practise this topic: {trainingUnit.title}</div>
+            <p className="text-xs text-cream-dim mt-0.5">Rule, exercises and feedback — right after the video.</p>
+          </div>
+          <span className="text-gold-bright shrink-0">→</span>
+        </Link>
       )}
 
       {/* Abschluss */}
