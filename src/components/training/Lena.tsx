@@ -18,6 +18,12 @@ import { useState } from "react";
 
 export type LenaMood = "neutral" | "cheer" | "encourage" | "explain" | "oops" | "wave";
 
+// Versionsnummer der Bilddateien. Statische Dateien werden lange gecacht, und
+// die Dateinamen bleiben gleich - ohne diesen Zusatz behalten Besucher, die die
+// Seite schon einmal geladen haben, dauerhaft die alten Bilder.
+// BEI JEDEM AUSTAUSCH DER BILDER HOCHZAEHLEN.
+const ASSET_VERSION = 2;
+
 export default function Lena({
   mood = "neutral",
   size = 120,
@@ -32,7 +38,7 @@ export default function Lena({
 
   return (
     <img
-      src={`/lena/${mood}.png`}
+      src={`/lena/${mood}.png?v=${ASSET_VERSION}`}
       alt=""
       width={size}
       height={size}
