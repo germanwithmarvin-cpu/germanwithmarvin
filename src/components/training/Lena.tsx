@@ -68,8 +68,8 @@ function Face({ mood }: { mood: LenaMood }) {
         </>
       ) : (
         <>
-          <path d="M84 98 Q92 93 100 97" stroke={INK} strokeWidth="3.5" fill="none" strokeLinecap="round" />
-          <path d="M120 97 Q128 93 136 98" stroke={INK} strokeWidth="3.5" fill="none" strokeLinecap="round" />
+          <path d="M84 102 Q92 99 100 101" stroke={INK} strokeWidth="3.5" fill="none" strokeLinecap="round" />
+          <path d="M120 101 Q128 99 136 102" stroke={INK} strokeWidth="3.5" fill="none" strokeLinecap="round" />
         </>
       )}
 
@@ -105,59 +105,59 @@ function Face({ mood }: { mood: LenaMood }) {
       {mood === "encourage" && <path d="M98 142 Q110 152 122 142" stroke={INK} strokeWidth="3.5" fill="none" strokeLinecap="round" />}
       {mood === "neutral" && <path d="M101 143 Q110 149 119 143" stroke={INK} strokeWidth="3.5" fill="none" strokeLinecap="round" />}
       {mood === "wave" && <path d="M99 142 Q110 151 121 142" stroke={INK} strokeWidth="3.5" fill="none" strokeLinecap="round" />}
-      {mood === "explain" && <ellipse cx="110" cy="145" rx="6" ry="7" fill={INK} />}
+      {mood === "explain" && <ellipse cx="110" cy="145" rx="5" ry="4" fill={INK} />}
       {mood === "oops" && <path d="M100 147 Q106 142 112 147 Q118 152 122 146" stroke={INK} strokeWidth="3.2" fill="none" strokeLinecap="round" />}
     </g>
   );
 }
 
-// Hände/Arme je nach Stimmung – bewusst schlicht, damit die Figur klar bleibt.
+// Hände/Arme je nach Stimmung. Der Arm wird als durchgehender Strich von der
+// Schulter gezeichnet, damit die Hand nie frei zu schweben scheint.
 function Hands({ mood }: { mood: LenaMood }) {
+  const arm = (d: string) => <path d={d} stroke={JACKET} strokeWidth="17" strokeLinecap="round" fill="none" />;
+
   if (mood === "cheer") {
     return (
       <g>
-        <rect x="36" y="150" width="17" height="46" rx="8" fill={JACKET} transform="rotate(18 44 173)" />
-        <circle cx="34" cy="150" r="12" fill={SKIN} />
-        <rect x="167" y="150" width="17" height="46" rx="8" fill={JACKET} transform="rotate(-18 176 173)" />
-        <circle cx="186" cy="150" r="12" fill={SKIN} />
+        {arm("M74 208 Q52 184 46 158")}
+        {arm("M146 208 Q168 184 174 158")}
+        <circle cx="45" cy="152" r="12" fill={SKIN} />
+        <circle cx="175" cy="152" r="12" fill={SKIN} />
       </g>
     );
   }
   if (mood === "wave") {
     return (
       <g>
-        <rect x="167" y="146" width="17" height="48" rx="8" fill={JACKET} transform="rotate(-22 176 170)" />
-        <circle cx="188" cy="144" r="13" fill={SKIN} />
-        <path d="M182 134 l4 -8 M190 133 l3 -9 M196 137 l6 -6" stroke={SKIN_SHADE} strokeWidth="3" strokeLinecap="round" />
+        {arm("M146 208 Q172 190 182 162")}
+        <circle cx="184" cy="155" r="13" fill={SKIN} />
+        <path d="M178 141 l3 -8 M187 140 l2 -9 M194 144 l6 -6" stroke={SKIN_SHADE} strokeWidth="3" strokeLinecap="round" fill="none" />
       </g>
     );
   }
   if (mood === "encourage") {
-    // Daumen hoch
     return (
       <g>
-        <rect x="168" y="168" width="17" height="40" rx="8" fill={JACKET} transform="rotate(-12 176 188)" />
-        <circle cx="184" cy="168" r="13" fill={SKIN} />
-        <rect x="180" y="147" width="8" height="16" rx="4" fill={SKIN} />
+        {arm("M146 210 Q172 204 180 184")}
+        <circle cx="182" cy="178" r="13" fill={SKIN} />
+        <rect x="178" y="157" width="8" height="16" rx="4" fill={SKIN} />
       </g>
     );
   }
   if (mood === "explain") {
-    // zeigt zur Seite
     return (
       <g>
-        <rect x="166" y="172" width="17" height="38" rx="8" fill={JACKET} transform="rotate(-28 174 190)" />
-        <circle cx="190" cy="170" r="12" fill={SKIN} />
-        <rect x="196" y="165" width="18" height="8" rx="4" fill={SKIN} />
+        {arm("M146 208 Q172 198 186 178")}
+        <circle cx="189" cy="174" r="12" fill={SKIN} />
+        <rect x="195" y="170" width="17" height="8" rx="4" fill={SKIN} />
       </g>
     );
   }
   if (mood === "oops") {
-    // Hand an der Wange
     return (
       <g>
-        <rect x="160" y="176" width="16" height="34" rx="8" fill={JACKET} transform="rotate(-34 168 192)" />
-        <circle cx="176" cy="164" r="11" fill={SKIN} />
+        {arm("M146 210 Q168 200 172 178")}
+        <circle cx="173" cy="171" r="11" fill={SKIN} />
       </g>
     );
   }
