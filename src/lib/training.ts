@@ -57,7 +57,7 @@ function toExercise(r: Record<string, unknown>): Exercise {
     correct: sol.correct ?? -1,
     answers: sol.answers ?? [],
     order: sol.order ?? [],
-    explain: (r.explain as string) ?? "",
+    explain: (r.explanation as string) ?? "",
     hint: (r.hint as string) ?? "",
   };
 }
