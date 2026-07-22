@@ -7,6 +7,7 @@ import { getAccess } from "@/lib/access";
 import { createClient } from "@/lib/supabase/client";
 import Paywall from "@/components/Paywall";
 import Lena from "@/components/training/Lena";
+import { CHECK_QUESTIONS } from "@/lib/grammarCheck";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1"];
 
@@ -78,6 +79,23 @@ export default function TrainingPage() {
           </div>
         )}
       </div>
+
+      {/* Der Check steht bewusst vor den Einheiten: wer nicht weiss, wo es
+          hakt, faengt sonst bei Einheit 1 an, obwohl die laengst sitzt. */}
+      {!loading && units.length > 0 && (
+        <Link href="/check" className="card p-5 flex items-center gap-4 transition hover:border-gold/50"
+          style={{ borderLeft: "5px solid var(--gold)" }}>
+          <div className="text-3xl shrink-0">🧭</div>
+          <div className="min-w-0 flex-1">
+            <div className="font-bold">Not sure where to start?</div>
+            <p className="text-sm text-cream-dim mt-0.5">
+              Take the grammar check — {CHECK_QUESTIONS.length} questions, ten minutes. It finds the topics that are not sitting yet
+              and sends you straight to the right unit.
+            </p>
+          </div>
+          <span className="text-gold-bright shrink-0 text-xl">→</span>
+        </Link>
+      )}
 
       {loading && <p className="text-sm text-cream-dim">Loading…</p>}
       {!loading && units.length === 0 && (

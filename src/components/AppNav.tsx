@@ -11,6 +11,7 @@ const links = [
   { href: "/dashboard", label: "Overview", icon: "🏠" },
   { href: "/lessons", label: "Lessons", icon: "🎬" },
   { href: "/training", label: "Training", icon: "🎓" },
+  { href: "/check", label: "Where you stand", icon: "🧭" },
   { href: "/decks", label: "Flashcards", icon: "🗂️" },
   { href: "/game", label: "Word Rocket", icon: "🚀" },
   { href: "/stories", label: "Stories", icon: "📖" },
