@@ -30,7 +30,7 @@ export type PathTrophyItem = {
 export type PathItem = PathNodeItem | PathTrophyItem;
 
 const ROW = 258; // vertikaler Abstand je Reihe
-const TOP = 196; // Abstand oben (Platz für die erste Kapitel-Leiste)
+const TOP = 220; // Abstand oben (Platz für die erste, größere Kapitel-Leiste)
 const NODE = 116; // Knoten-Durchmesser
 const RING = 9; // Dicke des Fortschrittsrings
 
@@ -186,9 +186,9 @@ export function PathMap({ items }: { items: PathItem[] }) {
               const y = points[i].y;
               const count = node.level ? levelCounts[node.level] ?? 0 : 0;
               return (
-                <div key={`lvl-${node.id}`} className="absolute left-0 right-0 px-6" style={{ top: y - NODE / 2 - 112 }}>
+                <div key={`lvl-${node.id}`} className="absolute left-0 right-0 px-6" style={{ top: y - NODE / 2 - 132 }}>
                   <div
-                    className="node-pop flex items-center gap-3 rounded-2xl px-4 py-3"
+                    className="node-pop flex items-center gap-4 rounded-2xl px-5 py-4"
                     style={{
                       animationDelay: `${Math.min(i * 0.04, 1.2)}s`,
                       background: "color-mix(in srgb, var(--background) 90%, transparent)",
@@ -197,14 +197,14 @@ export function PathMap({ items }: { items: PathItem[] }) {
                     }}
                   >
                     <span
-                      className="grid place-items-center rounded-xl px-3.5 py-1.5 text-xl font-extrabold shrink-0"
-                      style={{ background: "linear-gradient(160deg, var(--gold-bright), var(--gold))", color: "#3b2116" }}
+                      className="grid place-items-center rounded-2xl px-5 py-2.5 text-3xl font-extrabold shrink-0"
+                      style={{ background: "linear-gradient(160deg, var(--gold-bright), var(--gold))", color: "#3b2116", boxShadow: "0 8px 18px -10px rgba(59,41,34,0.5)" }}
                     >
                       {node.level}
                     </span>
                     <div className="min-w-0">
-                      <div className="text-lg font-bold text-cream leading-tight truncate">{node.levelLabel ?? ""}</div>
-                      <div className="text-xs text-cream-dim">{count} {count === 1 ? "topic" : "topics"}</div>
+                      <div className="text-2xl font-bold text-cream leading-tight truncate">{node.levelLabel ?? ""}</div>
+                      <div className="text-sm text-cream-dim mt-0.5">{count} {count === 1 ? "topic" : "topics"}</div>
                     </div>
                     <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, color-mix(in srgb, var(--gold) 45%, transparent), transparent)" }} />
                   </div>
