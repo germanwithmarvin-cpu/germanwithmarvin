@@ -62,7 +62,7 @@ export const TRAINING_UNITS: SeedUnit[] = [
     exercises: [
       {
         kind: "choice",
-        prompt: "How many articles for the does German have in the singular?",
+        prompt: "In the singular, how many different words for the does German have?",
         data: { options: ["One", "Two", "Three", "Four"] },
         solution: { correct: 2 },
         explanation: "**Three**: *der* (masculine), *die* (feminine), *das* (neuter). Every noun carries one of them.",

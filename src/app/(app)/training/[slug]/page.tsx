@@ -107,7 +107,8 @@ export default function TrainingUnitPage() {
       const [list, prog] = await Promise.all([getUnits(), getMyProgress()]);
       if (cancelled) return;
       const idx = list.findIndex((x) => x.id === u.id);
-      const gap = list.slice(0, Math.max(idx, 0)).find((x) => (prog[x.id]?.mastery ?? 0) < 80);
+      const gap = prog[u.id] ? undefined // schon angefangen -> bleibt offen
+        : list.slice(0, Math.max(idx, 0)).find((x) => (prog[x.id]?.mastery ?? 0) < 80);
       if (gap) {
         const supabase = createClient();
         const { data: { user } } = await supabase.auth.getUser();

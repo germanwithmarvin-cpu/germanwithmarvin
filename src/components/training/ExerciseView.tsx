@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { Exercise } from "@/lib/training";
 import SentenceSlots from "./SentenceSlots";
 
@@ -56,6 +56,12 @@ function Choice({ ex, value, onChange, locked }: { ex: Exercise; value: string; 
 
 // Lückentext & Fehlersuche: freie Eingabe.
 function Typed({ ex, value, onChange, locked, correct }: { ex: Exercise; value: string; onChange: (v: string) => void; locked: boolean; correct: boolean }) {
+  // React verwendet dasselbe Eingabefeld für die naechste Aufgabe weiter, also
+  // greift autoFocus nur beim allerersten Mal. Ohne diesen Griff steht der
+  // Cursor ab Aufgabe zwei nicht mehr im Feld und das Getippte geht ins Leere.
+  const box = useRef<HTMLInputElement>(null);
+  useEffect(() => { if (!locked) box.current?.focus(); }, [ex.id, locked]);
+
   return (
     <div className="space-y-4">
       <p className="text-xs uppercase tracking-widest text-cream-dim">
@@ -63,7 +69,7 @@ function Typed({ ex, value, onChange, locked, correct }: { ex: Exercise; value: 
       </p>
       <p className="text-xl font-semibold leading-relaxed">{ex.prompt}</p>
       <input
-        autoFocus
+        ref={box}
         disabled={locked}
         value={value}
         onChange={(e) => onChange(e.target.value)}

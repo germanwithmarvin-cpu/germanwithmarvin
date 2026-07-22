@@ -22,16 +22,19 @@ export default function TrainingPage() {
     (async () => {
       const access = await getAccess();
       if (access.tier !== "full") { if (!cancelled) { setBlocked(true); setLoading(false); } return; }
-      const [u, p] = await Promise.all([getUnits(), getMyProgress()]);
-      if (cancelled) return;
-      setUnits(u); setProgress(p); setLoading(false);
-
       // Der Lehrer sieht alles – sonst könnte Marvin neue Einheiten nicht prüfen.
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user || cancelled) return;
-      const { data } = await supabase.from("profiles").select("is_teacher").eq("id", user.id).single();
-      if (!cancelled) setIsTeacher(Boolean(data?.is_teacher));
+      // Wird zusammen mit dem Rest geladen, sonst blitzen die Schlösser kurz auf.
+      const teacher = async () => {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return false;
+        const { data } = await supabase.from("profiles").select("is_teacher").eq("id", user.id).single();
+        return Boolean(data?.is_teacher);
+      };
+
+      const [u, p, t] = await Promise.all([getUnits(), getMyProgress(), teacher()]);
+      if (cancelled) return;
+      setUnits(u); setProgress(p); setIsTeacher(t); setLoading(false);
     })();
     return () => { cancelled = true; };
   }, []);
@@ -42,9 +45,10 @@ export default function TrainingPage() {
 
   // Schritt für Schritt: eine Einheit öffnet sich erst, wenn die davor sitzt.
   // So kann niemand die Verbposition üben, bevor die Konjugation durch ist.
+  // Angefangene Einheiten bleiben offen – was einmal auf war, wird nie wieder zu.
   const firstOpen = units.findIndex((u) => (progress[u.id]?.mastery ?? 0) < 80);
   const isLocked = (u: Unit) => {
-    if (isTeacher || firstOpen < 0) return false;
+    if (isTeacher || firstOpen < 0 || progress[u.id]) return false;
     return units.indexOf(u) > firstOpen;
   };
 
