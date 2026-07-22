@@ -2,11 +2,17 @@
 // Werden über /api/seed-training serverseitig eingespielt.
 //
 // WICHTIG – Reihenfolge: Die Einheiten folgen der Video-Reihenfolge des Kurses.
-// A1: Alphabet -> Begrüßungen -> Artikel -> KONJUGATION -> VERBPOSITION ->
-//     Zahlen/Zeit -> Small Talk -> ... -> Fragen
+// Die echten A1-Videos in ihrer Reihenfolge (Stand Juli 2026):
+//   Was ist A1? -> Alphabet -> Begrüßungen -> ARTIKEL -> KONJUGATION ->
+//   VERBPOSITION -> Zahlen/Zeit/Datum -> SMALL TALK -> Danke sagen ->
+//   Im Restaurant -> Reaktionen
+// Zu Plural und haben/sein gibt es KEIN eigenes Video. Diese beiden Einheiten
+// vertiefen deshalb das jeweils passende Video (Artikel bzw. Konjugation) und
+// stehen direkt dahinter.
+//
 // Eine Einheit darf NICHTS voraussetzen, was erst später drankommt. Konkret in
-// A1 tabu, weil später/A2: trennbare Verben, Modalverben, Nebensätze (weil/dass),
-// Fragen, Fälle, Vergangenheit.
+// A1 tabu, weil erst in A2: Fälle, trennbare Verben, Modalverben, Nebensätze
+// (weil/dass), Vergangenheit.
 //
 // Auszeichnung in Theorie und Erklärungen:
 //   **Text**  = wichtige Regel (gelber Marker)
@@ -159,7 +165,7 @@ export const TRAINING_UNITS: SeedUnit[] = [
     level: "A1",
     lessonId: "german-conjugation-how-german-verbs-chan-z9wd",
     lessonMatch: "conjugation",
-    sortOrder: 2,
+    sortOrder: 3,
     theory: [
       "A German verb has two parts: the **stem** and the **ending**. Take the infinitive lernen, cut off **-en**, and the stem is left: lern-.",
       "Now you only add the ending for the person:\nich *lerne* — du *lernst* — er/sie/es *lernt*\nwir *lernen* — ihr *lernt* — sie/Sie *lernen*",
@@ -268,7 +274,7 @@ export const TRAINING_UNITS: SeedUnit[] = [
     level: "A1",
     lessonId: "a1-german-sentence-structure-the-verbpos-rvmk",
     lessonMatch: "verbposition",
-    sortOrder: 3,
+    sortOrder: 5,
     theory: [
       "In a German statement the conjugated verb always stands in **second place**. Not the second word — the second **position**. One position can be a single word (Ich) or a small group of words (Am Montag).",
       "@Ich|lerne*|heute Deutsch",
@@ -382,7 +388,7 @@ export const TRAINING_UNITS: SeedUnit[] = [
     level: "A1",
     lessonId: null,
     lessonMatch: "number",
-    sortOrder: 4,
+    sortOrder: 6,
     theory: [
       "0–12 you simply learn: null, eins, zwei, drei, vier, fünf, sechs, sieben, acht, neun, zehn, elf, zwölf.",
       "From 13 to 19 you glue the unit onto **zehn**: drei + zehn = *dreizehn*, sech + zehn = *sechzehn*, sieb + zehn = *siebzehn*.",
@@ -499,9 +505,8 @@ export const TRAINING_UNITS: SeedUnit[] = [
     title: "haben and sein",
     subtitle: "The two verbs you need every single day",
     level: "A1",
-    lessonId: null,
-    lessonMatch: "haben",
-    sortOrder: 5,
+    lessonId: "german-conjugation-how-german-verbs-chan-z9wd",  // vertieft das Konjugations-Video
+    sortOrder: 4,
     theory: [
       "Two verbs turn up in almost every German sentence — and both are **irregular**. The stem-plus-ending trick does not work here. You learn these two by heart, once, and then they carry you for years.",
       "**sein** (to be):\nich *bin* — du *bist* — er/sie/es *ist*\nwir *sind* — ihr *seid* — sie/Sie *sind*",
@@ -614,9 +619,8 @@ export const TRAINING_UNITS: SeedUnit[] = [
     title: "Making nouns plural",
     subtitle: "One article, five patterns",
     level: "A1",
-    lessonId: null,
-    lessonMatch: "plural",
-    sortOrder: 6,
+    lessonId: "the-german-articles-der-die-das-2ewc",  // vertieft das Artikel-Video
+    sortOrder: 2,
     theory: [
       "The easy half first: in the plural **every noun takes die**. der and das simply disappear.\nder Mann → *die* Männer — das Kind → *die* Kinder — die Frau → *die* Frauen",
       "The other half is the ending, and there are **five patterns**:",
@@ -709,11 +713,129 @@ export const TRAINING_UNITS: SeedUnit[] = [
       },
       {
         kind: "error",
-        prompt: "Correct this sentence: Das Bücher sind neu.",
+        prompt: "Correct this: das Bücher",
         data: {},
-        solution: { answers: ["Die Bücher sind neu.", "Die Buecher sind neu.", "Die Bücher sind neu"] },
-        explanation: "Bücher is plural, and the plural always takes **die**: *Die* Bücher sind neu.",
+        solution: { answers: ["die Bücher", "die Buecher", "Die Bücher"] },
+        explanation: "Bücher is plural, and the plural always takes **die**: *die* Bücher.",
         hint: "Look at the article, not at the noun.",
+      },
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // 7) SMALL TALK / FRAGEN – zum Video "How to Do Small Talk in German".
+  //    Hier sind Fragen das erste Mal dran. Der Anschluss an die Verbposition
+  //    ist der ganze Trick: Aussage = Verb an 2, Ja/Nein-Frage = Verb an 1.
+  //    "Wie geht es dir?" wird bewusst als fester Block gelehrt (Dativ kommt
+  //    erst in A2).
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    slug: "small-talk",
+    title: "Asking questions",
+    subtitle: "Small talk — and where the verb goes in a question",
+    level: "A1",
+    lessonId: "how-to-do-small-talk-in-german-cnzx",
+    lessonMatch: "small talk",
+    sortOrder: 7,
+    theory: [
+      "You already know the rule for statements: the verb stands in **second place**. A question changes exactly one thing — where the verb goes. Nothing else.",
+      "There are two kinds. First the **W-questions**, the ones that ask for information. The W-word takes position 1, and the verb stays exactly where it was — **second**:",
+      "@Woher|kommst*|du\n@Wie|heißt*|du\n@Wo|wohnst*|du",
+      "The W-words worth knowing now: **wer** (who), **was** (what), **wo** (where), **woher** (where from), **wohin** (where to), **wann** (when), **wie** (how), **warum** (why).",
+      "Second: the **yes/no questions**. There is no W-word, so position 1 is free — and the **verb jumps into it**:",
+      "@Kommst*|du aus Berlin\n@Lernst*|du Deutsch",
+      "That is the whole system. Verb in **second** place = statement. Verb in **first** place = yes/no question. You answer those with Ja or Nein.",
+      "The five that carry almost every first conversation:\n**Wie heißt du?** — What is your name?\n**Woher kommst du?** — Where are you from?\n**Wo wohnst du?** — Where do you live?\n**Was machst du?** — What do you do?\n**Wie geht es dir?** — How are you?",
+      "Two notes. With people you do not know you use the polite **Sie**: Wie heißen *Sie*? Woher kommen *Sie*? And **Wie geht es dir?** is best learnt as one fixed block — the grammar inside it comes later, in A2.",
+    ].join("\n\n"),
+    exercises: [
+      {
+        kind: "choice",
+        prompt: "In a W-question (Woher kommst du?), where does the verb stand?",
+        data: { options: ["In first place", "In second place", "At the end", "It disappears"] },
+        solution: { correct: 1 },
+        explanation: "The W-word takes position 1, so the verb keeps its usual **second place**: Woher *kommst* du?",
+      },
+      {
+        kind: "choice",
+        prompt: "In a yes/no question (Lernst du Deutsch?), where does the verb stand?",
+        data: { options: ["In first place", "In second place", "At the end", "Behind the subject"] },
+        solution: { correct: 0 },
+        explanation: "No W-word means position 1 is free — the **verb moves into first place**: *Lernst* du Deutsch?",
+      },
+      {
+        kind: "order",
+        prompt: "Build the question: Where do you come from?",
+        data: { tokens: ["kommst", "Woher", "du"] },
+        solution: { order: ["Woher", "kommst", "du"], verb: 1 },
+        explanation: "W-word first, verb second, subject third: Woher *kommst* du?",
+        hint: "The verb keeps its second place.",
+      },
+      {
+        kind: "order",
+        prompt: "Build the yes/no question: Do you learn German?",
+        data: { tokens: ["Deutsch", "Lernst", "du"] },
+        solution: { order: ["Lernst", "du", "Deutsch"], verb: 0 },
+        explanation: "Without a W-word the verb takes **first place**: *Lernst* du Deutsch? Compare the statement: Du *lernst* Deutsch.",
+        hint: "Nothing stands in front of the verb here.",
+      },
+      {
+        kind: "gap",
+        prompt: "___ heißt du? (you want to know his or her name)",
+        data: {},
+        solution: { answers: ["Wie"] },
+        explanation: "German asks **wie** (how), not was: *Wie* heißt du?",
+        hint: "Not what — Germans ask it differently.",
+      },
+      {
+        kind: "gap",
+        prompt: "___ wohnst du? (you want to know the city)",
+        data: {},
+        solution: { answers: ["Wo"] },
+        explanation: "**wo** asks for a place: *Wo* wohnst du? — In Hamburg.",
+      },
+      {
+        kind: "error",
+        prompt: "Correct this question: Woher du kommst?",
+        data: {},
+        solution: { answers: ["Woher kommst du?", "Woher kommst du"] },
+        explanation: "Woher takes position 1, so the verb must follow immediately: Woher *kommst* du? The subject moves behind it — exactly like in a statement.",
+        hint: "What has to come second?",
+      },
+      {
+        kind: "error",
+        prompt: "Turn this into a proper question: Du lernst Deutsch?",
+        data: {},
+        solution: { answers: ["Lernst du Deutsch?", "Lernst du Deutsch"] },
+        explanation: "For a yes/no question the **verb goes to the front**: *Lernst* du Deutsch? Just raising your voice at the end is not enough in German.",
+      },
+      {
+        kind: "choice",
+        prompt: "Which W-word asks for a reason?",
+        data: { options: ["Wann", "Wohin", "Warum", "Wer"] },
+        solution: { correct: 2 },
+        explanation: "**warum** = why. Wann is when, wohin is where to, wer is who.",
+      },
+      {
+        kind: "gap",
+        prompt: "Polite form: ___ heißen Sie?",
+        data: {},
+        solution: { answers: ["Wie"] },
+        explanation: "Same W-word, only the polite **Sie** and its verb form change: *Wie* heißen Sie?",
+      },
+      {
+        kind: "choice",
+        prompt: "What does Wie geht es dir? mean?",
+        data: { options: ["What is your name?", "How are you?", "Where do you live?", "How old are you?"] },
+        solution: { correct: 1 },
+        explanation: "**How are you?** Learn it as one fixed block — the grammar inside it comes in A2. Polite version: Wie geht es Ihnen?",
+      },
+      {
+        kind: "order",
+        prompt: "Build the question: When do you learn German?",
+        data: { tokens: ["du", "Wann", "Deutsch", "lernst"] },
+        solution: { order: ["Wann", "lernst", "du", "Deutsch"], verb: 1 },
+        explanation: "Wann in position 1, verb *lernst* second, then the subject: Wann lernst du Deutsch?",
       },
     ],
   },
