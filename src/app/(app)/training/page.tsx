@@ -43,13 +43,19 @@ export default function TrainingPage() {
 
   const mastered = units.filter((u) => (progress[u.id]?.mastery ?? 0) >= 80).length;
 
-  // Schritt für Schritt: eine Einheit öffnet sich erst, wenn die davor sitzt.
-  // So kann niemand die Verbposition üben, bevor die Konjugation durch ist.
+  // Schritt für Schritt – aber nur INNERHALB eines Levels. So kann niemand die
+  // Verbposition üben, bevor die Konjugation sitzt; ein B1-Schüler muss aber
+  // nicht erst ganz A1 durcharbeiten, um an die Relativsätze zu kommen.
   // Angefangene Einheiten bleiben offen – was einmal auf war, wird nie wieder zu.
-  const firstOpen = units.findIndex((u) => (progress[u.id]?.mastery ?? 0) < 80);
   const isLocked = (u: Unit) => {
-    if (isTeacher || firstOpen < 0 || progress[u.id]) return false;
-    return units.indexOf(u) > firstOpen;
+    if (isTeacher || progress[u.id]) return false;
+    const level = units.filter((x) => x.level === u.level);
+    const firstOpen = level.findIndex((x) => (progress[x.id]?.mastery ?? 0) < 80);
+    return firstOpen >= 0 && level.indexOf(u) > firstOpen;
+  };
+  const previousInLevel = (u: Unit) => {
+    const level = units.filter((x) => x.level === u.level);
+    return level[level.indexOf(u) - 1];
   };
 
   return (
@@ -94,7 +100,7 @@ export default function TrainingPage() {
                 const m = progress[u.id]?.mastery ?? 0;
                 const done = m >= 80;
                 const locked = isLocked(u);
-                const previous = units[units.indexOf(u) - 1];
+                const previous = previousInLevel(u);
 
                 const body = (
                   <>

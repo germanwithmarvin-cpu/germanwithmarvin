@@ -103,12 +103,13 @@ export default function TrainingUnitPage() {
       if (cancelled) return;
       if (!u) { setPhase("missing"); return; }
 
-      // Schritt für Schritt: alle Einheiten davor müssen sitzen.
+      // Schritt für Schritt: alle Einheiten davor IM SELBEN LEVEL müssen sitzen.
       const [list, prog] = await Promise.all([getUnits(), getMyProgress()]);
       if (cancelled) return;
-      const idx = list.findIndex((x) => x.id === u.id);
+      const level = list.filter((x) => x.level === u.level);
+      const idx = level.findIndex((x) => x.id === u.id);
       const gap = prog[u.id] ? undefined // schon angefangen -> bleibt offen
-        : list.slice(0, Math.max(idx, 0)).find((x) => (prog[x.id]?.mastery ?? 0) < 80);
+        : level.slice(0, Math.max(idx, 0)).find((x) => (prog[x.id]?.mastery ?? 0) < 80);
       if (gap) {
         const supabase = createClient();
         const { data: { user } } = await supabase.auth.getUser();

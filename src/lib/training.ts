@@ -168,11 +168,23 @@ export function checkAnswer(ex: Exercise, given: string): boolean {
     const got = given.split("\n").map((t) => t.trim()).filter(Boolean);
     return got.length === ex.order.length && got.every((t, i) => norm(t) === norm(ex.order[i]));
   }
-  // gap / error: gegen alle akzeptierten Lösungen prüfen, ein Tippfehler erlaubt
+  // gap / error: gegen alle akzeptierten Lösungen prüfen.
+  //
+  // Ein Tippfehler wird nur bei MEHRWORT-Antworten verziehen, also bei ganzen
+  // Sätzen. Dort geht es um den Satzbau, und an "Deutch" statt "Deutsch" soll
+  // niemand scheitern.
+  //
+  // Bei Einwort-Antworten wird exakt geprüft, denn dort IST der eine Buchstabe
+  // die Aufgabe: lerne/lernt, kann/kannst, der/den, weil/wenn. Mit Toleranz
+  // hätte die Konjugations-Einheit "lernt" als "lerne" durchgewinkt.
+  // Umlaute sind davon nicht betroffen - die werden vorher vereinheitlicht
+  // (ä->ae), und wo es nötig ist, steht die ae-Schreibweise zusätzlich in der
+  // Lösungsliste.
   const g = norm(given);
   if (!g) return false;
   return ex.answers.some((a) => {
     const t = norm(a);
-    return g === t || (t.length > 4 && dist(g, t) <= 1);
+    if (g === t) return true;
+    return t.includes(" ") && dist(g, t) <= 1;
   });
 }
