@@ -11,16 +11,32 @@ import ExerciseView from "@/components/training/ExerciseView";
 
 type Phase = "loading" | "blocked" | "missing" | "theory" | "practice" | "done";
 
-// Sehr einfache Auszeichnung: **fett**, *kursiv*, Leerzeile = neuer Absatz.
-function RichText({ text }: { text: string }) {
+// Auszeichnung: **wichtig** (Marker), *Verb* (Bordeaux-Chip), Leerzeile = Absatz.
+// Bewusst deutlich abgesetzt – nur ein Farbunterschied ist zu schwach.
+function RichText({ text, size = "base" }: { text: string; size?: "base" | "large" }) {
+  const cls = size === "large" ? "text-[17px] leading-8" : "text-[15.5px] leading-7";
   return (
-    <div className="space-y-3">
+    <div className={`space-y-4 ${cls}`}>
       {text.split(/\n\s*\n/).map((para, i) => (
-        <p key={i} className="leading-relaxed">
+        <p key={i}>
           {para.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).map((part, k) => {
-            if (part.startsWith("**") && part.endsWith("**")) return <b key={k} style={{ color: "var(--bordeaux)" }}>{part.slice(2, -2)}</b>;
-            if (part.startsWith("*") && part.endsWith("*") && part.length > 2) return <i key={k} className="text-gold-bright font-semibold not-italic">{part.slice(1, -1)}</i>;
-            return <span key={k}>{part}</span>;
+            if (part.startsWith("**") && part.endsWith("**")) {
+              return (
+                <mark key={k} className="font-extrabold rounded px-1.5 py-0.5"
+                  style={{ background: "color-mix(in srgb, var(--gold) 42%, transparent)", color: "var(--cream)" }}>
+                  {part.slice(2, -2)}
+                </mark>
+              );
+            }
+            if (part.startsWith("*") && part.endsWith("*") && part.length > 2) {
+              return (
+                <span key={k} className="font-bold rounded px-1.5 py-0.5 whitespace-nowrap"
+                  style={{ background: "var(--bordeaux)", color: "#fff" }}>
+                  {part.slice(1, -1)}
+                </span>
+              );
+            }
+            return <span key={k}>{part.split("\n").map((line, n) => <span key={n}>{n > 0 && <br />}{line}</span>)}</span>;
           })}
         </p>
       ))}
@@ -119,7 +135,7 @@ export default function TrainingUnitPage() {
             </div>
             <p className="text-cream-dim text-sm mt-1">{unit.subtitle}</p>
           </div>
-          <div className="card p-6"><RichText text={unit.theory} /></div>
+          <div className="card p-6 sm:p-7"><RichText text={unit.theory} size="large" /></div>
           <div className="flex items-center gap-3">
             <button onClick={() => setPhase("practice")} className="btn-gold px-6 py-3 font-bold">Start practice →</button>
             <span className="text-xs text-cream-dim">{list.length} exercises</span>
@@ -140,11 +156,14 @@ export default function TrainingUnitPage() {
 
           {/* Rückmeldung mit Begründung */}
           {locked && (
-            <div className="rounded-xl p-4" style={{ background: ok ? "color-mix(in srgb, var(--green-accent) 16%, transparent)" : "color-mix(in srgb, var(--red-accent) 14%, transparent)" }}>
-              <div className="font-bold mb-1" style={{ color: ok ? "var(--green-accent)" : "var(--red-accent)" }}>
+            <div className="rounded-2xl p-5 sm:p-6" style={{
+              background: ok ? "color-mix(in srgb, var(--green-accent) 14%, transparent)" : "color-mix(in srgb, var(--red-accent) 12%, transparent)",
+              borderLeft: `6px solid ${ok ? "var(--green-accent)" : "var(--red-accent)"}`,
+            }}>
+              <div className="font-extrabold text-lg mb-2" style={{ color: ok ? "var(--green-accent)" : "var(--red-accent)" }}>
                 {ok ? "✓ Correct" : "✗ Not quite"}
               </div>
-              {ex.explain && <p className="text-sm leading-relaxed">{ex.explain}</p>}
+              {ex.explain && <RichText text={ex.explain} size="large" />}
             </div>
           )}
           {!locked && ex.hint && <p className="text-xs text-cream-dim">💡 {ex.hint}</p>}
