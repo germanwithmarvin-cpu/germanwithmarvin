@@ -35,10 +35,12 @@ function Choice({ ex, value, onChange, locked }: { ex: Exercise; value: string; 
           return (
             <button
               key={i}
-              disabled={locked}
-              onClick={() => onChange(String(i))}
-              className="text-left rounded-xl px-4 py-3 font-medium transition disabled:cursor-default flex items-center gap-3"
-              style={{ background: bg, color }}
+              onClick={() => !locked && onChange(String(i))}
+              // Kein `disabled`: der Browser graut den Text sonst aus, und genau
+              // dann soll der Schüler richtig/falsch am besten erkennen können.
+              aria-disabled={locked}
+              className="text-left rounded-xl px-4 py-3 font-semibold text-lg transition flex items-center gap-3"
+              style={{ background: bg, color, opacity: 1, pointerEvents: locked ? "none" : undefined }}
             >
               <span className="grid place-items-center w-6 h-6 rounded-md text-xs font-bold shrink-0"
                 style={{ background: "color-mix(in srgb, var(--cream) 14%, transparent)" }}>{i + 1}</span>
@@ -115,9 +117,9 @@ function Order({ ex, value, onChange, locked, correct }: { ex: Exercise; value: 
       >
         {chosen.length === 0 && <span className="text-cream-dim text-sm py-1.5">…</span>}
         {chosen.map((t, i) => (
-          <button key={`${t}-${i}`} disabled={locked} onClick={() => removeAt(i)}
-            className="rounded-lg px-3 py-1.5 font-medium transition disabled:cursor-default"
-            style={{ background: "var(--gold)", color: "#3b2116" }}>
+          <button key={`${t}-${i}`} aria-disabled={locked} onClick={() => !locked && removeAt(i)}
+            className="rounded-lg px-3 py-2 font-semibold text-lg transition"
+            style={{ background: "var(--gold)", color: "#3b2116", opacity: 1, pointerEvents: locked ? "none" : undefined }}>
             {t}
           </button>
         ))}
@@ -131,7 +133,7 @@ function Order({ ex, value, onChange, locked, correct }: { ex: Exercise; value: 
             const spent = left <= 0;
             return (
               <button key={`${t}-${i}`} disabled={spent} onClick={() => add(t)}
-                className="rounded-lg px-3 py-1.5 font-medium transition"
+                className="rounded-lg px-3 py-2 font-semibold text-lg transition"
                 style={{ background: spent ? "transparent" : "var(--bordeaux-soft)", color: spent ? "transparent" : "var(--cream)", boxShadow: spent ? "inset 0 0 0 1px color-mix(in srgb, var(--cream) 12%, transparent)" : "none" }}>
                 {t}
               </button>
