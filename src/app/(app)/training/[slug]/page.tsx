@@ -8,6 +8,11 @@ import { getAccess } from "@/lib/access";
 import { addXp } from "@/lib/progress";
 import Paywall from "@/components/Paywall";
 import ExerciseView from "@/components/training/ExerciseView";
+import Lena from "@/components/training/Lena";
+
+// Lenas Sprüche – mitlernend, auf Augenhöhe, nie belehrend.
+const PRAISE = ["Nailed it!", "Exactly.", "Nice — keep going!", "That was clean."];
+const CONSOLE_LINES = ["So close — look:", "Almost! Here is why:", "No worries, this is the bit:"];
 
 type Phase = "loading" | "blocked" | "missing" | "theory" | "practice" | "done";
 
@@ -135,7 +140,10 @@ export default function TrainingUnitPage() {
             </div>
             <p className="text-cream-dim text-sm mt-1">{unit.subtitle}</p>
           </div>
-          <div className="card p-6 sm:p-7"><RichText text={unit.theory} size="large" /></div>
+          <div className="card p-6 sm:p-7 flex gap-5 items-start">
+            <div className="shrink-0 hidden md:block -mt-2"><Lena mood="explain" size={104} /></div>
+            <div className="min-w-0 flex-1"><RichText text={unit.theory} size="large" /></div>
+          </div>
           <div className="flex items-center gap-3">
             <button onClick={() => setPhase("practice")} className="btn-gold px-6 py-3 font-bold">Start practice →</button>
             <span className="text-xs text-cream-dim">{list.length} exercises</span>
@@ -160,10 +168,17 @@ export default function TrainingUnitPage() {
               background: ok ? "color-mix(in srgb, var(--green-accent) 14%, transparent)" : "color-mix(in srgb, var(--red-accent) 12%, transparent)",
               borderLeft: `6px solid ${ok ? "var(--green-accent)" : "var(--red-accent)"}`,
             }}>
-              <div className="font-extrabold text-lg mb-2" style={{ color: ok ? "var(--green-accent)" : "var(--red-accent)" }}>
-                {ok ? "✓ Correct" : "✗ Not quite"}
+              <div className="flex gap-4 items-start">
+                <div className="shrink-0 hidden sm:block -mt-3">
+                  <Lena mood={ok ? "cheer" : "oops"} size={84} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="font-extrabold text-lg mb-2" style={{ color: ok ? "var(--green-accent)" : "var(--red-accent)" }}>
+                    {ok ? `✓ ${PRAISE[idx % PRAISE.length]}` : `✗ ${CONSOLE_LINES[idx % CONSOLE_LINES.length]}`}
+                  </div>
+                  {ex.explain && <RichText text={ex.explain} size="large" />}
+                </div>
               </div>
-              {ex.explain && <RichText text={ex.explain} size="large" />}
             </div>
           )}
           {!locked && ex.hint && <p className="text-xs text-cream-dim">💡 {ex.hint}</p>}
@@ -184,7 +199,7 @@ export default function TrainingUnitPage() {
             const passed = pct >= 80;
             return (
               <>
-                <div className="text-5xl">{passed ? "🎓" : "💪"}</div>
+                <div className="flex justify-center"><Lena mood={passed ? "cheer" : "encourage"} size={130} /></div>
                 <div>
                   <div className="text-5xl font-extrabold" style={{ color: "var(--bordeaux)" }}>{pct}%</div>
                   <p className="text-cream-dim text-sm mt-1">{correctCount} of {list.length} correct</p>

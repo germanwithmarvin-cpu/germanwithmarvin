@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getUnits, getMyProgress, type Unit, type UnitProgress } from "@/lib/training";
 import { getAccess } from "@/lib/access";
 import Paywall from "@/components/Paywall";
+import Lena from "@/components/training/Lena";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1"];
 
@@ -33,11 +34,15 @@ export default function TrainingPage() {
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">Training 🎓</h1>
-          <p className="text-cream-dim text-sm mt-1">
-            Learn a rule, then practise it until it sticks — with a proper explanation whenever you slip.
-          </p>
+        <div className="flex items-center gap-4">
+          <div className="shrink-0 hidden sm:block"><Lena mood="wave" size={92} /></div>
+          <div>
+            <h1 className="text-2xl font-bold">Training 🎓</h1>
+            <p className="text-cream-dim text-sm mt-1">
+              Hi, I&apos;m <b className="text-cream">Lena</b> — I&apos;m learning along with you. Read the rule,
+              practise it, and whenever you slip I&apos;ll tell you exactly why.
+            </p>
+          </div>
         </div>
         {units.length > 0 && (
           <div className="card px-4 py-2.5">
