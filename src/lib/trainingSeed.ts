@@ -488,4 +488,233 @@ export const TRAINING_UNITS: SeedUnit[] = [
       },
     ],
   },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // 5) HABEN & SEIN – vertieft die beiden unregelmaessigen Verben.
+  //    Beispiele bewusst ohne Artikel im Objekt (Hunger, Zeit, Glueck), damit
+  //    kein Akkusativ durch die Hintertuer hereinkommt.
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    slug: "haben-sein",
+    title: "haben and sein",
+    subtitle: "The two verbs you need every single day",
+    level: "A1",
+    lessonId: null,
+    lessonMatch: "haben",
+    sortOrder: 5,
+    theory: [
+      "Two verbs turn up in almost every German sentence — and both are **irregular**. The stem-plus-ending trick does not work here. You learn these two by heart, once, and then they carry you for years.",
+      "**sein** (to be):\nich *bin* — du *bist* — er/sie/es *ist*\nwir *sind* — ihr *seid* — sie/Sie *sind*",
+      "**haben** (to have):\nich *habe* — du *hast* — er/sie/es *hat*\nwir *haben* — ihr *habt* — sie/Sie *haben*",
+      "You use **sein** to say what something is or what it is like: Ich *bin* müde. Er *ist* Lehrer. Wir *sind* aus Berlin.",
+      "Now the part worth marking: German often uses **haben** where English uses to be.",
+      "Ich *habe* Hunger = I **am** hungry\nIch *habe* Durst = I **am** thirsty\nIch *habe* Angst = I **am** afraid\nDu *hast* Recht = You **are** right",
+      "Say Ich bin Hunger and a German hears something very strange. With Hunger, Durst, Angst, Glück and Recht it is always **haben**.",
+      "And nothing changes about the verb position — these two also stand in second place: Heute *habe* ich Zeit.",
+    ].join("\n\n"),
+    exercises: [
+      {
+        kind: "gap",
+        prompt: "Ich ___ müde. (sein)",
+        data: {},
+        solution: { answers: ["bin"] },
+        explanation: "**sein** for ich: ich *bin*. You are describing how you are, so it is sein.",
+      },
+      {
+        kind: "gap",
+        prompt: "Du ___ Zeit. (haben)",
+        data: {},
+        solution: { answers: ["hast"] },
+        explanation: "**haben** for du: du *hast*.",
+      },
+      {
+        kind: "choice",
+        prompt: "Er ___ Lehrer.",
+        data: { options: ["hat", "ist", "bin", "sind"] },
+        solution: { correct: 1 },
+        explanation: "You are saying what he **is**, so it is sein: er *ist* Lehrer.",
+      },
+      {
+        kind: "gap",
+        prompt: "Wir ___ Hunger. (haben)",
+        data: {},
+        solution: { answers: ["haben"] },
+        explanation: "**haben** for wir: wir *haben* Hunger — literally we have hunger.",
+      },
+      {
+        kind: "gap",
+        prompt: "Ihr ___ nett. (sein)",
+        data: {},
+        solution: { answers: ["seid"] },
+        explanation: "**sein** for ihr: ihr *seid*. Careful — this is the one form people mix up with sind.",
+        hint: "It is not sind.",
+      },
+      {
+        kind: "choice",
+        prompt: "How do you say I am hungry in German?",
+        data: { options: ["Ich bin Hunger.", "Ich habe Hunger.", "Ich bin hungrig sein.", "Ich habe hungrig."] },
+        solution: { correct: 1 },
+        explanation: "German has hunger instead of being hungry: **Ich habe Hunger.** Same with Durst, Angst, Glück and Recht.",
+      },
+      {
+        kind: "error",
+        prompt: "Correct this sentence: Du bist Durst.",
+        data: {},
+        solution: { answers: ["Du hast Durst.", "Du hast Durst"] },
+        explanation: "Durst goes with **haben**, and du takes *hast*: Du *hast* Durst.",
+      },
+      {
+        kind: "gap",
+        prompt: "Sie ___ aus Berlin. (sein — the polite you)",
+        data: {},
+        solution: { answers: ["sind"] },
+        explanation: "The polite **Sie** takes the same form as sie (they): Sie *sind*.",
+      },
+      {
+        kind: "order",
+        prompt: "Build the sentence: Today I have time.",
+        data: { tokens: ["ich", "Heute", "Zeit", "habe"] },
+        solution: { order: ["Heute", "habe", "ich", "Zeit"], verb: 1 },
+        explanation: "Heute takes position 1, so *habe* is second and ich moves behind it — exactly the rule from the last unit.",
+        hint: "The verb keeps its second place.",
+      },
+      {
+        kind: "gap",
+        prompt: "Er ___ Durst. (haben)",
+        data: {},
+        solution: { answers: ["hat"] },
+        explanation: "**haben** for er/sie/es: er *hat*.",
+      },
+      {
+        kind: "choice",
+        prompt: "Which sentence is correct?",
+        data: { options: ["Ich habe müde.", "Ich bin müde.", "Ich bin Hunger.", "Wir sind Glück."] },
+        solution: { correct: 1 },
+        explanation: "müde is a description, so it takes **sein**: Ich *bin* müde. Hunger and Glück on the other hand take *haben*.",
+      },
+      {
+        kind: "error",
+        prompt: "Correct this sentence: Ihr sind sehr nett.",
+        data: {},
+        solution: { answers: ["Ihr seid sehr nett.", "Ihr seid sehr nett"] },
+        explanation: "**ihr** takes *seid*. Only wir and sie/Sie take *sind*.",
+      },
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // 6) PLURAL – baut nur auf den Artikeln auf, keine Faelle.
+  //    Achtung bei der Aufgabenwahl: Die Antwortpruefung erlaubt einen
+  //    Tippfehler, also duerfen Einzahl und Mehrzahl nie nur EINEN Buchstaben
+  //    auseinanderliegen (Auto/Autos, Vater/Vaeter) - solche Paare als
+  //    Auswahlaufgabe stellen, nicht als Luecke.
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    slug: "plurals",
+    title: "Making nouns plural",
+    subtitle: "One article, five patterns",
+    level: "A1",
+    lessonId: null,
+    lessonMatch: "plural",
+    sortOrder: 6,
+    theory: [
+      "The easy half first: in the plural **every noun takes die**. der and das simply disappear.\nder Mann → *die* Männer — das Kind → *die* Kinder — die Frau → *die* Frauen",
+      "The other half is the ending, and there are **five patterns**:",
+      "**-e**, often with an Umlaut: der Tisch → die Tisch*e*, der Stuhl → die St*ü*hl*e*",
+      "**-er**, almost always with an Umlaut: das Buch → die B*ü*ch*er*, das Kind → die Kind*er*",
+      "**-(e)n**: die Frau → die Frau*en*, die Blume → die Blume*n*",
+      "**-s**, mostly for words that came from other languages: das Auto → die Auto*s*, das Hotel → die Hotel*s*",
+      "**no ending at all** for many words ending in -er, -en or -el: der Lehrer → die Lehrer. Sometimes only an Umlaut appears: der Vater → die V*ä*ter.",
+      "One rule of thumb that really pays off: **feminine nouns almost always take -n or -en.** That covers a huge part of the vocabulary, including everything ending in -ung, -heit, -keit and -schaft: die Wohnung → die Wohnungen.",
+      "For the rest it is the same deal as with the article: **learn the plural together with the word.** In a good dictionary it is written right next to it — der Tisch, -e.",
+    ].join("\n\n"),
+    exercises: [
+      {
+        kind: "choice",
+        prompt: "Which article does a noun take in the plural?",
+        data: { options: ["der", "die", "das", "The same one as in the singular"] },
+        solution: { correct: 1 },
+        explanation: "Always **die** — der and das do not exist in the plural.",
+      },
+      {
+        kind: "gap",
+        prompt: "das Buch → die ___",
+        data: {},
+        solution: { answers: ["Bücher", "Buecher"] },
+        explanation: "**-er** plus Umlaut: das Buch → die *Bücher*. This pattern is typical for short neuter words.",
+      },
+      {
+        kind: "gap",
+        prompt: "die Frau → die ___",
+        data: {},
+        solution: { answers: ["Frauen"] },
+        explanation: "Feminine nouns almost always take **-n or -en**: die Frau → die *Frauen*.",
+      },
+      {
+        kind: "choice",
+        prompt: "das Auto → die ___",
+        data: { options: ["Auten", "Autos", "Autoen", "Aute"] },
+        solution: { correct: 1 },
+        explanation: "Words that came from other languages usually take **-s**: die *Autos*. Same with die Hotels, die Kinos.",
+      },
+      {
+        kind: "gap",
+        prompt: "der Lehrer → die ___",
+        data: {},
+        solution: { answers: ["Lehrer"] },
+        explanation: "Words ending in **-er, -en or -el** often stay exactly the same: der Lehrer → die *Lehrer*. Only the article tells you it is plural.",
+        hint: "Sometimes nothing changes at all.",
+      },
+      {
+        kind: "choice",
+        prompt: "der Stuhl → die ___",
+        data: { options: ["Stuhls", "Stuhlen", "Stühle", "Stühler"] },
+        solution: { correct: 2 },
+        explanation: "**-e** plus Umlaut: die *Stühle*. Very common for masculine nouns.",
+      },
+      {
+        kind: "gap",
+        prompt: "das Kind → die ___",
+        data: {},
+        solution: { answers: ["Kinder"] },
+        explanation: "**-er**, here without an Umlaut (i cannot take one): das Kind → die *Kinder*.",
+      },
+      {
+        kind: "error",
+        prompt: "Correct this: die Blumes",
+        data: {},
+        solution: { answers: ["die Blumen", "Die Blumen"] },
+        explanation: "Blume is feminine, so it takes **-n**: die *Blumen*. The -s ending is only for foreign words.",
+      },
+      {
+        kind: "choice",
+        prompt: "Which group almost always takes -n or -en in the plural?",
+        data: { options: ["Masculine nouns", "Feminine nouns", "Neuter nouns", "Foreign words"] },
+        solution: { correct: 1 },
+        explanation: "**Feminine nouns.** If you know a word is die, you can guess its plural correctly most of the time.",
+      },
+      {
+        kind: "choice",
+        prompt: "der Vater → die ___",
+        data: { options: ["Vaters", "Vatern", "Väter", "Vätere"] },
+        solution: { correct: 2 },
+        explanation: "No ending, only an **Umlaut**: der Vater → die *Väter*. Same with der Bruder → die Brüder.",
+      },
+      {
+        kind: "gap",
+        prompt: "die Wohnung → die ___",
+        data: {},
+        solution: { answers: ["Wohnungen"] },
+        explanation: "Everything ending in **-ung** is feminine and takes **-en**: die *Wohnungen*.",
+      },
+      {
+        kind: "error",
+        prompt: "Correct this sentence: Das Bücher sind neu.",
+        data: {},
+        solution: { answers: ["Die Bücher sind neu.", "Die Buecher sind neu.", "Die Bücher sind neu"] },
+        explanation: "Bücher is plural, and the plural always takes **die**: *Die* Bücher sind neu.",
+        hint: "Look at the article, not at the noun.",
+      },
+    ],
+  },
 ];
