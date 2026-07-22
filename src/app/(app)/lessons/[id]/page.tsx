@@ -32,8 +32,10 @@ export default function LessonPage() {
   const [watched, setWatched] = useState(false);
   const [finished, setFinished] = useState(false);
   const [score, setScore] = useState<{ correct: number; total: number } | null>(null);
-  // Passende Übungs-Einheit im Trainer (falls es zu diesem Video eine gibt).
-  const [trainingUnit, setTrainingUnit] = useState<TrainingUnit | null>(null);
+  // Passende Übungs-Einheit im Trainer. undefined = noch nicht nachgesehen.
+  // Der Unterschied ist wichtig: solange das offen ist, darf die Seite noch
+  // nicht entscheiden, ob sie die alten Aufgaben zeigt.
+  const [trainingUnit, setTrainingUnit] = useState<TrainingUnit | null | undefined>(undefined);
 
   useEffect(() => {
     getLessons().then((all) => {
@@ -66,7 +68,11 @@ export default function LessonPage() {
     );
   }
 
-  const exercisesOn = lesson.quizEnabled && items.length > 0;
+  // Gibt es zum Thema eine Trainingseinheit, ersetzt sie die alten Aufgaben in
+  // der Lektion. Die Einheit ist gepflegt, erklaert bei Fehlern und merkt sich
+  // den Fortschritt - das kann das eingebaute Quiz alles nicht.
+  const trainerChecked = trainingUnit !== undefined;
+  const exercisesOn = trainerChecked && !trainingUnit && lesson.quizEnabled && items.length > 0;
 
   function markWatched() {
     setWatched(true);
@@ -129,7 +135,9 @@ export default function LessonPage() {
         </div>
       )}
 
-      {!watched && (
+      {/* Erst anzeigen, wenn feststeht, ob es eine Trainingseinheit gibt -
+          sonst steht kurz die falsche Beschriftung auf dem Knopf. */}
+      {!watched && trainerChecked && (
         <button onClick={markWatched} className="btn-gold px-6 py-3 w-full">
           {exercisesOn ? "I've watched it — start the exercises ✅" : "I've watched it — mark as complete ✅"}
         </button>
@@ -140,15 +148,25 @@ export default function LessonPage() {
         <Exercises items={items} onDone={onExercisesDone} />
       )}
 
-      {/* Weiterführung in den Trainer – nur wenn es zum Thema eine Einheit gibt */}
+      {/* Üben passiert im Trainer, nicht mehr in der Lektion. */}
       {trainingUnit && (
-        <Link href={`/training/${trainingUnit.slug}`} className="card p-4 flex items-center gap-4 transition hover:border-gold/50">
-          <div className="text-3xl shrink-0">🎓</div>
+        <Link
+          href={`/training/${trainingUnit.slug}`}
+          className="card p-5 sm:p-6 flex items-center gap-4 sm:gap-5 transition hover:border-gold/50"
+          style={{ borderLeft: "5px solid var(--gold)" }}
+        >
+          <div className="text-4xl shrink-0">🎓</div>
           <div className="min-w-0 flex-1">
-            <div className="font-semibold">Practise this topic: {trainingUnit.title}</div>
-            <p className="text-xs text-cream-dim mt-0.5">Rule, exercises and feedback — right after the video.</p>
+            <div className="text-[11px] font-extrabold uppercase tracking-[0.16em] mb-1" style={{ color: "var(--bordeaux)" }}>
+              Now practise it
+            </div>
+            <div className="font-bold text-lg leading-tight">{trainingUnit.title}</div>
+            <p className="text-sm text-cream-dim mt-1">
+              The rule again in short, then {trainingUnit.subtitle ? trainingUnit.subtitle.toLowerCase() : "exercises"} — with an
+              explanation for every mistake, and your progress is saved.
+            </p>
           </div>
-          <span className="text-gold-bright shrink-0">→</span>
+          <span className="text-gold-bright shrink-0 text-xl">→</span>
         </Link>
       )}
 
