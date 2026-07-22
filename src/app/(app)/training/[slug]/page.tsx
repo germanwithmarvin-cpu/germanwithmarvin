@@ -219,9 +219,13 @@ export default function TrainingUnitPage() {
               borderLeft: `6px solid ${ok ? "var(--green-accent)" : "var(--red-accent)"}`,
             }}>
               <div className="flex gap-4 items-start">
-                <div className="shrink-0 hidden sm:block -mt-3">
-                  <Lena mood={ok ? "cheer" : "oops"} size={84} />
-                </div>
+                {/* Nicht bei jeder Antwort – sonst nutzt sich ihre Wirkung ab.
+                    Bei Fehlern immer (da hilft sie), bei Treffern nur an Combo-Marken. */}
+                {(!ok || combo === 3 || combo === 5 || (combo >= 8 && combo % 4 === 0)) && (
+                  <div className="shrink-0 hidden sm:block -mt-6">
+                    <Lena mood={ok ? (combo >= 5 ? "cheer" : "encourage") : "oops"} size={110} />
+                  </div>
+                )}
                 <div className="min-w-0 flex-1">
                   <div className="font-extrabold text-lg mb-2" style={{ color: ok ? "var(--green-accent)" : "var(--red-accent)" }}>
                     {ok ? `✓ ${PRAISE[idx % PRAISE.length]}` : `✗ ${CONSOLE_LINES[idx % CONSOLE_LINES.length]}`}

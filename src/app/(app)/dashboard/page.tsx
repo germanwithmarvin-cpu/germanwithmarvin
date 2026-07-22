@@ -12,6 +12,7 @@ import { getMyAvatar } from "@/lib/profile";
 import { getAccess, type Access } from "@/lib/access";
 import { createClient } from "@/lib/supabase/client";
 import { checkoutUrl, priceLabel } from "@/lib/config";
+import Lena from "@/components/training/Lena";
 
 // Rang anhand gelernter Karten (wie im Profil) – spielerische Stufe im Hero.
 const RANKS: [number, string, string][] = [
@@ -129,10 +130,18 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Tipp des Tages */}
+      {/* Lena mit dem Tipp des Tages – eine Figur, die mitlernt, wirkt anders als ein Hinweiskasten */}
       {tip && (
-        <div className="rounded-xl px-4 py-3 text-sm" style={{ background: "color-mix(in srgb, var(--gold) 12%, var(--surface))", border: "1px solid color-mix(in srgb, var(--gold) 25%, transparent)" }}>
-          <span className="text-gold-bright font-semibold">💡 Tip:</span> <span className="text-cream">{tip}</span>
+        <div className="flex items-end gap-3 sm:gap-4">
+          <Lena mood="wave" size={112} className="shrink-0 -mb-1" />
+          <div className="relative flex-1 rounded-2xl px-4 py-3.5 mb-3"
+            style={{ background: "color-mix(in srgb, var(--gold) 14%, var(--surface))", border: "1px solid color-mix(in srgb, var(--gold) 28%, transparent)" }}>
+            {/* Sprechblasen-Zipfel nach links */}
+            <span className="absolute -left-2 bottom-5 w-4 h-4 rotate-45"
+              style={{ background: "color-mix(in srgb, var(--gold) 14%, var(--surface))", borderLeft: "1px solid color-mix(in srgb, var(--gold) 28%, transparent)", borderBottom: "1px solid color-mix(in srgb, var(--gold) 28%, transparent)" }} />
+            <div className="text-[13px] font-semibold text-gold-bright mb-0.5">Lena</div>
+            <p className="text-[15px] leading-relaxed text-cream">{tip}</p>
+          </div>
         </div>
       )}
 
