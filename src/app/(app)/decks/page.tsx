@@ -148,31 +148,59 @@ export default function DecksPage() {
             </Link>
           </div>
 
-          {/* Grammatik-Extra-Decks – neben dem Pfad auswählbar */}
-          {grammarDecks.length > 0 && (
-            <div className="card p-4">
-              <div className="flex items-center gap-2 text-base mb-2"><span>🧩</span> Grammar packs</div>
-              <div className="space-y-1">
-                {grammarDecks.map((deck) => {
-                  const locked = !canAccessVocabLevel(tier, deck.level);
-                  const p = progress[deck.id];
-                  return (
-                    <Link
-                      key={deck.id}
-                      href={locked ? "/redeem" : `/study/${deck.id}`}
-                      className="flex items-center justify-between gap-2 px-2 py-1.5 rounded-lg text-sm text-cream-dim hover:bg-gold/10 transition"
-                      title={locked ? "Unlock with your access code" : undefined}
-                    >
-                      <span className="truncate">{deck.title}</span>
-                      <span className="shrink-0 text-xs">{locked ? "🔒" : `${p?.known ?? 0}/${p?.total ?? 0}`}</span>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+          {/* Grammatik-Decks stehen jetzt als eigene, breite Sektion unter dem Pfad. */}
         </aside>
       </div>
+
+      {/* Grammatik-Decks: eigene, gut sichtbare Sektion in voller Breite */}
+      {grammarDecks.length > 0 && (
+        <section className="px-6 mt-10">
+          <div className="flex flex-wrap items-end justify-between gap-3 mb-4">
+            <div>
+              <h2 className="text-2xl font-bold flex items-center gap-2"><span>🧩</span> Grammar packs</h2>
+              <p className="text-cream-dim text-sm mt-1">
+                Targeted practice next to the path — cases, prepositions, verbs and fixed expressions.
+              </p>
+            </div>
+            <span className="text-xs text-cream-dim">{grammarDecks.length} packs</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            {grammarDecks.map((deck) => {
+              const locked = !canAccessVocabLevel(tier, deck.level);
+              const p = progress[deck.id];
+              const total = p?.total ?? 0;
+              const known = p?.known ?? 0;
+              const deckPct = total ? Math.round((known / total) * 100) : 0;
+              return (
+                <Link
+                  key={deck.id}
+                  href={locked ? "/redeem" : `/study/${deck.id}`}
+                  className="card p-4 flex flex-col gap-2 transition hover:border-gold/50"
+                  title={locked ? "Unlock with your access code" : undefined}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="font-semibold leading-tight">{deck.title}</div>
+                    <span className="shrink-0 text-[11px] px-2 py-0.5 rounded-full" style={{ background: "var(--bordeaux-deep)" }}>
+                      {deck.level}
+                    </span>
+                  </div>
+                  {deck.description && <p className="text-xs text-cream-dim line-clamp-2">{deck.description}</p>}
+                  <div className="mt-auto pt-2">
+                    <div className="flex items-center justify-between text-[11px] text-cream-dim mb-1">
+                      <span>{locked ? "🔒 Locked" : `${known}/${total} cards`}</span>
+                      {!locked && <span className="text-gold-bright font-semibold">{deckPct}%</span>}
+                    </div>
+                    <div className="h-1.5 rounded-full bg-bordeaux-deep/60">
+                      <div className="h-1.5 rounded-full bg-gold-bright transition-all" style={{ width: `${deckPct}%` }} />
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
