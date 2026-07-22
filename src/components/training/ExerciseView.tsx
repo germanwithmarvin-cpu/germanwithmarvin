@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import type { Exercise } from "@/lib/training";
+import SentenceSlots from "./SentenceSlots";
 
 // Darstellung einer Aufgabe. Der Elternteil hält den Antwort-Zustand:
 //   value  = aktuelle Antwort (bei "order": Bausteine mit \n getrennt)
@@ -143,10 +144,10 @@ function Order({ ex, value, onChange, locked, correct }: { ex: Exercise; value: 
       )}
 
       {locked && !correct && (
-        <p className="text-sm">
-          <span className="text-cream-dim">Correct: </span>
-          <b style={{ color: "var(--green-accent)" }}>{ex.order.join(" ")}</b>
-        </p>
+        <div className="space-y-2">
+          <p className="text-sm text-cream-dim">Correct:</p>
+          <SentenceSlots tokens={ex.order} verb={ex.verb >= 0 ? ex.verb : undefined} size="small" />
+        </div>
       )}
     </div>
   );

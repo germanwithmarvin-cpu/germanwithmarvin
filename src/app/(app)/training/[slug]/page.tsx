@@ -9,6 +9,7 @@ import { addXp } from "@/lib/progress";
 import Paywall from "@/components/Paywall";
 import ExerciseView from "@/components/training/ExerciseView";
 import Lena from "@/components/training/Lena";
+import SentenceSlots from "@/components/training/SentenceSlots";
 
 // Lenas Sprüche – mitlernend, auf Augenhöhe, nie belehrend.
 const PRAISE = ["Nailed it!", "Exactly.", "Nice — keep going!", "That was clean."];
@@ -22,7 +23,21 @@ function RichText({ text, size = "base" }: { text: string; size?: "base" | "larg
   const cls = size === "large" ? "text-[17px] leading-8" : "text-[15.5px] leading-7";
   return (
     <div className={`space-y-4 ${cls}`}>
-      {text.split(/\n\s*\n/).map((para, i) => (
+      {text.split(/\n\s*\n/).map((para, i) => {
+        // Zeilen mit "@" werden als Satz-Positionen gezeichnet:
+        //   @Heute|lerne*|ich Deutsch   ("*" markiert das konjugierte Verb)
+        if (para.trimStart().startsWith("@")) {
+          return (
+            <div key={i} className="space-y-3 my-2">
+              {para.split("\n").filter((l) => l.trim().startsWith("@")).map((line, k) => {
+                const raw = line.trim().slice(1).split("|").map((t) => t.trim());
+                const verb = raw.findIndex((t) => t.endsWith("*"));
+                return <SentenceSlots key={k} tokens={raw.map((t) => t.replace(/\*$/, ""))} verb={verb >= 0 ? verb : undefined} />;
+              })}
+            </div>
+          );
+        }
+        return (
         <p key={i}>
           {para.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).map((part, k) => {
             if (part.startsWith("**") && part.endsWith("**")) {
@@ -44,7 +59,8 @@ function RichText({ text, size = "base" }: { text: string; size?: "base" | "larg
             return <span key={k}>{part.split("\n").map((line, n) => <span key={n}>{n > 0 && <br />}{line}</span>)}</span>;
           })}
         </p>
-      ))}
+        );
+      })}
     </div>
   );
 }

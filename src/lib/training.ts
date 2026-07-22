@@ -15,6 +15,7 @@ export type Exercise = {
   correct: number; // choice: Index der richtigen Option
   answers: string[]; // gap/error: akzeptierte Lösungen
   order: string[]; // order: richtige Reihenfolge
+  verb: number; // Index des konjugierten Verbs (fuer die Positions-Darstellung)
   explain: string;
   hint: string;
 };
@@ -47,7 +48,7 @@ function toUnit(r: Record<string, unknown>): Unit {
 
 function toExercise(r: Record<string, unknown>): Exercise {
   const data = (r.data ?? {}) as { options?: string[]; tokens?: string[] };
-  const sol = (r.solution ?? {}) as { correct?: number; answers?: string[]; order?: string[] };
+  const sol = (r.solution ?? {}) as { correct?: number; answers?: string[]; order?: string[]; verb?: number };
   return {
     id: r.id as string,
     kind: r.kind as ExerciseKind,
@@ -57,6 +58,7 @@ function toExercise(r: Record<string, unknown>): Exercise {
     correct: sol.correct ?? -1,
     answers: sol.answers ?? [],
     order: sol.order ?? [],
+    verb: sol.verb ?? -1,
     explain: (r.explanation as string) ?? "",
     hint: (r.hint as string) ?? "",
   };
