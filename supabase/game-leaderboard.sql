@@ -42,7 +42,8 @@ as $$
            b.name,
            b.base + (((extract(week from now())::int * b.k) % 47) - 23) as score
     from (values
-      ('Lena', 640, 7), ('Jonas', 560, 11), ('Sofia', 500, 13), ('Mateo', 430, 17),
+      -- Kein "Lena" hier: so heisst die Lernbegleiterin im Trainingsbereich.
+      ('Mira', 640, 7), ('Jonas', 560, 11), ('Sofia', 500, 13), ('Mateo', 430, 17),
       ('Emma', 370, 19), ('Noah', 310, 23), ('Yuki', 260, 29), ('Ben', 200, 31)
     ) as b(name, base, k)
   ),
