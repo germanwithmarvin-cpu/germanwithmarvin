@@ -10,62 +10,13 @@ import { addXp } from "@/lib/progress";
 import Paywall from "@/components/Paywall";
 import ExerciseView from "@/components/training/ExerciseView";
 import Lena from "@/components/training/Lena";
-import SentenceSlots from "@/components/training/SentenceSlots";
+import Theory from "@/components/training/Theory";
 
 // Lenas Sprüche – mitlernend, auf Augenhöhe, nie belehrend.
 const PRAISE = ["Nailed it!", "Exactly.", "Nice — keep going!", "That was clean."];
 const CONSOLE_LINES = ["So close — look:", "Almost! Here is why:", "No worries, this is the bit:"];
 
 type Phase = "loading" | "blocked" | "locked" | "missing" | "theory" | "practice" | "done";
-
-// Auszeichnung: **wichtig** (Marker), *Verb* (Bordeaux-Chip), @-Zeile = Satzpositionen.
-function RichText({ text, size = "base" }: { text: string; size?: "base" | "large" }) {
-  const cls = size === "large" ? "text-[17px] leading-8" : "text-[15.5px] leading-7";
-  return (
-    <div className={`space-y-4 ${cls}`}>
-      {text.split(/\n\s*\n/).map((para, i) => {
-        if (para.trimStart().startsWith("@")) {
-          return (
-            <div key={i} className="space-y-3 my-2">
-              {para.split("\n").filter((l) => l.trim().startsWith("@")).map((line, k) => {
-                const raw = line.trim().slice(1).split("|").map((t) => t.trim());
-                const verb = raw.findIndex((t) => t.endsWith("*"));
-                return <SentenceSlots key={k} tokens={raw.map((t) => t.replace(/\*$/, ""))} verb={verb >= 0 ? verb : undefined} />;
-              })}
-            </div>
-          );
-        }
-        return (
-          <p key={i}>
-            {para.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g).map((part, k) => {
-              if (part.startsWith("**") && part.endsWith("**")) {
-                return (
-                  <mark key={k} className="font-extrabold rounded px-1.5 py-0.5"
-                    style={{ background: "color-mix(in srgb, var(--gold) 42%, transparent)", color: "var(--cream)" }}>
-                    {part.slice(2, -2)}
-                  </mark>
-                );
-              }
-              if (part.startsWith("*") && part.endsWith("*") && part.length > 2) {
-                const chip = part.slice(1, -1);
-                return (
-                  // Kurze Chips (Verbformen) bleiben zusammen. Lange Chips - etwa
-                  // eine ganze Konnektoren-Liste - duerfen umbrechen, sonst
-                  // schieben sie auf dem Handy die Seite seitlich auseinander.
-                  <span key={k} className={`font-bold rounded px-1.5 py-0.5 ${chip.length <= 24 ? "whitespace-nowrap" : ""}`}
-                    style={{ background: "var(--bordeaux)", color: "#fff" }}>
-                    {chip}
-                  </span>
-                );
-              }
-              return <span key={k}>{part.split("\n").map((line, n) => <span key={n}>{n > 0 && <br />}{line}</span>)}</span>;
-            })}
-          </p>
-        );
-      })}
-    </div>
-  );
-}
 
 export default function TrainingUnitPage() {
   const params = useParams<{ slug: string }>();
@@ -237,18 +188,20 @@ export default function TrainingUnitPage() {
 
       {/* Theorie */}
       {phase === "theory" && unit && (
-        <div className="space-y-5">
-          <div>
-            <div className="flex items-center gap-3">
-              <span className="rounded-lg px-2.5 py-1 text-sm font-extrabold" style={{ background: "linear-gradient(160deg, var(--gold-bright), var(--gold))", color: "#3b2116" }}>{unit.level}</span>
-              <h1 className="text-2xl font-bold">{unit.title}</h1>
+        <div className="space-y-6">
+          {/* Lena steht neben der Überschrift, nicht mehr neben dem Text –
+              so hat die Erklärung die volle Breite. */}
+          <div className="flex items-start gap-4">
+            <div className="shrink-0 hidden md:block -mt-3"><Lena mood="explain" size={140} /></div>
+            <div className="min-w-0 pt-1">
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="rounded-lg px-2.5 py-1 text-sm font-extrabold" style={{ background: "linear-gradient(160deg, var(--gold-bright), var(--gold))", color: "#3b2116" }}>{unit.level}</span>
+                <h1 className="text-2xl font-bold">{unit.title}</h1>
+              </div>
+              <p className="text-cream-dim text-sm mt-1">{unit.subtitle}</p>
             </div>
-            <p className="text-cream-dim text-sm mt-1">{unit.subtitle}</p>
           </div>
-          <div className="card p-6 sm:p-7 flex gap-5 items-start">
-            <div className="shrink-0 hidden md:block -mt-2"><Lena mood="explain" size={172} /></div>
-            <div className="min-w-0 flex-1"><RichText text={unit.theory} size="large" /></div>
-          </div>
+          <div className="card p-6 sm:p-8"><Theory text={unit.theory} /></div>
           <div className="flex items-center gap-3">
             <button onClick={() => start()} className="btn-gold px-6 py-3 font-bold">Start practice →</button>
             <span className="text-xs text-cream-dim">{all.length} exercises</span>
@@ -293,7 +246,7 @@ export default function TrainingUnitPage() {
               <button onClick={() => setShowRule((s) => !s)} className="text-sm text-cream-dim hover:text-cream underline underline-offset-4">
                 {showRule ? "Hide the rule" : "Show me the rule again"}
               </button>
-              {showRule && <div className="card p-5 mt-2"><RichText text={unit.theory} /></div>}
+              {showRule && <div className="card p-5 mt-2"><Theory text={unit.theory} compact /></div>}
             </div>
           )}
 
@@ -313,7 +266,7 @@ export default function TrainingUnitPage() {
                   <div className="font-extrabold text-lg mb-2" style={{ color: ok ? "var(--green-accent)" : "var(--red-accent)" }}>
                     {ok ? `✓ ${PRAISE[pos % PRAISE.length]}` : `✗ ${CONSOLE_LINES[pos % CONSOLE_LINES.length]}`}
                   </div>
-                  {ex.explain && <RichText text={ex.explain} size="large" />}
+                  {ex.explain && <Theory text={ex.explain} />}
                 </div>
               </div>
             </div>
