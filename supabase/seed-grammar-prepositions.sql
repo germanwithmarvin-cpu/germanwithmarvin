@@ -23,12 +23,14 @@ alter table public.fc_decks add column if not exists category   text not null de
 delete from public.fc_decks
 where owner_id = (select id from auth.users where email = 'marvin.h.graf@gmail.com')
   and category = 'grammar'
-  and title in (
+  and (title in (
     'Verbs with fixed prepositions',
     'Adjectives with fixed prepositions',
-    'Verb-noun collocations',
-    'Prepositions · mixed challenge'
-  );
+    'Verb-noun collocations'
+  )
+  -- Muster statt exaktem Titel: faengt auch Altbestand mit zerstoerten
+  -- Sonderzeichen ab (sonst entsteht beim Neuimport ein Duplikat).
+  or title like '%mixed challenge%');
 
 
 -- 11) Verben mit festen Präpositionen 📌
