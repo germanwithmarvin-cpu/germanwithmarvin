@@ -143,10 +143,49 @@ const RELATIVE_PRONOUNS: DrillSet = {
   ],
 };
 
+// ─── Nomen-Verb-Verbindungen ─────────────────────────────────────────────────
+// Die Lücke ist das feste Verb – der Teil, den man nicht raten kann. Die
+// Erklärung nennt die ganze Verbindung.
+const NV = (phrase: string, verb: string, meaning: string, sentences: string[]): DrillItem => ({
+  answer: verb,
+  explain: `**${phrase}** — ${meaning}. The verb is fixed; you learn the whole combination as one piece.`,
+  sentences,
+});
+
+// Alle Sätze bewusst mit Modalverb oder zu-Infinitiv, damit das gesuchte Verb
+// immer in der INFINITIV-Form am Ende steht – so passt die eine Antwort zu
+// jedem Satz.
+const NOUN_VERB: DrillSet = {
+  key: "noun-verb-combinations",
+  unitSlug: "noun-verb-combinations",
+  title: "Noun-verb combinations",
+  items: [
+    NV("eine Entscheidung treffen", "treffen", "to decide", ["Ich muss eine Entscheidung ___ .", "Wir müssen bald eine Entscheidung ___ .", "Sie konnte keine Entscheidung ___ ."]),
+    NV("Kritik üben", "üben", "to criticise", ["Man darf Kritik ___ .", "Er möchte Kritik an dem Plan ___ .", "Sie will keine Kritik ___ ."]),
+    NV("zur Verfügung stellen", "stellen", "to provide", ["Können Sie den Raum zur Verfügung ___ ?", "Wir möchten die Daten zur Verfügung ___ .", "Die Firma kann mir einen Wagen zur Verfügung ___ ."]),
+    NV("in Frage stellen", "stellen", "to question, to doubt", ["Ich möchte das nicht in Frage ___ .", "Niemand darf seine Ehrlichkeit in Frage ___ .", "Das könnte das ganze Projekt in Frage ___ ."]),
+    NV("Rücksicht nehmen", "nehmen", "to be considerate", ["Du musst mehr Rücksicht ___ .", "Bitte versuch, Rücksicht auf die Nachbarn zu ___ .", "Er will keine Rücksicht ___ ."]),
+    NV("in Kauf nehmen", "nehmen", "to accept (a drawback)", ["Wir müssen Verluste in Kauf ___ .", "Das würde ich gern in Kauf ___ .", "Sie muss den langen Weg in Kauf ___ ."]),
+    NV("in Betracht ziehen", "ziehen", "to consider", ["Wir sollten alle Optionen in Betracht ___ .", "Er möchte einen Umzug in Betracht ___ .", "Das müssen wir in Betracht ___ ."]),
+    NV("zum Ausdruck bringen", "bringen", "to express", ["Er möchte seine Sorgen zum Ausdruck ___ .", "Sie will ihre Freude zum Ausdruck ___ .", "Ich möchte meinen Dank zum Ausdruck ___ ."]),
+    NV("eine Rolle spielen", "spielen", "to matter, to play a role", ["Geld soll dabei keine Rolle ___ .", "Bildung kann eine wichtige Rolle ___ .", "Das dürfte hier keine Rolle ___ ."]),
+    NV("Hilfe leisten", "leisten", "to provide help", ["Wir wollen schnelle Hilfe ___ .", "Er kann Erste Hilfe ___ .", "Sie möchte finanzielle Hilfe ___ ."]),
+    NV("Bescheid geben", "geben", "to let someone know", ["Kannst du mir bitte Bescheid ___ ?", "Ich werde dir morgen Bescheid ___ .", "Bitte versuchen Sie, mir rechtzeitig Bescheid zu ___ ."]),
+    NV("Abschied nehmen", "nehmen", "to say goodbye", ["Wir müssen Abschied von den Gästen ___ .", "Sie will Abschied von ihrer Heimat ___ .", "Es fiel ihm schwer, Abschied zu ___ ."]),
+    NV("in Anspruch nehmen", "nehmen", "to make use of, to take up", ["Das wird viel Zeit in Anspruch ___ .", "Ich möchte Ihre Hilfe gern in Anspruch ___ .", "Der Umbau könnte mehrere Wochen in Anspruch ___ ."]),
+    NV("eine Frage stellen", "stellen", "to ask a question", ["Darf ich eine Frage ___ ?", "Er möchte eine schwierige Frage ___ .", "Die Schüler wollen viele Fragen ___ ."]),
+    NV("Stellung nehmen", "nehmen", "to take a position, to comment", ["Der Minister muss zu den Vorwürfen Stellung ___ .", "Können Sie dazu Stellung ___ ?", "Sie wollte keine Stellung ___ ."]),
+    NV("Wert legen auf", "legen", "to attach importance to", ["Ich möchte großen Wert auf Pünktlichkeit ___ .", "Sie will Wert auf gute Qualität ___ .", "Er kann keinen Wert auf Äußerlichkeiten ___ ."]),
+    NV("einen Beitrag leisten", "leisten", "to make a contribution", ["Jeder kann einen Beitrag ___ .", "Sie möchte einen wichtigen Beitrag ___ .", "Wir wollen einen Beitrag zum Umweltschutz ___ ."]),
+    NV("einen Fehler machen", "machen", "to make a mistake — the one case where machen is right", ["Jeder kann einen Fehler ___ .", "Man sollte keinen Fehler ___ .", "Wir dürfen keinen Fehler ___ ."]),
+  ],
+};
+
 const SETS: Record<string, DrillSet> = {
   [FIXED_PREPOSITIONS.unitSlug]: FIXED_PREPOSITIONS,
   [ARTICLES.unitSlug]: ARTICLES,
   [RELATIVE_PRONOUNS.unitSlug]: RELATIVE_PRONOUNS,
+  [NOUN_VERB.unitSlug]: NOUN_VERB,
 };
 
 export function getDrillForUnit(unitSlug: string): DrillSet | null {
