@@ -731,6 +731,113 @@ const SEPARABLE_VERBS: DrillSet = {
   ],
 };
 
+// ─── Satzbau: von Hand geschrieben (nicht aus Wortlisten generierbar) ────────
+
+// Nebensätze – nach dass/weil/wenn/ob wandert das konjugierte Verb ans Ende.
+// Cue ist der Infinitiv; gesucht ist die konjugierte Form am Satzende.
+const SUBORDINATE_CLAUSES: DrillSet = {
+  key: "subordinate-clauses", unitSlug: "subordinate-clauses", title: "Subordinate clauses",
+  items: [
+    F("kommt", "Ich weiß, dass er heute ___ . (kommen)", "Nebensatz: Verb ans Ende → **kommt**."),
+    F("hat", "Ich glaube, dass sie recht ___ . (haben)", "Verb ans Ende → **hat**."),
+    F("ist", "Er sagt, dass das Wetter schön ___ . (sein)", "Verb ans Ende → **ist**."),
+    F("wohnt", "Ich weiß, dass sie in Berlin ___ . (wohnen)", "Verb ans Ende → **wohnt**."),
+    F("arbeitet", "Sie sagt, dass er viel ___ . (arbeiten)", "Verb ans Ende → **arbeitet**."),
+    F("regnet", "Ich bleibe zu Hause, weil es ___ . (regnen)", "weil: Verb ans Ende → **regnet**."),
+    F("habe", "Ich komme nicht, weil ich keine Zeit ___ . (haben)", "weil: Verb ans Ende → **habe**."),
+    F("bist", "Ruf mich an, wenn du fertig ___ . (sein)", "wenn: Verb ans Ende → **bist**."),
+    F("kommst", "Ich frage, ob du morgen ___ . (kommen)", "ob: Verb ans Ende → **kommst**."),
+    F("hilft", "Ich hoffe, dass er mir ___ . (helfen)", "Verb ans Ende → **hilft** (e→i)."),
+    F("liest", "Sie sagt, dass sie gern ___ . (lesen)", "Verb ans Ende → **liest** (e→ie)."),
+    F("schläft", "Sei leise, weil das Baby ___ . (schlafen)", "Verb ans Ende → **schläft** (a→ä)."),
+    F("gehe", "Ich sage, dass ich nach Hause ___ . (gehen)", "Verb ans Ende → **gehe** (ich)."),
+    F("versteht", "Ich hoffe, dass er mich ___ . (verstehen)", "Verb ans Ende → **versteht**."),
+  ],
+};
+
+// Konnektoren – gesucht ist das Bindewort. Cue ist die englische Bedeutung
+// (plus Wortstellungs-Hinweis, wo weil/denn sonst zweideutig wären).
+const CONNECTORS: DrillSet = {
+  key: "connectors", unitSlug: "connectors", title: "Connectors",
+  items: [
+    F("weil", "Ich lerne Deutsch, ___ ich in Berlin wohne. (because — verb goes to the end)", "reason, verb-final → **weil**."),
+    F("aber", "Ich bin müde, ___ ich arbeite weiter. (but)", "contrast → **aber**."),
+    F("deshalb", "Es regnet, ___ bleibe ich zu Hause. (therefore — note the inversion)", "consequence, position 1 → **deshalb**."),
+    F("obwohl", "Ich gehe spazieren, ___ es regnet. (although)", "concession → **obwohl**."),
+    F("denn", "Ich nehme einen Schirm, ___ es könnte regnen. (for — main-clause word order)", "reason, no inversion → **denn**."),
+    F("wenn", "___ ich Zeit habe, lese ich. (when / if)", "condition → **wenn**."),
+    F("dass", "Ich weiß, ___ er heute kommt. (that)", "content clause → **dass**."),
+    F("oder", "Möchtest du Tee ___ Kaffee? (or)", "alternative → **oder**."),
+    F("und", "Ich koche, ___ du deckst den Tisch. (and)", "addition → **und**."),
+    F("damit", "Ich lerne viel, ___ ich die Prüfung bestehe. (so that)", "purpose → **damit**."),
+    F("trotzdem", "Es regnet. ___ gehe ich spazieren. (nevertheless — note the inversion)", "concession, position 1 → **trotzdem**."),
+    F("sondern", "Das ist nicht rot, ___ blau. (but rather — after a negation)", "correction → **sondern**."),
+    F("ob", "Ich frage mich, ___ er heute kommt. (whether)", "indirect yes/no → **ob**."),
+    F("bevor", "Ich frühstücke, ___ ich zur Arbeit gehe. (before)", "time → **bevor**."),
+  ],
+};
+
+// Zweiteilige Konnektoren – die fehlende Hälfte des Paares.
+const TWO_PART_CONNECTORS: DrillSet = {
+  key: "two-part-connectors", unitSlug: "two-part-connectors", title: "Two-part connectors",
+  items: [
+    F("oder", "Entweder wir gehen ins Kino ___ wir bleiben zu Hause.", "entweder … **oder**."),
+    F("noch", "Ich mag weder Kaffee ___ Tee.", "weder … **noch**."),
+    F("auch", "Sie spricht nicht nur Deutsch, sondern ___ Englisch.", "nicht nur … sondern **auch**."),
+    F("als", "Sowohl Anna ___ auch Tom kommen.", "sowohl … **als** auch."),
+    F("aber", "Der Film war zwar lang, ___ interessant.", "zwar … **aber**."),
+    F("desto", "Je mehr ich übe, ___ besser werde ich.", "je … **desto**."),
+    F("entweder", "___ du hilfst mir, oder ich mache es allein.", "**entweder** … oder."),
+    F("weder", "Er ist ___ groß noch klein.", "**weder** … noch."),
+    F("sowohl", "___ im Sommer als auch im Winter ist es schön.", "**sowohl** … als auch."),
+    F("sondern", "Ich trinke nicht nur Wasser, ___ auch Saft.", "nicht nur … **sondern** auch."),
+    F("noch", "Weder er ___ sie war da.", "weder … **noch**."),
+    F("desto", "Je früher, ___ besser.", "je … **desto**."),
+    F("als", "Sowohl der Lehrer ___ auch die Schüler waren müde.", "sowohl … **als** auch."),
+    F("aber", "Ich bin zwar müde, ___ ich mache weiter.", "zwar … **aber**."),
+  ],
+};
+
+// Verbstellung – Verb an Position 2 (nach einem vorangestellten Teil), bei
+// Ja/Nein-Fragen an Position 1. Cue nennt Infinitiv + Person/Satzart.
+const VERB_POSITION: DrillSet = {
+  key: "verb-position", unitSlug: "verb-position", title: "Verb position",
+  items: [
+    F("gehe", "Morgen ___ ich ins Kino. (gehen — ich)", "verb second → **gehe**."),
+    F("Hast", "___ du morgen Zeit? (haben — yes/no question)", "yes/no question: verb first → **Hast**."),
+    F("fährt", "Am Montag ___ er nach Berlin. (fahren — er)", "verb second → **fährt**."),
+    F("Kommst", "___ du mit? (kommen — question)", "yes/no question: verb first → **Kommst**."),
+    F("habe", "Heute ___ ich viel gemacht. (haben — ich)", "verb second → **habe**."),
+    F("spielt", "Am Wochenende ___ sie Tennis. (spielen — sie, singular)", "verb second → **spielt**."),
+    F("Wohnst", "___ du in Berlin? (wohnen — question)", "yes/no question → **Wohnst**."),
+    F("ist", "Heute ___ das Wetter schön. (sein)", "verb second → **ist**."),
+    F("geht", "Am Abend ___ er spazieren. (gehen — er)", "verb second → **geht**."),
+    F("Bist", "___ du müde? (sein — question)", "yes/no question → **Bist**."),
+    F("trinke", "Morgens ___ ich Kaffee. (trinken — ich)", "verb second → **trinke**."),
+    F("Kannst", "___ du mir helfen? (können — question)", "yes/no question → **Kannst**."),
+  ],
+};
+
+// Infinitiv mit zu – nach bestimmten Ausdrücken (vorhaben, versuchen, es ist
+// wichtig …). Gesucht ist „zu + Infinitiv"; bei trennbaren Verben in die Mitte.
+const INFINITIVE_ZU: DrillSet = {
+  key: "infinitive-zu", unitSlug: "infinitive-zu", title: "Infinitive with zu",
+  items: [
+    F("zu lernen", "Es ist wichtig, viel ___ . (lernen)", "zu + Infinitiv → **zu lernen**."),
+    F("zu arbeiten", "Ich habe vor, mehr ___ . (arbeiten)", "vorhaben → **zu arbeiten**."),
+    F("zu rauchen", "Er hat aufgehört, ___ . (rauchen)", "aufhören → **zu rauchen**."),
+    F("zu helfen", "Sie hat versprochen, mir ___ . (helfen)", "versprechen → **zu helfen**."),
+    F("zu warten", "Ich habe keine Lust, hier ___ . (warten)", "Lust haben → **zu warten**."),
+    F("zu essen", "Es ist gesund, langsam ___ . (essen)", "→ **zu essen**."),
+    F("zu schlafen", "Ich versuche, früh ___ . (schlafen)", "versuchen → **zu schlafen**."),
+    F("zu kommen", "Er hat vergessen, pünktlich ___ . (kommen)", "vergessen → **zu kommen**."),
+    F("zu bleiben", "Ich habe beschlossen, hier ___ . (bleiben)", "beschließen → **zu bleiben**."),
+    F("zu lesen", "Es macht Spaß, Bücher ___ . (lesen)", "→ **zu lesen**."),
+    F("zu spielen", "Die Kinder haben angefangen, ___ . (spielen)", "anfangen → **zu spielen**."),
+    F("aufzuräumen", "Ich habe vergessen, mein Zimmer ___ . (aufräumen)", "separable verb: zu goes inside → **aufzuräumen**."),
+  ],
+};
+
 const SETS: Record<string, DrillSet> = {
   [FIXED_PREPOSITIONS.unitSlug]: FIXED_PREPOSITIONS,
   [ARTICLES.unitSlug]: ARTICLES,
@@ -760,6 +867,11 @@ const SETS: Record<string, DrillSet> = {
   [POSSESSIVES.unitSlug]: POSSESSIVES,
   [NEGATION.unitSlug]: NEGATION,
   [SEPARABLE_VERBS.unitSlug]: SEPARABLE_VERBS,
+  [SUBORDINATE_CLAUSES.unitSlug]: SUBORDINATE_CLAUSES,
+  [CONNECTORS.unitSlug]: CONNECTORS,
+  [TWO_PART_CONNECTORS.unitSlug]: TWO_PART_CONNECTORS,
+  [VERB_POSITION.unitSlug]: VERB_POSITION,
+  [INFINITIVE_ZU.unitSlug]: INFINITIVE_ZU,
 };
 
 export function getDrillForUnit(unitSlug: string): DrillSet | null {
