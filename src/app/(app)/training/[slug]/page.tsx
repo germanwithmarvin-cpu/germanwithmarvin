@@ -11,6 +11,7 @@ import Paywall from "@/components/Paywall";
 import ExerciseView from "@/components/training/ExerciseView";
 import Lena from "@/components/training/Lena";
 import Theory from "@/components/training/Theory";
+import { getDrillForUnit } from "@/lib/drills";
 
 // Lenas Sprüche – mitlernend, auf Augenhöhe, nie belehrend.
 const PRAISE = ["Nailed it!", "Exactly.", "Nice — keep going!", "That was clean."];
@@ -202,10 +203,25 @@ export default function TrainingUnitPage() {
             </div>
           </div>
           <div className="card p-6 sm:p-8"><Theory text={unit.theory} /></div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <button onClick={() => start()} className="btn-gold px-6 py-3 font-bold">Start practice →</button>
             <span className="text-xs text-cream-dim">{all.length} exercises</span>
           </div>
+          {/* Intensiv-Modus: nur bei Themen, die als Drill hinterlegt sind. */}
+          {getDrillForUnit(unit.slug) && (
+            <Link href={`/training/${unit.slug}/drill`}
+              className="card p-4 flex items-center gap-4 transition hover:border-gold/50 mt-1"
+              style={{ borderLeft: "5px solid var(--bordeaux)" }}>
+              <div className="text-2xl shrink-0">🔥</div>
+              <div className="min-w-0 flex-1">
+                <div className="font-bold text-sm">Intensive drill</div>
+                <p className="text-xs text-cream-dim mt-0.5">
+                  This topic rewards repetition. Endless fresh questions from the same pattern — go until it comes without thinking.
+                </p>
+              </div>
+              <span className="text-gold-bright shrink-0">→</span>
+            </Link>
+          )}
         </div>
       )}
 
