@@ -996,6 +996,144 @@ const AUCH_NUR_SCHON_ERST: DrillSet = {
   ],
 };
 
+// ─── Wortschatz / feste Wendungen: Lücke in der Phrase ───────────────────────
+
+const GREETINGS: DrillSet = {
+  key: "greetings", unitSlug: "greetings", title: "Greetings",
+  items: [
+    F("Morgen", "Guten ___! (morning)", "**Guten Morgen!**"),
+    F("Tag", "Guten ___! (day / hello)", "**Guten Tag!**"),
+    F("Abend", "Guten ___! (evening)", "**Guten Abend!**"),
+    F("Nacht", "Gute ___! (good night)", "**Gute Nacht!**"),
+    F("Wiedersehen", "Auf ___! (goodbye, formal)", "**Auf Wiedersehen!**"),
+    F("bald", "Bis ___! (see you soon)", "**Bis bald!**"),
+    F("später", "Bis ___! (see you later)", "**Bis später!**"),
+    F("Ihnen", "Wie geht es ___? (you, formal)", "formal → **Ihnen**."),
+    F("dir", "Wie geht es ___? (you, informal)", "informal → **dir**."),
+    F("heißen", "Wie ___ Sie? (what are you called)", "**Wie heißen Sie?**"),
+    F("freut", "Es ___ mich! (nice to meet you)", "**Es freut mich!**"),
+    F("Willkommen", "Herzlich ___! (welcome)", "**Herzlich willkommen!**"),
+  ],
+};
+
+const THANK_YOU: DrillSet = {
+  key: "thank-you", unitSlug: "thank-you", title: "Saying thank you",
+  items: [
+    F("Dank", "Vielen ___! (thanks a lot)", "**Vielen Dank!**"),
+    F("danke", "___ schön! (thank you)", "**Danke schön!**"),
+    F("geschehen", "Gern ___. (you're welcome)", "**Gern geschehen.**"),
+    F("bitte", "Danke! — ___! (you're welcome, one word)", "**Bitte!**"),
+    F("danken", "Nichts zu ___. (don't mention it)", "**Nichts zu danken.**"),
+    F("Dank", "Herzlichen ___! (heartfelt thanks)", "**Herzlichen Dank!**"),
+    F("dankbar", "Ich bin dir sehr ___. (grateful)", "**dankbar**."),
+    F("bedanken", "Ich möchte mich ___. (to say thanks)", "sich **bedanken**."),
+    F("nett", "Das ist sehr ___ von dir. (kind)", "**nett** von dir."),
+    F("Problem", "Kein ___! (it's totally fine)", "**Kein Problem!**"),
+  ],
+};
+
+const RESTAURANT_DRILL: DrillSet = {
+  key: "restaurant", unitSlug: "restaurant", title: "At the restaurant",
+  items: [
+    F("Rechnung", "Die ___, bitte! (the bill)", "**Die Rechnung, bitte!**"),
+    F("hätte", "Ich ___ gern ein Wasser. (would like — polite)", "**Ich hätte gern …**"),
+    F("Speisekarte", "Die ___, bitte. (the menu)", "**die Speisekarte**."),
+    F("bestellen", "Ich möchte ___. (to order)", "**bestellen**."),
+    F("empfehlen", "Was können Sie ___? (recommend)", "**empfehlen**."),
+    F("zahlen", "Ich möchte ___, bitte. (to pay)", "**zahlen**."),
+    F("reserviert", "Ich habe einen Tisch ___. (reserved)", "**reserviert**."),
+    F("schmeckt", "Wie ___ es Ihnen? (does it taste)", "**schmeckt**."),
+    F("Vorspeise", "Als ___ nehme ich Suppe. (starter)", "**Vorspeise**."),
+    F("Trinkgeld", "Ist das ___ inklusive? (the tip)", "**Trinkgeld**."),
+    F("getrennt", "Zusammen oder ___? (separately)", "**getrennt** zahlen."),
+    F("durstig", "Ich bin ___. (thirsty)", "**durstig**."),
+  ],
+};
+
+const SMALL_TALK_DRILL: DrillSet = {
+  key: "small-talk", unitSlug: "small-talk", title: "Small talk",
+  items: [
+    F("kommen", "Woher ___ Sie? (come from)", "**Woher kommen Sie?**"),
+    F("beruflich", "Was machst du ___? (for a living)", "**beruflich**."),
+    F("Wetter", "Schönes ___ heute, oder? (weather)", "**Wetter**."),
+    F("Wochenende", "Schönes ___! (have a nice weekend)", "**Wochenende**."),
+    F("lange", "Wohnst du schon ___ hier? (long)", "**lange**."),
+    F("gefällt", "Wie ___ es dir hier? (do you like it)", "**gefällt**."),
+    F("Hobbys", "Was sind deine ___? (hobbies)", "**Hobbys**."),
+    F("kennenzulernen", "Schön, dich ___! (to meet you)", "**kennenzulernen**."),
+    F("Urlaub", "Warst du im ___? (on holiday)", "**Urlaub**."),
+    F("übrigens", "___, wie heißt du eigentlich? (by the way)", "**übrigens**."),
+  ],
+};
+
+const REACTIONS_DRILL: DrillSet = {
+  key: "reactions", unitSlug: "reactions", title: "Reactions",
+  items: [
+    F("schade", "Oh, wie ___! (what a pity)", "**Wie schade!**"),
+    F("Glückwunsch", "Herzlichen ___! (congratulations)", "**Herzlichen Glückwunsch!**"),
+    F("Besserung", "Gute ___! (get well soon)", "**Gute Besserung!**"),
+    Fa("toll", ["super", "klasse", "prima"], "Das ist ja ___! (great)", "**toll / super / klasse!**"),
+    F("leid", "Das tut mir ___. (I'm sorry)", "**Das tut mir leid.**"),
+    F("Glück", "Viel ___! (good luck)", "**Viel Glück!**"),
+    F("Appetit", "Guten ___! (enjoy your meal)", "**Guten Appetit!**"),
+    F("Quatsch", "So ein ___! (nonsense)", "**So ein Quatsch!**"),
+    F("Reise", "Gute ___! (have a good trip)", "**Gute Reise!**"),
+    F("Ahnung", "Keine ___! (no idea)", "**Keine Ahnung!**"),
+  ],
+};
+
+const PHONE_CALLS_DRILL: DrillSet = {
+  key: "phone-calls", unitSlug: "phone-calls", title: "Phone calls",
+  items: [
+    F("Apparat", "Wer ist am ___? (on the line)", "**am Apparat**."),
+    F("Moment", "Einen ___, bitte. (just a second)", "**Einen Moment, bitte.**"),
+    F("verbinde", "Ich ___ Sie. (connect you)", "**Ich verbinde Sie.**"),
+    F("zurück", "Ich rufe Sie später ___. (call back)", "zurückrufen → **zurück**."),
+    F("erreichen", "Kann ich Herrn Meier ___? (reach)", "**erreichen**."),
+    F("besetzt", "Die Leitung ist ___. (busy)", "**besetzt**."),
+    F("ausrichten", "Kann ich etwas ___? (pass on a message)", "**ausrichten**."),
+    F("dran", "Wer ist ___? (on the phone, casual)", "**Wer ist dran?**"),
+    F("Nachricht", "Möchten Sie eine ___ hinterlassen? (message)", "**Nachricht**."),
+    F("spreche", "Mit wem ___ ich? (am I speaking)", "**Mit wem spreche ich?**"),
+  ],
+};
+
+const NUMBERS_TIME: DrillSet = {
+  key: "numbers-time", unitSlug: "numbers-time", title: "Numbers and time",
+  items: [
+    F("vor", "Es ist Viertel ___ drei. (2:45)", "quarter to → **vor**."),
+    F("nach", "Es ist Viertel ___ drei. (3:15)", "quarter past → **nach**."),
+    F("halb", "Es ist ___ vier. (3:30)", "German half = half to four → **halb**."),
+    F("Uhr", "Es ist zehn ___. (o'clock)", "**zehn Uhr**."),
+    F("zehn", "Es ist ___ nach zwei. (2:10)", "**zehn nach zwei**."),
+    F("fünf", "Es ist ___ vor eins. (12:55)", "**fünf vor eins**."),
+    F("Mittag", "Um zwölf Uhr mittags ist ___. (noon)", "**Mittag**."),
+    F("Mitternacht", "Um null Uhr ist ___. (midnight)", "**Mitternacht**."),
+    F("dauert", "Wie lange ___ das? (does it take)", "**dauert**."),
+    F("spät", "Wie ___ ist es? (what time is it)", "**Wie spät ist es?**"),
+    F("hundert", "Zehn mal zehn ist ___. (100)", "**hundert**."),
+    F("tausend", "Zehn mal hundert ist ___. (1000)", "**tausend**."),
+  ],
+};
+
+const PROVERBS_DRILL: DrillSet = {
+  key: "proverbs", unitSlug: "proverbs", title: "Proverbs",
+  items: [
+    F("Meister", "Übung macht den ___. (master)", "**Übung macht den Meister.**"),
+    F("Mund", "Morgenstund hat Gold im ___. (mouth)", "**… Gold im Mund.**"),
+    F("schwer", "Aller Anfang ist ___. (hard)", "**Aller Anfang ist schwer.**"),
+    F("alles", "Ende gut, ___ gut. (all)", "**Ende gut, alles gut.**"),
+    F("Wurm", "Der frühe Vogel fängt den ___. (worm)", "**… fängt den Wurm.**"),
+    F("Gold", "Reden ist Silber, Schweigen ist ___. (a precious metal)", "**… Schweigen ist Gold.**"),
+    F("Katze", "Ist die ___ aus dem Haus, tanzen die Mäuse. (cat)", "**Ist die Katze aus dem Haus …**"),
+    F("Apfel", "Der ___ fällt nicht weit vom Stamm. (apple)", "**Der Apfel fällt nicht weit …**"),
+    F("Wein", "Im ___ liegt die Wahrheit. (wine)", "**Im Wein liegt die Wahrheit.**"),
+    F("Hoffnung", "Die ___ stirbt zuletzt. (hope)", "**Die Hoffnung stirbt zuletzt.**"),
+    F("Rom", "___ wurde auch nicht an einem Tag erbaut. (Rome)", "**Rom wurde … nicht an einem Tag erbaut.**"),
+    F("Feuer", "Gebranntes Kind scheut das ___. (fire)", "**… scheut das Feuer.**"),
+  ],
+};
+
 const SETS: Record<string, DrillSet> = {
   [FIXED_PREPOSITIONS.unitSlug]: FIXED_PREPOSITIONS,
   [ARTICLES.unitSlug]: ARTICLES,
@@ -1038,6 +1176,14 @@ const SETS: Record<string, DrillSet> = {
   [PARTICIPLES_AS_ADJECTIVES.unitSlug]: PARTICIPLES_AS_ADJECTIVES,
   [INDIRECT_SPEECH.unitSlug]: INDIRECT_SPEECH,
   [AUCH_NUR_SCHON_ERST.unitSlug]: AUCH_NUR_SCHON_ERST,
+  [GREETINGS.unitSlug]: GREETINGS,
+  [THANK_YOU.unitSlug]: THANK_YOU,
+  [RESTAURANT_DRILL.unitSlug]: RESTAURANT_DRILL,
+  [SMALL_TALK_DRILL.unitSlug]: SMALL_TALK_DRILL,
+  [REACTIONS_DRILL.unitSlug]: REACTIONS_DRILL,
+  [PHONE_CALLS_DRILL.unitSlug]: PHONE_CALLS_DRILL,
+  [NUMBERS_TIME.unitSlug]: NUMBERS_TIME,
+  [PROVERBS_DRILL.unitSlug]: PROVERBS_DRILL,
 };
 
 export function getDrillForUnit(unitSlug: string): DrillSet | null {
