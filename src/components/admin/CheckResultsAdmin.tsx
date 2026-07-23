@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { getStudents } from "@/lib/teacher";
 import { CHECK_QUESTIONS } from "@/lib/grammarCheck";
 
 // Schwachstellen aller Schüler auf einen Blick – gedacht für den Moment kurz
@@ -30,8 +31,11 @@ export default function CheckResultsAdmin() {
       if (e) { setError(e.message); setStudents([]); return; }
       const rows = (data ?? []) as Row[];
 
-      const { data: profiles } = await supabase.from("profiles").select("id, full_name, email");
-      const nameById = new Map((profiles ?? []).map((p) => [p.id as string, (p.full_name as string) || (p.email as string) || "Student"]));
+      // Namen über dieselbe Lehrer-RPC wie die Schülerliste. Die E-Mail liegt
+      // in auth.users, nicht in profiles, und profiles ist für den Lehrer per
+      // RLS nicht lesbar - ein direkter Select liefert deshalb nur "Student".
+      const roster = await getStudents().catch(() => []);
+      const nameById = new Map(roster.map((s) => [s.studentId, s.fullName || s.email || "Student"]));
 
       // Je Schüler nur den jüngsten Durchlauf: alles innerhalb einer Minute
       // nach seiner neuesten Zeile gehört zusammen.
