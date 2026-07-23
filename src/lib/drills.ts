@@ -333,6 +333,117 @@ const COMPARISONS: DrillSet = {
   ],
 };
 
+// Präsens (regelmäßig) – Person + Infinitiv → Form
+const PRESENT: DrillSet = {
+  key: "present-tense", unitSlug: "present-tense", title: "Verb endings (present tense)",
+  items: [
+    F("lerne", "Ich ___ Deutsch. (lernen)", "**ich** → -e: lerne."),
+    F("wohnst", "Du ___ in Berlin. (wohnen)", "**du** → -st: wohnst."),
+    F("trinkt", "Er ___ Kaffee. (trinken)", "**er** → -t: trinkt."),
+    F("brauche", "Ich ___ ein Wörterbuch. (brauchen)", "**ich** → -e: brauche."),
+    F("spielt", "Ihr ___ Fußball. (spielen)", "**ihr** → -t: spielt."),
+    F("schreibe", "Ich ___ einen Brief. (schreiben)", "**ich** → -e: schreibe."),
+    F("arbeitest", "Du ___ viel. (arbeiten)", "stem in -t, extra -e: **arbeitest**."),
+    F("kauft", "Er ___ ein Auto. (kaufen)", "**er** → -t: kauft."),
+    F("sagt", "Er ___ die Wahrheit. (sagen)", "**er** → -t: sagt."),
+    F("macht", "Ihr ___ das zusammen. (machen)", "**ihr** → -t: macht."),
+    F("wohnt", "Das Kind ___ hier. (wohnen)", "3rd person → -t: wohnt."),
+    F("suchst", "Du ___ den Schlüssel. (suchen)", "**du** → -st: suchst."),
+    F("lernst", "Du ___ schnell. (lernen)", "**du** → -st: lernst."),
+    F("kommt", "Er ___ aus Spanien. (kommen)", "**er** → -t: kommt."),
+    F("arbeite", "Ich ___ hier. (arbeiten)", "stem in -t, extra -e: **arbeite**."),
+  ],
+};
+
+// Modalverben – Person → Form
+const MODALS: DrillSet = {
+  key: "modal-verbs", unitSlug: "modal-verbs", title: "Modal verbs",
+  items: [
+    F("kann", "Ich ___ gut schwimmen. (können)", "**ich** → kann (no ending)."),
+    F("musst", "Du ___ heute arbeiten. (müssen)", "**du** → musst."),
+    F("will", "Er ___ ins Kino gehen. (wollen)", "**er** → will (no ending)."),
+    F("soll", "Er ___ pünktlich sein. (sollen)", "**er** → soll (no ending)."),
+    F("dürft", "Ihr ___ hier bleiben. (dürfen)", "**ihr** → dürft."),
+    F("muss", "Ich ___ nach Hause gehen. (müssen)", "**ich** → muss (no ending)."),
+    F("sollst", "Du ___ mehr schlafen. (sollen)", "**du** → sollst."),
+    F("kann", "Er ___ nicht kommen. (können)", "**er** → kann (same as ich)."),
+    F("möchte", "Ich ___ einen Kaffee. (möchten)", "**ich** → möchte."),
+    F("könnt", "Ihr ___ das machen. (können)", "**ihr** → könnt."),
+    F("darf", "Ich ___ hier rauchen? (dürfen)", "**ich** → darf (no ending)."),
+    F("wollt", "Ihr ___ ins Kino gehen. (wollen)", "**ihr** → wollt."),
+  ],
+};
+
+// haben und sein
+const HABEN_SEIN: DrillSet = {
+  key: "haben-sein", unitSlug: "haben-sein", title: "haben and sein",
+  items: [
+    F("bin", "Ich ___ müde. (sein)", "**ich** → bin."),
+    F("bist", "Du ___ nett. (sein)", "**du** → bist."),
+    F("ist", "Er ___ Lehrer. (sein)", "**er** → ist."),
+    F("sind", "Wir ___ zu Hause. (sein)", "**wir** → sind."),
+    F("seid", "Ihr ___ spät dran. (sein)", "**ihr** → seid (not sind!)."),
+    F("habe", "Ich ___ Hunger. (haben)", "**ich** → habe."),
+    F("hast", "Du ___ Zeit. (haben)", "**du** → hast."),
+    F("hat", "Er ___ ein Auto. (haben)", "**er** → hat."),
+    F("sind", "Die Kinder ___ hier. (sein)", "plural → sind."),
+    F("habt", "Ihr ___ Recht. (haben)", "**ihr** → habt."),
+    F("ist", "Das Kind ___ klein. (sein)", "3rd person → ist."),
+    F("bin", "Ich ___ aus Berlin. (sein)", "**ich** → bin."),
+  ],
+};
+
+// Futur (werden + Infinitiv)
+const FUTURE: DrillSet = {
+  key: "future", unitSlug: "future", title: "Talking about the future",
+  items: [
+    F("werde", "Ich ___ morgen arbeiten. (werden)", "**ich** → werde."),
+    F("wirst", "Du ___ das schaffen. (werden)", "**du** → wirst."),
+    F("wird", "Er ___ bald kommen. (werden)", "**er** → wird."),
+    F("wird", "Das Kind ___ groß. (werden)", "3rd person → wird."),
+    F("werdet", "Ihr ___ viel lernen. (werden)", "**ihr** → werdet."),
+    F("wird", "Es ___ morgen regnen. (werden)", "**es** → wird."),
+    F("werde", "Ich ___ dir helfen. (werden)", "**ich** → werde."),
+    F("wirst", "Du ___ es bald verstehen. (werden)", "**du** → wirst."),
+  ],
+};
+
+// Reflexivpronomen
+const REFLEXIVE: DrillSet = {
+  key: "reflexive-verbs", unitSlug: "reflexive-verbs", title: "Reflexive verbs",
+  items: [
+    F("mich", "Ich freue ___ auf das Wochenende.", "**ich** → mich."),
+    F("dich", "Du interessierst ___ für Musik.", "**du** → dich."),
+    F("sich", "Er fühlt ___ nicht gut.", "**er** → sich."),
+    F("uns", "Wir treffen ___ um acht.", "**wir** → uns."),
+    F("euch", "Beeilt ___! (ihr)", "**ihr** → euch."),
+    F("mich", "Ich erinnere ___ an den Tag.", "**ich** → mich."),
+    F("dich", "Setz ___ auf den Stuhl! (du)", "**du** → dich."),
+    F("sich", "Sie freut ___ über das Geschenk.", "3rd person → sich."),
+    F("uns", "Wir verabschieden ___ von euch.", "**wir** → uns."),
+    F("mir", "Ich wasche ___ die Hände.", "with a second object → Dativ: **mir**."),
+  ],
+};
+
+// Objektpronomen (Akkusativ/Dativ)
+const OBJECT_PRONOUNS: DrillSet = {
+  key: "object-pronouns", unitSlug: "object-pronouns", title: "Object pronouns",
+  items: [
+    F("ihn", "Ich sehe den Mann. → Ich sehe ___ .", "Akkusativ, masculine → ihn."),
+    F("ihm", "Ich helfe dem Mann. → Ich helfe ___ .", "Dativ (helfen), masculine → ihm."),
+    F("sie", "Ich kenne die Frau. → Ich kenne ___ .", "Akkusativ, feminine → sie."),
+    F("ihr", "Ich danke der Frau. → Ich danke ___ .", "Dativ (danken), feminine → ihr."),
+    F("es", "Ich lese das Buch. → Ich lese ___ .", "Akkusativ, neuter → es."),
+    F("sie", "Ich sehe die Kinder. → Ich sehe ___ .", "Akkusativ, plural → sie."),
+    F("ihnen", "Ich helfe den Kindern. → Ich helfe ___ .", "Dativ, plural → ihnen."),
+    F("mir", "Kannst du ___ helfen? (me)", "Dativ of ich → mir."),
+    F("mich", "Er sieht ___ . (me)", "Akkusativ of ich → mich."),
+    F("dich", "Ich verstehe ___ . (you, du)", "Akkusativ of du → dich."),
+    F("uns", "Er besucht ___ . (us)", "Akkusativ of wir → uns."),
+    F("ihm", "Ich gebe ___ das Buch. (dem Kind)", "Dativ, neuter → ihm."),
+  ],
+};
+
 const SETS: Record<string, DrillSet> = {
   [FIXED_PREPOSITIONS.unitSlug]: FIXED_PREPOSITIONS,
   [ARTICLES.unitSlug]: ARTICLES,
@@ -343,6 +454,12 @@ const SETS: Record<string, DrillSet> = {
   [PARTIZIP.unitSlug]: PARTIZIP,
   [STEM_CHANGING.unitSlug]: STEM_CHANGING,
   [COMPARISONS.unitSlug]: COMPARISONS,
+  [PRESENT.unitSlug]: PRESENT,
+  [MODALS.unitSlug]: MODALS,
+  [HABEN_SEIN.unitSlug]: HABEN_SEIN,
+  [FUTURE.unitSlug]: FUTURE,
+  [REFLEXIVE.unitSlug]: REFLEXIVE,
+  [OBJECT_PRONOUNS.unitSlug]: OBJECT_PRONOUNS,
 };
 
 export function getDrillForUnit(unitSlug: string): DrillSet | null {
