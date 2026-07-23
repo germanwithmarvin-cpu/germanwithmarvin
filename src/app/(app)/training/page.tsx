@@ -80,21 +80,33 @@ export default function TrainingPage() {
         )}
       </div>
 
-      {/* Der Check steht bewusst vor den Einheiten: wer nicht weiss, wo es
-          hakt, faengt sonst bei Einheit 1 an, obwohl die laengst sitzt. */}
+      {/* Check und freies Training stehen bewusst vor den Einheiten: wer nicht
+          weiss, wo es hakt, faengt sonst bei Einheit 1 an, obwohl die sitzt. */}
       {!loading && units.length > 0 && (
-        <Link href="/check" className="card p-5 flex items-center gap-4 transition hover:border-gold/50"
-          style={{ borderLeft: "5px solid var(--gold)" }}>
-          <div className="text-3xl shrink-0">🧭</div>
-          <div className="min-w-0 flex-1">
-            <div className="font-bold">Not sure where to start?</div>
-            <p className="text-sm text-cream-dim mt-0.5">
-              Take the grammar check — {CHECK_QUESTIONS.length} questions, about {Math.round(CHECK_QUESTIONS.length / 4.5)} minutes. It finds the topics that are not sitting yet
-              and sends you straight to the right unit.
-            </p>
-          </div>
-          <span className="text-gold-bright shrink-0 text-xl">→</span>
-        </Link>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Link href="/check" className="card p-5 flex items-start gap-4 transition hover:border-gold/50"
+            style={{ borderLeft: "5px solid var(--gold)" }}>
+            <div className="text-3xl shrink-0">🧭</div>
+            <div className="min-w-0 flex-1">
+              <div className="font-bold">Not sure where to start?</div>
+              <p className="text-sm text-cream-dim mt-0.5">
+                The grammar check — {CHECK_QUESTIONS.length} questions, about {Math.round(CHECK_QUESTIONS.length / 4.5)} min. It finds
+                the topics that are not sitting yet and sends you to the right unit.
+              </p>
+            </div>
+          </Link>
+          <Link href="/training/mixed" className="card p-5 flex items-start gap-4 transition hover:border-gold/50"
+            style={{ borderLeft: "5px solid var(--bordeaux)" }}>
+            <div className="text-3xl shrink-0">🎲</div>
+            <div className="min-w-0 flex-1">
+              <div className="font-bold">Already know the basics?</div>
+              <p className="text-sm text-cream-dim mt-0.5">
+                Free practice mixes questions across your topics — harder than one block at a time,
+                and that is exactly why it sticks. Filter by level or weak spots.
+              </p>
+            </div>
+          </Link>
+        </div>
       )}
 
       {loading && <p className="text-sm text-cream-dim">Loading…</p>}

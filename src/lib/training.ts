@@ -89,6 +89,42 @@ export async function getExercises(unitId: string): Promise<Exercise[]> {
   return (data ?? []).map(toExercise);
 }
 
+// Freies Training: eine Aufgabe zusammen mit dem Thema, aus dem sie stammt –
+// damit der Schüler beim gemischten Üben sieht, worum es gerade geht.
+export type MixedItem = { ex: Exercise; unitTitle: string; unitSlug: string; level: string };
+
+// Zieht `count` Aufgaben quer über die übergebenen Einheiten. `weightByUnit`
+// (optional) verschiebt die Auswahl zu schwachen Themen: höheres Gewicht =
+// häufiger gezogen. Ohne Gewichte ist alles gleich wahrscheinlich.
+export async function getMixedExercises(
+  units: { id: string; title: string; slug: string; level: string }[],
+  count: number,
+  weightByUnit?: Record<string, number>,
+): Promise<MixedItem[]> {
+  if (units.length === 0) return [];
+  const supabase = createClient();
+  const byId = new Map(units.map((u) => [u.id, u]));
+  const { data } = await supabase.from("tr_exercises").select("*").in("unit_id", units.map((u) => u.id));
+
+  const pool = (data ?? []).map((r) => {
+    const u = byId.get(r.unit_id as string)!;
+    return { ex: toExercise(r), unitTitle: u.title, unitSlug: u.slug, level: u.level, unitId: u.id };
+  });
+
+  // Gewichtete Ziehung ohne Zurücklegen.
+  const weight = (unitId: string) => Math.max(0.0001, weightByUnit?.[unitId] ?? 1);
+  const picked: typeof pool = [];
+  while (picked.length < count && pool.length > 0) {
+    const total = pool.reduce((s, it) => s + weight(it.unitId), 0);
+    let r = Math.random() * total;
+    let i = 0;
+    for (; i < pool.length - 1; i++) { r -= weight(pool[i].unitId); if (r <= 0) break; }
+    picked.push(pool[i]);
+    pool.splice(i, 1);
+  }
+  return picked.map(({ ex, unitTitle, unitSlug, level }) => ({ ex, unitTitle, unitSlug, level }));
+}
+
 export async function getMyProgress(): Promise<Record<string, UnitProgress>> {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
