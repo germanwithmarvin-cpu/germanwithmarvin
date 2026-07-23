@@ -18,6 +18,7 @@ type DrillItem = {
   answer: string; // die gesuchte Lücke
   explain: string; // Erklärung nach dem Prüfen
   sentences: string[]; // Sätze mit ___
+  alt?: string[]; // weitere korrekte Lösungen (z. B. Imperativ mit/ohne -e)
 };
 
 export type DrillSet = {
@@ -183,6 +184,8 @@ const NOUN_VERB: DrillSet = {
 
 // ─── Formen bilden: ein generischer Eintrag „Wort → Form" ────────────────────
 const F = (answer: string, prompt: string, explain: string): DrillItem => ({ answer, explain, sentences: [prompt] });
+// wie F, aber mit weiteren korrekten Lösungen (z. B. Komm! / Komme!).
+const Fa = (answer: string, alt: string[], prompt: string, explain: string): DrillItem => ({ answer, alt, explain, sentences: [prompt] });
 
 // Plural
 const PLURALS: DrillSet = {
@@ -444,6 +447,224 @@ const OBJECT_PRONOUNS: DrillSet = {
   ],
 };
 
+// Die vier Fälle – der Satz erzwingt den Kasus, (m/f/n/pl) gibt das Genus,
+// damit hier wirklich nur der Kasus geübt wird (nicht das Auswendig-Genus).
+const CASES: DrillSet = {
+  key: "cases", unitSlug: "cases", title: "The four cases",
+  items: [
+    F("der", "___ Mann schläft. (m)", "subject → Nominativ: **der** Mann."),
+    F("den", "Ich sehe ___ Mann. (m)", "sehen → Akkusativ, masc: **den** Mann."),
+    F("dem", "Ich helfe ___ Mann. (m)", "helfen → Dativ, masc: **dem** Mann."),
+    F("die", "___ Frau liest. (f)", "subject → Nominativ: **die** Frau."),
+    F("die", "Ich kenne ___ Frau. (f)", "Akkusativ, fem = **die** (unchanged)."),
+    F("der", "Ich danke ___ Frau. (f)", "danken → Dativ, fem: **der** Frau."),
+    F("das", "___ Auto ist neu. (n)", "subject → Nominativ: **das** Auto."),
+    F("das", "Ich kaufe ___ Auto. (n)", "Akkusativ, neuter = **das** (unchanged)."),
+    F("dem", "Das Buch liegt auf ___ Tisch. (m)", "position → Dativ, masc: **dem** Tisch."),
+    F("den", "Ich frage ___ Lehrer. (m)", "fragen → Akkusativ: **den** Lehrer."),
+    F("dem", "Ich gebe ___ Kind ein Buch. (n)", "indirect object → Dativ: **dem** Kind."),
+    F("die", "Ich sehe ___ Katze. (f)", "Akkusativ, fem = **die**."),
+    F("den", "Das gehört ___ Kindern. (pl)", "Dativ Plural → **den** Kindern (+n)."),
+    F("der", "Das ist das Auto ___ Frau. (f)", "possession → Genitiv, fem: **der** Frau."),
+  ],
+};
+
+// Verben mit Dativ – der Clou ist: diese Verben nehmen Dativ, obwohl sich das
+// wie ein Objekt anfuehlt. Antwort ist immer ein Dativ-Artikel.
+const DATIVE_VERBS: DrillSet = {
+  key: "verbs-and-cases", unitSlug: "verbs-and-cases", title: "Verbs that take the dative",
+  items: [
+    F("dem", "Ich helfe ___ Mann. (m)", "helfen + Dativ: **dem** Mann."),
+    F("der", "Ich danke ___ Frau. (f)", "danken + Dativ: **der** Frau."),
+    F("dem", "Das Buch gehört ___ Kind. (n)", "gehören + Dativ: **dem** Kind."),
+    F("dem", "Der Film gefällt ___ Mann. (m)", "gefallen + Dativ: **dem** Mann."),
+    F("dem", "Ich antworte ___ Lehrer. (m)", "antworten + Dativ: **dem** Lehrer."),
+    F("der", "Ich folge ___ Frau. (f)", "folgen + Dativ: **der** Frau."),
+    F("dem", "Ich glaube ___ Mann. (m)", "glauben + Dativ: **dem** Mann."),
+    F("der", "Die Jacke passt ___ Frau. (f)", "passen + Dativ: **der** Frau."),
+    F("dem", "Ich gratuliere ___ Freund. (m)", "gratulieren + Dativ: **dem** Freund."),
+    F("der", "Das Kleid steht ___ Frau gut. (f)", "stehen (suit) + Dativ: **der** Frau."),
+    F("den", "Das gehört ___ Kindern. (pl)", "Dativ Plural: **den** Kindern."),
+    F("den", "Ich danke ___ Eltern. (pl)", "danken + Dativ Plural: **den** Eltern."),
+    F("dem", "Ich helfe ___ Kind. (n)", "helfen + Dativ: **dem** Kind."),
+    F("der", "Ich vertraue ___ Ärztin. (f)", "vertrauen + Dativ: **der** Ärztin."),
+  ],
+};
+
+// Grundpraepositionen mit festem Fall (nur nicht-verschmelzende Praepositionen,
+// damit die Antwort eindeutig bleibt: fuer/ohne/gegen/durch/um = Akk, mit/aus = Dat).
+const PREPOSITIONS: DrillSet = {
+  key: "prepositions", unitSlug: "prepositions", title: "Prepositions and their case",
+  items: [
+    F("den", "für ___ Mann (m)", "für + Akkusativ: **den** Mann."),
+    F("die", "für ___ Frau (f)", "für + Akkusativ, fem: **die** Frau."),
+    F("das", "für ___ Kind (n)", "für + Akkusativ, neuter: **das** Kind."),
+    F("den", "ohne ___ Hund (m)", "ohne + Akkusativ: **den** Hund."),
+    F("die", "ohne ___ Tasche (f)", "ohne + Akkusativ, fem: **die** Tasche."),
+    F("die", "gegen ___ Wand (f)", "gegen + Akkusativ, fem: **die** Wand."),
+    F("den", "durch ___ Park (m)", "durch + Akkusativ: **den** Park."),
+    F("das", "durch ___ Fenster (n)", "durch + Akkusativ, neuter: **das** Fenster."),
+    F("den", "um ___ Tisch (m)", "um + Akkusativ: **den** Tisch."),
+    F("dem", "mit ___ Auto (n)", "mit + Dativ, neuter: **dem** Auto."),
+    F("der", "mit ___ Freundin (f)", "mit + Dativ, fem: **der** Freundin."),
+    F("dem", "mit ___ Hund (m)", "mit + Dativ, masc: **dem** Hund."),
+    F("der", "aus ___ Stadt (f)", "aus + Dativ, fem: **der** Stadt."),
+    F("dem", "aus ___ Haus (n)", "aus + Dativ, neuter: **dem** Haus."),
+  ],
+};
+
+// Wechselpraepositionen – (wohin?) = Bewegung = Akkusativ, (wo?) = Ort = Dativ.
+// Nur nicht-verschmelzende Praepositionen (auf/ueber/neben/hinter/unter), damit
+// die Dativ-Antwort nicht zu im/am wird.
+const TWO_WAY: DrillSet = {
+  key: "two-way-prepositions", unitSlug: "two-way-prepositions", title: "Two-way prepositions",
+  items: [
+    F("den", "Ich lege das Buch auf ___ Tisch. (wohin? · m)", "movement → Akkusativ: auf **den** Tisch."),
+    F("dem", "Das Buch liegt auf ___ Tisch. (wo? · m)", "position → Dativ: auf **dem** Tisch."),
+    F("das", "Ich hänge ein Foto über ___ Sofa. (wohin? · n)", "movement → Akkusativ: über **das** Sofa."),
+    F("dem", "Das Foto hängt über ___ Sofa. (wo? · n)", "position → Dativ: über **dem** Sofa."),
+    F("das", "Ich stelle die Lampe neben ___ Bett. (wohin? · n)", "movement → Akkusativ: neben **das** Bett."),
+    F("dem", "Die Lampe steht neben ___ Bett. (wo? · n)", "position → Dativ: neben **dem** Bett."),
+    F("den", "Die Katze springt auf ___ Stuhl. (wohin? · m)", "movement → Akkusativ: auf **den** Stuhl."),
+    F("dem", "Die Katze sitzt auf ___ Stuhl. (wo? · m)", "position → Dativ: auf **dem** Stuhl."),
+    F("die", "Ich hänge das Handtuch hinter ___ Tür. (wohin? · f)", "movement → Akkusativ: hinter **die** Tür."),
+    F("der", "Das Handtuch hängt hinter ___ Tür. (wo? · f)", "position → Dativ: hinter **der** Tür."),
+    F("den", "Der Ball rollt unter ___ Tisch. (wohin? · m)", "movement → Akkusativ: unter **den** Tisch."),
+    F("dem", "Der Ball liegt unter ___ Tisch. (wo? · m)", "position → Dativ: unter **dem** Tisch."),
+    F("die", "Ich stelle das Glas auf ___ Kommode. (wohin? · f)", "movement → Akkusativ: auf **die** Kommode."),
+    F("der", "Das Glas steht auf ___ Kommode. (wo? · f)", "position → Dativ: auf **der** Kommode."),
+  ],
+};
+
+// N-Deklination – schwache Maskulina bekommen im Akk/Dat/Gen ein -(e)n.
+const N_DECLENSION: DrillSet = {
+  key: "n-declension", unitSlug: "n-declension", title: "N-declension",
+  items: [
+    F("Studenten", "Ich sehe den ___ . (Student)", "n-declension: den **Studenten** (+en)."),
+    F("Jungen", "Ich helfe dem ___ . (Junge)", "n-declension: dem **Jungen**."),
+    F("Nachbarn", "das Auto des ___ (Nachbar)", "n-declension: des **Nachbarn**."),
+    F("Kollegen", "Ich kenne den ___ . (Kollege)", "n-declension: den **Kollegen**."),
+    F("Touristen", "Ich spreche mit dem ___ . (Tourist)", "n-declension: dem **Touristen**."),
+    F("Polizisten", "Ich frage den ___ . (Polizist)", "n-declension: den **Polizisten**."),
+    F("Menschen", "Ich glaube dem ___ . (Mensch)", "n-declension: dem **Menschen**."),
+    F("Herrn", "der Hut des ___ (Herr)", "Herr → des **Herrn** (singular -n)."),
+    F("Präsidenten", "Ich sehe den ___ . (Präsident)", "n-declension: den **Präsidenten**."),
+    F("Kunden", "Ich berate den ___ . (Kunde)", "n-declension: den **Kunden**."),
+    F("Kollegen", "Ich gebe dem ___ das Buch. (Kollege)", "n-declension, Dativ: dem **Kollegen**."),
+    F("Namen", "Wie schreibt man den ___ ? (Name)", "Name → den **Namen**."),
+  ],
+};
+
+// Genitiv-Praepositionen – wegen/waehrend/trotz/statt... + Genitiv.
+// Antwort ist der Genitiv-Artikel: des (m/n) oder der (f/pl).
+const GENITIVE_PREPS: DrillSet = {
+  key: "genitive-prepositions", unitSlug: "genitive-prepositions", title: "Genitive prepositions",
+  items: [
+    F("des", "wegen ___ Wetters (n)", "wegen + Genitiv, neuter: **des** Wetters."),
+    F("der", "während ___ Woche (f)", "während + Genitiv, fem: **der** Woche."),
+    F("des", "trotz ___ Regens (m)", "trotz + Genitiv, masc: **des** Regens."),
+    F("der", "wegen ___ Kinder (pl)", "Genitiv Plural: **der** Kinder."),
+    F("des", "statt ___ Autos (n)", "statt + Genitiv, neuter: **des** Autos."),
+    F("der", "während ___ Reise (f)", "während + Genitiv, fem: **der** Reise."),
+    F("der", "trotz ___ Kälte (f)", "trotz + Genitiv, fem: **der** Kälte."),
+    F("der", "außerhalb ___ Stadt (f)", "außerhalb + Genitiv, fem: **der** Stadt."),
+    F("des", "wegen ___ Mannes (m)", "wegen + Genitiv, masc: **des** Mannes."),
+    F("des", "aufgrund ___ Fehlers (m)", "aufgrund + Genitiv, masc: **des** Fehlers."),
+    F("der", "innerhalb ___ Stunde (f)", "innerhalb + Genitiv, fem: **der** Stunde."),
+    F("der", "während ___ Ferien (pl)", "Genitiv Plural: **der** Ferien."),
+  ],
+};
+
+// Imperativ (du) – regelmäßige Verben akzeptieren beide Formen (Komm/Komme),
+// die Vokalwechsler (e→i/ie) haben nur eine Form (Lies, Gib …).
+const IMPERATIVE: DrillSet = {
+  key: "imperative", unitSlug: "imperative", title: "The imperative (du)",
+  items: [
+    Fa("Komm", ["Komme"], "kommen → du: ___ !", "drop -st, no pronoun: **Komm!** (also Komme)."),
+    Fa("Geh", ["Gehe"], "gehen → du: ___ !", "**Geh!** (also Gehe)."),
+    Fa("Mach", ["Mache"], "machen → du: ___ !", "**Mach!** (also Mache)."),
+    Fa("Hör", ["Höre"], "hören → du: ___ !", "**Hör!** (also Höre)."),
+    Fa("Sag", ["Sage"], "sagen → du: ___ !", "**Sag!** (also Sage)."),
+    Fa("Frag", ["Frage"], "fragen → du: ___ !", "**Frag!** (also Frage)."),
+    Fa("Fahr", ["Fahre"], "fahren → du: ___ !", "a stays a: **Fahr!** (also Fahre)."),
+    F("Warte", "warten → du: ___ !", "stem in -t keeps -e: **Warte!**"),
+    F("Öffne", "öffnen → du: ___ !", "stem in -n keeps -e: **Öffne!**"),
+    F("Lies", "lesen → du: ___ !", "e→ie: **Lies!**"),
+    F("Iss", "essen → du: ___ !", "e→i: **Iss!**"),
+    F("Nimm", "nehmen → du: ___ !", "irregular e→i: **Nimm!**"),
+    F("Gib", "geben → du: ___ !", "e→i: **Gib!**"),
+    F("Hilf", "helfen → du: ___ !", "e→i: **Hilf!**"),
+    F("Sprich", "sprechen → du: ___ !", "e→i: **Sprich!**"),
+    F("Sei", "sein → du: ___ !", "irregular: **Sei!**"),
+  ],
+};
+
+// Konjunktiv II – Grundverb → Form. Wollen/sollen sind bewusst nicht dabei
+// (ihr K II = Präteritum, das wäre zweideutig).
+const KONJUNKTIV_2: DrillSet = {
+  key: "konjunktiv-2", unitSlug: "konjunktiv-2", title: "Konjunktiv II",
+  items: [
+    F("hätte", "haben → ich ___ (Konjunktiv II)", "haben → **hätte**."),
+    F("wäre", "sein → ich ___ (Konjunktiv II)", "sein → **wäre**."),
+    F("würde", "werden → ich ___ (Konjunktiv II)", "werden → **würde**."),
+    F("könnte", "können → ich ___ (Konjunktiv II)", "können → **könnte**."),
+    F("müsste", "müssen → ich ___ (Konjunktiv II)", "müssen → **müsste**."),
+    F("dürfte", "dürfen → ich ___ (Konjunktiv II)", "dürfen → **dürfte**."),
+    F("hättest", "haben → du ___ (Konjunktiv II)", "du-form → **hättest**."),
+    F("wären", "sein → wir ___ (Konjunktiv II)", "wir-form → **wären**."),
+    F("könnten", "können → wir ___ (Konjunktiv II)", "wir-form → **könnten**."),
+    F("würdest", "werden → du ___ (Konjunktiv II)", "du-form → **würdest**."),
+    F("hätte", "haben → er ___ (Konjunktiv II)", "er-form = ich-form → **hätte**."),
+    F("wäre", "sein → er ___ (Konjunktiv II)", "er-form → **wäre**."),
+    F("möchte", "mögen → ich ___ (Konjunktiv II)", "mögen → **möchte**."),
+    F("müssten", "müssen → wir ___ (Konjunktiv II)", "wir-form → **müssten**."),
+  ],
+};
+
+// Adjektivendungen – Artikel + Nomen sind gegeben (also Genus/Kasus/Typ klar),
+// gesucht ist das voll gebeugte Adjektiv (Grundform in Klammern).
+const ADJECTIVE_ENDINGS: DrillSet = {
+  key: "adjective-endings", unitSlug: "adjective-endings", title: "Adjective endings",
+  items: [
+    F("große", "Der ___ Mann lacht. (groß)", "def. article, Nom masc → -e: der **große** Mann."),
+    F("großen", "Ich sehe den ___ Mann. (groß)", "def. article, Akk masc → -en: den **großen** Mann."),
+    F("großen", "Ich helfe dem ___ Mann. (groß)", "def. article, Dativ → -en: dem **großen** Mann."),
+    F("kleine", "Die ___ Frau lacht. (klein)", "def. article, Nom fem → -e: die **kleine** Frau."),
+    F("kleine", "Ich kenne die ___ Frau. (klein)", "def. article, Akk fem → -e: die **kleine** Frau."),
+    F("kleinen", "Ich helfe der ___ Frau. (klein)", "def. article, Dativ fem → -en: der **kleinen** Frau."),
+    F("neue", "Das ___ Auto ist teuer. (neu)", "def. article, Nom neut → -e: das **neue** Auto."),
+    F("neue", "Ich kaufe das ___ Auto. (neu)", "def. article, Akk neut → -e: das **neue** Auto."),
+    F("großer", "Ein ___ Mann lacht. (groß)", "indef. article, Nom masc → -er: ein **großer** Mann."),
+    F("großen", "Ich sehe einen ___ Mann. (groß)", "indef. article, Akk masc → -en: einen **großen** Mann."),
+    F("kleine", "Eine ___ Frau lacht. (klein)", "indef. article, Nom fem → -e: eine **kleine** Frau."),
+    F("neues", "Ein ___ Auto ist teuer. (neu)", "indef. article, Nom neut → -es: ein **neues** Auto."),
+    F("neues", "Ich kaufe ein ___ Auto. (neu)", "indef. article, Akk neut → -es: ein **neues** Auto."),
+    F("neuen", "Ich fahre mit einem ___ Auto. (neu)", "indef. article, Dativ → -en: mit einem **neuen** Auto."),
+    F("netten", "Ich spreche mit einer ___ Frau. (nett)", "indef. article, Dativ fem → -en: mit einer **netten** Frau."),
+  ],
+};
+
+// Ordnungszahlen – Ziffer → Wort. 1.–19. nehmen -te, ab 20. -ste; nach „am" Dativ.
+const DATES_ORDINALS: DrillSet = {
+  key: "dates-ordinals", unitSlug: "dates-ordinals", title: "Dates and ordinal numbers",
+  items: [
+    F("erste", "1 → der ___", "1 → **erste** (der erste)."),
+    F("zweite", "2 → der ___", "2 → **zweite**."),
+    F("dritte", "3 → der ___", "3 → **dritte** (irregular, not dreite)."),
+    F("vierte", "4 → der ___", "4 → **vierte**."),
+    F("fünfte", "5 → der ___", "5 → **fünfte**."),
+    F("sechste", "6 → der ___", "6 → **sechste**."),
+    Fa("siebte", ["siebente"], "7 → der ___", "7 → **siebte** (or siebente)."),
+    F("achte", "8 → der ___", "8 → **achte** (only one t)."),
+    F("neunte", "9 → der ___", "9 → **neunte**."),
+    F("zehnte", "10 → der ___", "10 → **zehnte**."),
+    F("zwanzigste", "20 → der ___", "from 20 on → -ste: **zwanzigste**."),
+    F("hundertste", "100 → der ___", "100 → **hundertste**."),
+    F("dritten", "am ___ Mai (3.)", "after am → Dativ -n: am **dritten** Mai."),
+    F("ersten", "am ___ Januar (1.)", "after am → Dativ: am **ersten** Januar."),
+  ],
+};
+
 const SETS: Record<string, DrillSet> = {
   [FIXED_PREPOSITIONS.unitSlug]: FIXED_PREPOSITIONS,
   [ARTICLES.unitSlug]: ARTICLES,
@@ -460,6 +681,16 @@ const SETS: Record<string, DrillSet> = {
   [FUTURE.unitSlug]: FUTURE,
   [REFLEXIVE.unitSlug]: REFLEXIVE,
   [OBJECT_PRONOUNS.unitSlug]: OBJECT_PRONOUNS,
+  [CASES.unitSlug]: CASES,
+  [DATIVE_VERBS.unitSlug]: DATIVE_VERBS,
+  [PREPOSITIONS.unitSlug]: PREPOSITIONS,
+  [TWO_WAY.unitSlug]: TWO_WAY,
+  [N_DECLENSION.unitSlug]: N_DECLENSION,
+  [GENITIVE_PREPS.unitSlug]: GENITIVE_PREPS,
+  [IMPERATIVE.unitSlug]: IMPERATIVE,
+  [KONJUNKTIV_2.unitSlug]: KONJUNKTIV_2,
+  [ADJECTIVE_ENDINGS.unitSlug]: ADJECTIVE_ENDINGS,
+  [DATES_ORDINALS.unitSlug]: DATES_ORDINALS,
 };
 
 export function getDrillForUnit(unitSlug: string): DrillSet | null {
@@ -521,7 +752,7 @@ export function generateDrill(set: DrillSet, count: number): Exercise[] {
     options: [],
     tokens: [],
     correct: -1,
-    answers: [p.item.answer],
+    answers: [p.item.answer, ...(p.item.alt ?? [])],
     order: [],
     verb: -1,
     explain: p.item.explain,
