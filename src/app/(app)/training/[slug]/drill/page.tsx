@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { checkAnswer, type Exercise } from "@/lib/training";
-import { getDrillForUnit, generateDrill, type DrillSet } from "@/lib/drills";
+import { checkAnswer, getUnitBySlug, getExercises, type Exercise } from "@/lib/training";
+import { getDrillForUnit, generateDrill, buildFallbackDrill } from "@/lib/drills";
 import { getAccess } from "@/lib/access";
 import { addXp } from "@/lib/progress";
 import Paywall from "@/components/Paywall";
@@ -29,7 +29,11 @@ type Phase = "loading" | "blocked" | "missing" | "practice" | "done";
 export default function DrillPage() {
   const slug = useParams<{ slug: string }>().slug;
   const [phase, setPhase] = useState<Phase>("loading");
-  const [set, setSet] = useState<DrillSet | null>(null);
+  const [title, setTitle] = useState("");
+  // Quelle einer Runde: entweder aus der Wortliste generiert oder als Fallback
+  // aus den vorhandenen Aufgaben der Einheit gemischt.
+  const [makeRound, setMakeRound] = useState<(() => Exercise[]) | null>(null);
+  const [fresh, setFresh] = useState(true); // true = generiert, false = Einheiten-Aufgaben
 
   const [queue, setQueue] = useState<Exercise[]>([]);
   const [pos, setPos] = useState(0);
@@ -50,17 +54,35 @@ export default function DrillPage() {
     (async () => {
       const access = await getAccess();
       if (access.tier !== "full") { if (!cancelled) setPhase("blocked"); return; }
+
       const s = getDrillForUnit(slug);
+      if (s) {
+        // Wortliste vorhanden: endlos frisch generieren.
+        if (cancelled) return;
+        setTitle(s.title); setFresh(true);
+        const gen = () => generateDrill(s, COUNT);
+        setMakeRound(() => gen);
+        beginRound(gen);
+        return;
+      }
+
+      // Kein Set: die vorhandenen Aufgaben der Einheit endlos durchmischen.
+      const unit = await getUnitBySlug(slug);
       if (cancelled) return;
-      if (!s) { setPhase("missing"); return; }
-      setSet(s);
-      startRound(s);
+      if (!unit) { setPhase("missing"); return; }
+      const ex = await getExercises(unit.id);
+      if (cancelled) return;
+      if (ex.length === 0) { setPhase("missing"); return; }
+      setTitle(unit.title); setFresh(false);
+      const gen = () => buildFallbackDrill(ex, COUNT);
+      setMakeRound(() => gen);
+      beginRound(gen);
     })();
     return () => { cancelled = true; };
   }, [slug]);
 
-  const startRound = (s: DrillSet) => {
-    const items = generateDrill(s, COUNT);
+  const beginRound = (gen: () => Exercise[]) => {
+    const items = gen();
     setQueue(items); setTotal(items.length); setPos(0); setRetry([]); setRound(1);
     setGiven(""); setLocked(false); setOk(false);
     setFirstPassRight(0); setCombo(0); setBestCombo(0); setSaved(false);
@@ -113,7 +135,7 @@ export default function DrillPage() {
   );
 
   // ── Übung ────────────────────────────────────────────────────────────────
-  if (phase === "practice" && ex && set) {
+  if (phase === "practice" && ex) {
     return (
       <div className="space-y-5 max-w-2xl">
         <div className="flex items-center justify-between text-sm">
@@ -132,7 +154,7 @@ export default function DrillPage() {
         <div className="card p-6 sm:p-7 space-y-5">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ background: "var(--bordeaux)", color: "#fff" }}>🔥 Intensive</span>
-            <span className="text-xs text-cream-dim">{set.title}</span>
+            <span className="text-xs text-cream-dim">{title}</span>
           </div>
 
           <ExerciseView ex={ex} value={given} onChange={setGiven} locked={locked} correct={ok} />
@@ -183,7 +205,9 @@ export default function DrillPage() {
         <p className="text-sm max-w-md mx-auto">
           {pct >= 80
             ? "That is starting to sit. The more rounds you do, the less you have to think about it."
-            : "This is exactly the topic that rewards repetition. Run another round — the questions will be different."}
+            : fresh
+              ? "This is exactly the topic that rewards repetition. Run another round — the questions will be different."
+              : "Run another round — the questions come back reshuffled, and the ones you missed keep returning until they sit."}
         </p>
         <div className="flex items-center justify-center gap-2 flex-wrap">
           {firstPassRight > 0 && <div className="text-sm px-4 py-2 rounded-full" style={{ background: "var(--bordeaux-deep)" }}><b className="text-gold-bright">+{firstPassRight} XP</b></div>}
@@ -192,7 +216,7 @@ export default function DrillPage() {
       </div>
 
       <div className="flex items-center gap-3 flex-wrap">
-        <button onClick={() => set && startRound(set)} className="btn-gold px-6 py-3 font-bold">Another {COUNT} →</button>
+        <button onClick={() => makeRound && beginRound(makeRound)} className="btn-gold px-6 py-3 font-bold">Another {COUNT} →</button>
         <Link href={`/training/${slug}`} className="btn-outline px-6 py-3">Back to the topic</Link>
       </div>
     </div>

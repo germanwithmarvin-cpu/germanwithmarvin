@@ -8,7 +8,6 @@ import { createClient } from "@/lib/supabase/client";
 import Paywall from "@/components/Paywall";
 import Lena from "@/components/training/Lena";
 import { CHECK_QUESTIONS } from "@/lib/grammarCheck";
-import { getDrillForUnit } from "@/lib/drills";
 
 const LEVELS = ["A1", "A2", "B1", "B2", "C1"];
 
@@ -168,19 +167,16 @@ export default function TrainingPage() {
                     </div>
                   );
                 }
-                // Karten mit Intensiv-Modus tragen den Einstieg direkt hier –
-                // sonst findet ihn niemand tief unten in der Einheit.
-                const hasDrill = !!getDrillForUnit(u.slug);
+                // Jede Einheit hat einen Intensiv-Modus – die Karte trägt den
+                // Einstieg direkt hier, sonst findet ihn niemand.
                 return (
                   <div key={u.id} className="card p-4 flex flex-col gap-2 transition hover:border-gold/50">
                     <Link href={`/training/${u.slug}`} className="flex flex-col gap-2 flex-1">{body}</Link>
-                    {hasDrill && (
-                      <Link href={`/training/${u.slug}/drill`}
-                        className="mt-1 pt-2.5 flex items-center gap-1.5 text-xs font-bold transition hover:opacity-80"
-                        style={{ borderTop: "1px solid color-mix(in srgb, var(--gold) 22%, transparent)", color: "var(--bordeaux)" }}>
-                        🔥 Intensive drill <span className="text-gold-bright">→</span>
-                      </Link>
-                    )}
+                    <Link href={`/training/${u.slug}/drill`}
+                      className="mt-1 pt-2.5 flex items-center gap-1.5 text-xs font-bold transition hover:opacity-80"
+                      style={{ borderTop: "1px solid color-mix(in srgb, var(--gold) 22%, transparent)", color: "var(--bordeaux)" }}>
+                      🔥 Intensive drill <span className="text-gold-bright">→</span>
+                    </Link>
                   </div>
                 );
               })}

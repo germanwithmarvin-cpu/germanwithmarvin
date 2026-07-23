@@ -192,6 +192,32 @@ export function getDrillForUnit(unitSlug: string): DrillSet | null {
   return SETS[unitSlug] ?? null;
 }
 
+const shuffle = <T,>(a: T[]) => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } };
+
+// Fallback-Drill für Einheiten ohne eigene Wortliste: die vorhandenen Aufgaben
+// der Einheit, endlos durchgemischt. Kein „frisch generiert", aber ein echter
+// Intensiv-Lauf mit Fehler-Schleife – und er funktioniert für jeden
+// Aufgabentyp, auch Satzbau (order). Neue Kennungen, damit nichts protokolliert
+// wird und die Fehler-Schleife jede Position einzeln behandelt.
+export function buildFallbackDrill(exercises: Exercise[], count: number): Exercise[] {
+  if (exercises.length === 0) return [];
+  const pool = [...exercises];
+  shuffle(pool);
+  const out: Exercise[] = [];
+  let i = 0;
+  while (out.length < count) {
+    if (i >= pool.length) {
+      const last = pool[pool.length - 1];
+      shuffle(pool);
+      if (pool[0] === last && pool.length > 1) [pool[0], pool[1]] = [pool[1], pool[0]];
+      i = 0;
+    }
+    out.push({ ...pool[i], id: `drill-fallback-${out.length}` });
+    i++;
+  }
+  return out;
+}
+
 // Zieht `count` frische Aufgaben. Erst werden alle (Eintrag × Satz)-Kombinationen
 // gemischt; reicht das nicht, wird nachgefüllt – aber nie derselbe Satz direkt
 // hintereinander.

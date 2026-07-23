@@ -207,21 +207,22 @@ export default function TrainingUnitPage() {
             <button onClick={() => start()} className="btn-gold px-6 py-3 font-bold">Start practice →</button>
             <span className="text-xs text-cream-dim">{all.length} exercises</span>
           </div>
-          {/* Intensiv-Modus: nur bei Themen, die als Drill hinterlegt sind. */}
-          {getDrillForUnit(unit.slug) && (
-            <Link href={`/training/${unit.slug}/drill`}
-              className="card p-4 flex items-center gap-4 transition hover:border-gold/50 mt-1"
-              style={{ borderLeft: "5px solid var(--bordeaux)" }}>
-              <div className="text-2xl shrink-0">🔥</div>
-              <div className="min-w-0 flex-1">
-                <div className="font-bold text-sm">Intensive drill</div>
-                <p className="text-xs text-cream-dim mt-0.5">
-                  This topic rewards repetition. Endless fresh questions from the same pattern — go until it comes without thinking.
-                </p>
-              </div>
-              <span className="text-gold-bright shrink-0">→</span>
-            </Link>
-          )}
+          {/* Intensiv-Modus für jede Einheit. Bei Themen mit Wortliste sind es
+              endlos frische Aufgaben, sonst die Aufgaben der Einheit gemischt. */}
+          <Link href={`/training/${unit.slug}/drill`}
+            className="card p-4 flex items-center gap-4 transition hover:border-gold/50 mt-1"
+            style={{ borderLeft: "5px solid var(--bordeaux)" }}>
+            <div className="text-2xl shrink-0">🔥</div>
+            <div className="min-w-0 flex-1">
+              <div className="font-bold text-sm">Intensive drill</div>
+              <p className="text-xs text-cream-dim mt-0.5">
+                {getDrillForUnit(unit.slug)
+                  ? "Endless fresh questions from the same pattern — go until it comes without thinking."
+                  : "A long run through this topic, reshuffled, with every mistake coming back until it sits."}
+              </p>
+            </div>
+            <span className="text-gold-bright shrink-0">→</span>
+          </Link>
         </div>
       )}
 
