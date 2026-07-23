@@ -938,6 +938,64 @@ const RELATIVE_PREPOSITIONS: DrillSet = {
   ],
 };
 
+// Partizip als Adjektiv – Partizip I (Infinitiv + d) oder Partizip II, attributiv
+// gebeugt. Alle im Nominativ mit bestimmtem Artikel → Endung -e.
+const PARTICIPLES_AS_ADJECTIVES: DrillSet = {
+  key: "participles-as-adjectives", unitSlug: "participles-as-adjectives", title: "Participles as adjectives",
+  items: [
+    F("schlafende", "der ___ Hund (schlafen — Partizip I)", "Partizip I + Endung: **schlafende** Hund."),
+    F("weinende", "das ___ Kind (weinen — Partizip I)", "Partizip I: **weinende** Kind."),
+    F("lachende", "der ___ Mann (lachen — Partizip I)", "Partizip I: **lachende** Mann."),
+    F("ankommende", "der ___ Zug (ankommen — Partizip I)", "Partizip I: **ankommende** Zug."),
+    F("kochende", "das ___ Wasser (kochen — Partizip I)", "Partizip I: **kochende** Wasser."),
+    F("geöffnete", "der ___ Brief (öffnen — Partizip II)", "Partizip II: **geöffnete** Brief."),
+    F("geschlossene", "das ___ Fenster (schließen — Partizip II)", "Partizip II: **geschlossene** Fenster."),
+    F("gestrichene", "die ___ Wand (streichen — Partizip II)", "Partizip II: **gestrichene** Wand."),
+    F("geparkte", "das ___ Auto (parken — Partizip II)", "Partizip II: **geparkte** Auto."),
+    F("gelesene", "das ___ Buch (lesen — Partizip II)", "Partizip II: **gelesene** Buch."),
+    F("gestellte", "die ___ Frage (stellen — Partizip II)", "Partizip II: **gestellte** Frage."),
+    F("gefallene", "der ___ Baum (fallen — Partizip II)", "Partizip II: **gefallene** Baum."),
+  ],
+};
+
+// Indirekte Rede – Konjunktiv I (meist 3. Person: er/sie + -e, sein → sei).
+const INDIRECT_SPEECH: DrillSet = {
+  key: "indirect-speech", unitSlug: "indirect-speech", title: "Indirect speech (Konjunktiv I)",
+  items: [
+    F("sei", "Er sagt, er ___ krank. (sein — er, Konjunktiv I)", "sein → **sei**."),
+    F("habe", "Sie sagt, sie ___ keine Zeit. (haben — sie sg, Konjunktiv I)", "haben → **habe**."),
+    F("komme", "Er meint, er ___ später. (kommen — er, Konjunktiv I)", "kommen → **komme**."),
+    F("gehe", "Sie sagt, sie ___ nach Hause. (gehen — sie sg, Konjunktiv I)", "gehen → **gehe**."),
+    F("könne", "Er sagt, er ___ nicht helfen. (können — er, Konjunktiv I)", "können → **könne**."),
+    F("wolle", "Sie sagt, sie ___ mitkommen. (wollen — sie sg, Konjunktiv I)", "wollen → **wolle**."),
+    F("müsse", "Er sagt, er ___ arbeiten. (müssen — er, Konjunktiv I)", "müssen → **müsse**."),
+    F("werde", "Sie sagt, sie ___ bald fertig. (werden — sie sg, Konjunktiv I)", "werden → **werde**."),
+    F("seien", "Sie sagt, die Kinder ___ müde. (sein — pl, Konjunktiv I)", "sein Plural → **seien**."),
+    F("wisse", "Er sagt, er ___ nichts davon. (wissen — er, Konjunktiv I)", "wissen → **wisse**."),
+    F("dürfe", "Sie sagt, sie ___ nicht kommen. (dürfen — sie sg, Konjunktiv I)", "dürfen → **dürfe**."),
+    F("habe", "Er behauptet, er ___ das nicht gesagt. (haben — er, Konjunktiv I)", "haben → **habe**."),
+  ],
+};
+
+// Gradpartikeln auch / nur / schon / erst – die richtige Partikel nach Bedeutung.
+const AUCH_NUR_SCHON_ERST: DrillSet = {
+  key: "auch-nur-schon-erst", unitSlug: "auch-nur-schon-erst", title: "auch, nur, schon, erst",
+  items: [
+    F("schon", "Es ist ___ spät, wir müssen gehen. (already)", "already → **schon**."),
+    F("erst", "Es ist ___ 8 Uhr, wir haben viel Zeit. (only / not until)", "sooner than expected → **erst**."),
+    F("nur", "Ich habe ___ 5 Euro dabei. (only, no more)", "no more than → **nur**."),
+    F("auch", "Ich komme, und mein Bruder kommt ___ . (too / also)", "in addition → **auch**."),
+    F("schon", "Bist du ___ fertig? Das ging schnell! (already)", "already → **schon**."),
+    F("erst", "Ich bin ___ gestern angekommen. (only / just recently)", "not until → **erst**."),
+    F("nur", "Das kostet ___ 3 Euro, sehr günstig. (only)", "no more than → **nur**."),
+    F("erst", "Ich stehe am Wochenende ___ um zehn auf. (not until)", "not until → **erst**."),
+    F("erst", "Der Film fängt ___ um neun an. (not until)", "not until → **erst**."),
+    F("schon", "Wir sind ___ da, das war schnell. (already)", "already → **schon**."),
+    F("nur", "Ich wollte ___ helfen, nicht stören. (just / only)", "nothing more than → **nur**."),
+    F("auch", "Nicht nur ich mag das, du magst es ___ . (too)", "in addition → **auch**."),
+  ],
+};
+
 const SETS: Record<string, DrillSet> = {
   [FIXED_PREPOSITIONS.unitSlug]: FIXED_PREPOSITIONS,
   [ARTICLES.unitSlug]: ARTICLES,
@@ -977,6 +1035,9 @@ const SETS: Record<string, DrillSet> = {
   [KONJUNKTIV_2_PAST.unitSlug]: KONJUNKTIV_2_PAST,
   [PASSIVE.unitSlug]: PASSIVE,
   [RELATIVE_PREPOSITIONS.unitSlug]: RELATIVE_PREPOSITIONS,
+  [PARTICIPLES_AS_ADJECTIVES.unitSlug]: PARTICIPLES_AS_ADJECTIVES,
+  [INDIRECT_SPEECH.unitSlug]: INDIRECT_SPEECH,
+  [AUCH_NUR_SCHON_ERST.unitSlug]: AUCH_NUR_SCHON_ERST,
 };
 
 export function getDrillForUnit(unitSlug: string): DrillSet | null {
