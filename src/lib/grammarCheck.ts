@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 // Bewusst anders als der Vokabeltest unter /exam: der schaetzt das Level,
 // dieser findet THEMEN. Beides zusammen ergibt ein Bild.
 //
-// Aufbau: 14 Themen mal 3 Fragen. Drei, nicht eine - bei einer einzigen Frage
+// Aufbau: 18 Themen mal 3 Fragen. Drei, nicht eine - bei einer einzigen Frage
 // diagnostiziert ein Fluechtigkeitsfehler eine Schwaeche, die keine ist.
 // Alles Auswahlfragen, damit der Check in unter zehn Minuten durch ist.
 //
@@ -91,6 +91,17 @@ export const CHECK_QUESTIONS: CheckQuestion[] = [
     prompt: "Der Mann gibt der Frau das Buch. Which case is der Frau?",
     options: ["Nominativ", "Akkusativ", "Dativ", "Genitiv"], correct: 2 },
 
+  // ── A2 · Objektpronomen ──────────────────────────────────────────────────
+  { unit: "object-pronouns", level: "A2", topic: "Object pronouns",
+    prompt: "Ich sehe den Mann. → Ich sehe ___ .",
+    options: ["er", "ihn", "ihm", "sein"], correct: 1 },
+  { unit: "object-pronouns", level: "A2", topic: "Object pronouns",
+    prompt: "Ich helfe dem Mann. → Ich helfe ___ .",
+    options: ["ihn", "ihm", "er", "sein"], correct: 1 },
+  { unit: "object-pronouns", level: "A2", topic: "Object pronouns",
+    prompt: "Kannst du ___ helfen? (me)",
+    options: ["mich", "mir", "ich", "mein"], correct: 1 },
+
   // ── A2 · Grundpräpositionen ──────────────────────────────────────────────
   { unit: "prepositions", level: "A2", topic: "Prepositions (accusative/dative)",
     prompt: "Ich fahre mit ___ Auto.",
@@ -112,6 +123,17 @@ export const CHECK_QUESTIONS: CheckQuestion[] = [
   { unit: "perfekt", level: "A2", topic: "The past (Perfekt)",
     prompt: "Which sentence is correct?",
     options: ["Ich habe ein Buch gelesen.", "Ich bin ein Buch gelesen.", "Ich habe ein Buch lesen.", "Ich habe gelesen ein Buch."], correct: 0 },
+
+  // ── A2 · Präteritum ──────────────────────────────────────────────────────
+  { unit: "preterite", level: "A2", topic: "The written past (Präteritum)",
+    prompt: "gehen → er ___ (Präteritum)",
+    options: ["gehte", "ging", "gang", "gingt"], correct: 1 },
+  { unit: "preterite", level: "A2", topic: "The written past (Präteritum)",
+    prompt: "machen → ich ___ (Präteritum)",
+    options: ["machte", "machtete", "mochte", "macht"], correct: 0 },
+  { unit: "preterite", level: "A2", topic: "The written past (Präteritum)",
+    prompt: "Which sentence uses the Präteritum correctly?",
+    options: ["Er gingt nach Hause.", "Er ging nach Hause.", "Er gehte nach Hause.", "Er gegangen nach Hause."], correct: 1 },
 
   // ── A2 · Trennbare Verben ────────────────────────────────────────────────
   { unit: "separable-verbs", level: "A2", topic: "Separable verbs",
@@ -167,6 +189,28 @@ export const CHECK_QUESTIONS: CheckQuestion[] = [
   { unit: "relative-clauses", level: "B1", topic: "Relative clauses",
     prompt: "Which sentence is correct?",
     options: ["Das ist die Frau, die dort steht.", "Das ist die Frau, die steht dort.", "Das ist die Frau, der dort steht.", "Das ist die Frau, dass dort steht."], correct: 0 },
+
+  // ── B1 · Infinitiv mit zu ────────────────────────────────────────────────
+  { unit: "infinitive-zu", level: "B1", topic: "The infinitive with zu",
+    prompt: "Ich versuche, Deutsch ___ lernen.",
+    options: ["zu", "zum", "um", "für"], correct: 0 },
+  { unit: "infinitive-zu", level: "B1", topic: "The infinitive with zu",
+    prompt: "Which sentence is correct?",
+    options: ["Ich muss zu lernen.", "Ich muss lernen.", "Ich muss zu lerne.", "Ich muss am lernen."], correct: 1 },
+  { unit: "infinitive-zu", level: "B1", topic: "The infinitive with zu",
+    prompt: "Ich habe vor, früh ___ . (aufstehen)",
+    options: ["zu aufstehen", "aufzustehen", "aufstehen zu", "zu aufstehe"], correct: 1 },
+
+  // ── B1 · Plusquamperfekt ─────────────────────────────────────────────────
+  { unit: "plusquamperfekt", level: "B1", topic: "The past perfect (Plusquamperfekt)",
+    prompt: "Ich ___ gegessen. (I had eaten)",
+    options: ["habe", "hatte", "war", "bin"], correct: 1 },
+  { unit: "plusquamperfekt", level: "B1", topic: "The past perfect (Plusquamperfekt)",
+    prompt: "Ich ___ nach Berlin gefahren. (I had driven)",
+    options: ["hatte", "war", "habe", "bin"], correct: 1 },
+  { unit: "plusquamperfekt", level: "B1", topic: "The past perfect (Plusquamperfekt)",
+    prompt: "Nachdem ich gegessen ___ , ging ich spazieren.",
+    options: ["habe", "hatte", "bin", "war"], correct: 1 },
 
   // ── B2 · Konnektoren ─────────────────────────────────────────────────────
   { unit: "connectors", level: "B2", topic: "Connectors",

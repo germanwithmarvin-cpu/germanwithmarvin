@@ -89,7 +89,7 @@ export default function TrainingPage() {
           <div className="min-w-0 flex-1">
             <div className="font-bold">Not sure where to start?</div>
             <p className="text-sm text-cream-dim mt-0.5">
-              Take the grammar check — {CHECK_QUESTIONS.length} questions, ten minutes. It finds the topics that are not sitting yet
+              Take the grammar check — {CHECK_QUESTIONS.length} questions, about {Math.round(CHECK_QUESTIONS.length / 4.5)} minutes. It finds the topics that are not sitting yet
               and sends you straight to the right unit.
             </p>
           </div>

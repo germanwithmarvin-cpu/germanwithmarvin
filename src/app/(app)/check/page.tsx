@@ -92,7 +92,7 @@ export default function CheckPage() {
           <div className="pt-1">
             <h1 className="text-2xl font-bold">Where do you stand?</h1>
             <p className="text-cream-dim text-sm mt-1">
-              {total} questions, about ten minutes. No preparation needed.
+              {total} questions, about {Math.round(total / 4.5)} minutes. No preparation needed.
             </p>
           </div>
         </div>
