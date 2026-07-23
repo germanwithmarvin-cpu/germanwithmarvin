@@ -838,6 +838,106 @@ const INFINITIVE_ZU: DrillSet = {
   ],
 };
 
+// Nebensätze mit Modalverben – das Modalverb steht ganz am Ende (hinter dem
+// Infinitiv). Cue: Modal-Infinitiv + Person; der Vollverb-Infinitiv steht schon da.
+const SUBORDINATE_MODALS: DrillSet = {
+  key: "subordinate-modals", unitSlug: "subordinate-modals", title: "Modals in subordinate clauses",
+  items: [
+    F("muss", "Ich glaube, dass er heute arbeiten ___ . (müssen — er)", "modal goes to the very end → **muss**."),
+    F("kann", "Ich weiß, dass sie gut schwimmen ___ . (können — sie sg)", "modal to the end → **kann**."),
+    F("will", "Er sagt, dass er nach Hause gehen ___ . (wollen — er)", "modal to the end → **will**."),
+    F("musst", "Ich hoffe, dass du nicht warten ___ . (müssen — du)", "modal to the end → **musst**."),
+    F("darf", "Sie fragt, ob sie rauchen ___ . (dürfen — sie sg)", "modal to the end → **darf**."),
+    F("soll", "Ich weiß nicht, was ich machen ___ . (sollen — ich)", "modal to the end → **soll**."),
+    F("kannst", "Ich frage, ob du kommen ___ . (können — du)", "modal to the end → **kannst**."),
+    F("will", "Ich glaube, dass sie schlafen ___ . (wollen — sie sg)", "modal to the end → **will**."),
+    F("darfst", "Ich hoffe, dass du bleiben ___ . (dürfen — du)", "modal to the end → **darfst**."),
+    F("kann", "Ich weiß, dass er nicht kochen ___ . (können — er)", "modal to the end → **kann**."),
+    F("soll", "Sie sagt, dass er pünktlich sein ___ . (sollen — er)", "modal to the end → **soll**."),
+    F("muss", "Es ist schade, dass sie gehen ___ . (müssen — sie sg)", "modal to the end → **muss**."),
+  ],
+};
+
+// Plusquamperfekt – hatte/war + Partizip II (Vorvergangenheit). Gesucht ist das
+// Hilfsverb; Bewegungs-/Zustandsverben nehmen war, der Rest hatte.
+const PLUSQUAMPERFEKT: DrillSet = {
+  key: "plusquamperfekt", unitSlug: "plusquamperfekt", title: "Past perfect (Plusquamperfekt)",
+  items: [
+    F("hatte", "Nachdem ich gegessen ___ , ging ich schlafen. (haben — ich)", "**hatte** + Partizip."),
+    F("war", "Als der Zug ___ abgefahren, kam ich an. (sein — er)", "abfahren → sein: **war**."),
+    F("hatte", "Sie ___ das Buch schon gelesen. (haben — sie sg)", "**hatte** gelesen."),
+    F("hatten", "Wir ___ das Essen bestellt. (haben — wir)", "**hatten** bestellt."),
+    F("war", "Er ___ nach Hause gegangen. (sein — er)", "gehen → sein: **war** gegangen."),
+    F("hatte", "Ich ___ den Film schon gesehen. (haben — ich)", "**hatte** gesehen."),
+    F("warst", "Du ___ zu spät gekommen. (sein — du)", "kommen → sein: **warst** gekommen."),
+    F("hattest", "Du ___ die Tür geschlossen. (haben — du)", "**hattest** geschlossen."),
+    F("war", "Nachdem sie ___ eingeschlafen, klingelte das Telefon. (sein — sie sg)", "einschlafen → sein: **war**."),
+    F("hatte", "Er ___ mir vorher geholfen. (haben — er)", "**hatte** geholfen."),
+    F("waren", "Die Gäste ___ schon gegangen. (sein — sie pl)", "**waren** gegangen."),
+    F("hatte", "Ich ___ vergessen, dich anzurufen. (haben — ich)", "**hatte** vergessen."),
+  ],
+};
+
+// Konjunktiv II der Vergangenheit – hätte/wäre + Partizip II (irreale
+// Vergangenheit). Gesucht ist das Hilfsverb in der passenden Person.
+const KONJUNKTIV_2_PAST: DrillSet = {
+  key: "konjunktiv-2-past", unitSlug: "konjunktiv-2-past", title: "Konjunktiv II (past)",
+  items: [
+    F("hätte", "Wenn ich Zeit gehabt ___ , wäre ich gekommen. (haben — ich)", "irreal past: **hätte** + Partizip."),
+    F("wäre", "Ich ___ gern gekommen, aber es ging nicht. (sein — ich)", "kommen → **wäre** gekommen."),
+    F("hättest", "Du ___ das nicht sagen sollen. (haben — du)", "**hättest** … sollen."),
+    F("wäre", "Er ___ fast zu spät gekommen. (sein — er)", "**wäre** gekommen."),
+    F("hätte", "Sie ___ mehr lernen müssen. (haben — sie sg)", "**hätte** … müssen."),
+    F("wären", "Wir ___ gern länger geblieben. (sein — wir)", "bleiben → **wären** geblieben."),
+    F("hätte", "An deiner Stelle ___ ich das anders gemacht. (haben — ich)", "**hätte** gemacht."),
+    F("wärst", "Du ___ beinahe gefallen. (sein — du)", "fallen → **wärst** gefallen."),
+    F("hätten", "Wir ___ dir helfen können. (haben — wir)", "**hätten** … können."),
+    F("wäre", "Wenn er schneller gewesen ___ , hätte er gewonnen. (sein — er)", "**wäre** gewesen."),
+    F("hätte", "Ich ___ dich fast nicht erkannt. (haben — ich)", "**hätte** erkannt."),
+    F("hättest", "Du ___ mir schreiben können. (haben — du)", "**hättest** … können."),
+  ],
+};
+
+// Passiv (Vorgangspassiv) – werden + Partizip II. Gesucht ist die Form von
+// werden in der angegebenen Zeit/Person; das Partizip steht schon da.
+const PASSIVE: DrillSet = {
+  key: "passive", unitSlug: "passive", title: "Passive voice",
+  items: [
+    F("wird", "Das Haus ___ gebaut. (present — es)", "Passiv Präsens: **wird** + Partizip."),
+    F("werden", "Die Häuser ___ gebaut. (present — plural)", "**werden** gebaut."),
+    F("wurde", "Das Auto ___ repariert. (past — es)", "Passiv Präteritum: **wurde** repariert."),
+    F("wurden", "Die Briefe ___ geschrieben. (past — plural)", "**wurden** geschrieben."),
+    F("wird", "Der Kuchen ___ gebacken. (present — er)", "**wird** gebacken."),
+    F("wurde", "Das Fenster ___ geöffnet. (past — es)", "**wurde** geöffnet."),
+    F("wird", "Die Tür ___ geschlossen. (present — sie sg)", "**wird** geschlossen."),
+    F("werden", "Die Kinder ___ abgeholt. (present — plural)", "**werden** abgeholt."),
+    F("wurde", "Der Dieb ___ gefangen. (past — er)", "**wurde** gefangen."),
+    F("wird", "Das Problem ___ gelöst. (present — es)", "**wird** gelöst."),
+    F("wurden", "Die Fragen ___ beantwortet. (past — plural)", "**wurden** beantwortet."),
+    F("wird", "Hier ___ Deutsch gesprochen. (present)", "**wird** gesprochen."),
+  ],
+};
+
+// Präposition + Relativpronomen – die Präposition bestimmt den Fall. Gesucht ist
+// das Relativpronomen (nur Dativ + für-Akk-masc, damit die Antwort eindeutig ist).
+const RELATIVE_PREPOSITIONS: DrillSet = {
+  key: "relative-prepositions", unitSlug: "relative-prepositions", title: "Prepositions + relative pronouns",
+  items: [
+    F("dem", "Der Mann, mit ___ ich spreche, ist mein Chef. (m)", "mit + Dativ masc → **dem**."),
+    F("der", "Die Frau, mit ___ ich arbeite, ist nett. (f)", "mit + Dativ fem → **der**."),
+    F("dem", "Das Kind, mit ___ ich spiele, lacht. (n)", "mit + Dativ neut → **dem**."),
+    F("denen", "Die Leute, mit ___ ich wohne, sind laut. (pl)", "mit + Dativ Plural → **denen**."),
+    F("den", "Der Freund, für ___ ich das kaufe, hat Geburtstag. (m)", "für + Akkusativ masc → **den**."),
+    F("dem", "Der Lehrer, bei ___ ich lerne, ist gut. (m)", "bei + Dativ masc → **dem**."),
+    F("der", "Die Ärztin, bei ___ ich war, ist nett. (f)", "bei + Dativ fem → **der**."),
+    F("dem", "Der Kollege, von ___ ich das weiß, ist zuverlässig. (m)", "von + Dativ masc → **dem**."),
+    F("der", "Die Stadt, in ___ ich wohne, ist schön. (f)", "in + Dativ fem → **der**."),
+    F("dem", "Das Dorf, in ___ ich geboren bin, ist klein. (n)", "in + Dativ neut → **dem**."),
+    F("denen", "Die Kinder, von ___ ich spreche, sind meine. (pl)", "von + Dativ Plural → **denen**."),
+    F("den", "Der Chef, für ___ ich arbeite, ist streng. (m)", "für + Akkusativ masc → **den**."),
+  ],
+};
+
 const SETS: Record<string, DrillSet> = {
   [FIXED_PREPOSITIONS.unitSlug]: FIXED_PREPOSITIONS,
   [ARTICLES.unitSlug]: ARTICLES,
@@ -872,6 +972,11 @@ const SETS: Record<string, DrillSet> = {
   [TWO_PART_CONNECTORS.unitSlug]: TWO_PART_CONNECTORS,
   [VERB_POSITION.unitSlug]: VERB_POSITION,
   [INFINITIVE_ZU.unitSlug]: INFINITIVE_ZU,
+  [SUBORDINATE_MODALS.unitSlug]: SUBORDINATE_MODALS,
+  [PLUSQUAMPERFEKT.unitSlug]: PLUSQUAMPERFEKT,
+  [KONJUNKTIV_2_PAST.unitSlug]: KONJUNKTIV_2_PAST,
+  [PASSIVE.unitSlug]: PASSIVE,
+  [RELATIVE_PREPOSITIONS.unitSlug]: RELATIVE_PREPOSITIONS,
 };
 
 export function getDrillForUnit(unitSlug: string): DrillSet | null {
