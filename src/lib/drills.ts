@@ -181,11 +181,168 @@ const NOUN_VERB: DrillSet = {
   ],
 };
 
+// ─── Formen bilden: ein generischer Eintrag „Wort → Form" ────────────────────
+const F = (answer: string, prompt: string, explain: string): DrillItem => ({ answer, explain, sentences: [prompt] });
+
+// Plural
+const PLURALS: DrillSet = {
+  key: "plurals", unitSlug: "plurals", title: "Making nouns plural",
+  items: [
+    F("Tische", "der Tisch → die ___", "**-e**: die Tische."),
+    F("Stühle", "der Stuhl → die ___", "**-e** with Umlaut: die Stühle."),
+    F("Bücher", "das Buch → die ___", "**-er** with Umlaut: die Bücher."),
+    F("Kinder", "das Kind → die ___", "**-er**: die Kinder."),
+    F("Frauen", "die Frau → die ___", "**-en**: die Frauen."),
+    F("Männer", "der Mann → die ___", "**-er** with Umlaut: die Männer."),
+    F("Autos", "das Auto → die ___", "**-s** (foreign word): die Autos."),
+    F("Häuser", "das Haus → die ___", "**-er** with Umlaut: die Häuser."),
+    F("Äpfel", "der Apfel → die ___", "only an **Umlaut**: die Äpfel."),
+    F("Bäume", "der Baum → die ___", "**-e** with Umlaut: die Bäume."),
+    F("Blumen", "die Blume → die ___", "**-n**: die Blumen."),
+    F("Hunde", "der Hund → die ___", "**-e**: die Hunde."),
+    F("Katzen", "die Katze → die ___", "**-n**: die Katzen."),
+    F("Bälle", "der Ball → die ___", "**-e** with Umlaut: die Bälle."),
+    F("Ärzte", "der Arzt → die ___", "**-e** with Umlaut: die Ärzte."),
+    F("Väter", "der Vater → die ___", "only an **Umlaut**: die Väter."),
+    F("Mütter", "die Mutter → die ___", "only an **Umlaut**: die Mütter."),
+    F("Bilder", "das Bild → die ___", "**-er**: die Bilder."),
+    F("Städte", "die Stadt → die ___", "**-e** with Umlaut: die Städte."),
+    F("Tage", "der Tag → die ___", "**-e**: die Tage."),
+    F("Jahre", "das Jahr → die ___", "**-e**: die Jahre."),
+    F("Hände", "die Hand → die ___", "**-e** with Umlaut: die Hände."),
+    F("Freunde", "der Freund → die ___", "**-e**: die Freunde."),
+    F("Wohnungen", "die Wohnung → die ___", "**-en** (all -ung words): die Wohnungen."),
+    F("Wörter", "das Wort → die ___", "**-er** with Umlaut: die Wörter."),
+    F("Brüder", "der Bruder → die ___", "**-er** with Umlaut: die Brüder."),
+    F("Straßen", "die Straße → die ___", "**-n**: die Straßen."),
+    F("Gläser", "das Glas → die ___", "**-er** with Umlaut: die Gläser."),
+    F("Züge", "der Zug → die ___", "**-e** with Umlaut: die Züge."),
+    F("Nächte", "die Nacht → die ___", "**-e** with Umlaut: die Nächte."),
+  ],
+};
+
+// Präteritum (er/sie/es-Form)
+const PRETERITE: DrillSet = {
+  key: "preterite", unitSlug: "preterite", title: "The written past (Präteritum)",
+  items: [
+    F("ging", "gehen → er ___", "irregular: **ging** (no -te)."),
+    F("kam", "kommen → er ___", "irregular: **kam**."),
+    F("sah", "sehen → er ___", "irregular: **sah**."),
+    F("war", "sein → er ___", "irregular: **war**."),
+    F("hatte", "haben → er ___", "irregular: **hatte**."),
+    F("wurde", "werden → er ___", "irregular: **wurde**."),
+    F("gab", "geben → er ___", "irregular: **gab**."),
+    F("nahm", "nehmen → er ___", "irregular: **nahm**."),
+    F("fand", "finden → er ___", "irregular: **fand**."),
+    F("sprach", "sprechen → er ___", "irregular: **sprach**."),
+    F("fuhr", "fahren → er ___", "irregular: **fuhr**."),
+    F("schrieb", "schreiben → er ___", "irregular: **schrieb**."),
+    F("las", "lesen → er ___", "irregular: **las**."),
+    F("aß", "essen → er ___", "irregular: **aß**."),
+    F("trank", "trinken → er ___", "irregular: **trank**."),
+    F("lief", "laufen → er ___", "irregular: **lief**."),
+    F("schlief", "schlafen → er ___", "irregular: **schlief**."),
+    F("trug", "tragen → er ___", "irregular: **trug**."),
+    F("traf", "treffen → er ___", "irregular: **traf**."),
+    F("dachte", "denken → er ___", "irregular: **dachte**."),
+    F("brachte", "bringen → er ___", "irregular: **brachte**."),
+    F("wusste", "wissen → er ___", "irregular: **wusste**."),
+    F("machte", "machen → er ___", "regular: **machte** (stem + -te)."),
+    F("sagte", "sagen → er ___", "regular: **sagte**."),
+    F("arbeitete", "arbeiten → er ___", "regular, extra -e: **arbeitete**."),
+    F("wohnte", "wohnen → er ___", "regular: **wohnte**."),
+  ],
+};
+
+// Partizip II (Perfekt)
+const PARTIZIP: DrillSet = {
+  key: "perfekt", unitSlug: "perfekt", title: "The past (Partizip II)",
+  items: [
+    F("gelernt", "lernen → Partizip II: ___", "regular: **ge- + stem + -t**: gelernt."),
+    F("gemacht", "machen → Partizip II: ___", "regular: **gemacht**."),
+    F("gekauft", "kaufen → Partizip II: ___", "regular: **gekauft**."),
+    F("gespielt", "spielen → Partizip II: ___", "regular: **gespielt**."),
+    F("gesagt", "sagen → Partizip II: ___", "regular: **gesagt**."),
+    F("gearbeitet", "arbeiten → Partizip II: ___", "regular, extra -e: **gearbeitet**."),
+    F("gesehen", "sehen → Partizip II: ___", "irregular: **gesehen**."),
+    F("getrunken", "trinken → Partizip II: ___", "irregular: **getrunken**."),
+    F("gegangen", "gehen → Partizip II: ___", "irregular: **gegangen**."),
+    F("gekommen", "kommen → Partizip II: ___", "irregular: **gekommen**."),
+    F("gegessen", "essen → Partizip II: ___", "irregular: **gegessen**."),
+    F("gegeben", "geben → Partizip II: ___", "irregular: **gegeben**."),
+    F("genommen", "nehmen → Partizip II: ___", "irregular: **genommen**."),
+    F("gefunden", "finden → Partizip II: ___", "irregular: **gefunden**."),
+    F("gesprochen", "sprechen → Partizip II: ___", "irregular: **gesprochen**."),
+    F("geschrieben", "schreiben → Partizip II: ___", "irregular: **geschrieben**."),
+    F("gelesen", "lesen → Partizip II: ___", "irregular: **gelesen**."),
+    F("gefahren", "fahren → Partizip II: ___", "irregular (takes sein): **gefahren**."),
+    F("gelaufen", "laufen → Partizip II: ___", "irregular (takes sein): **gelaufen**."),
+    F("geschlafen", "schlafen → Partizip II: ___", "irregular: **geschlafen**."),
+    F("studiert", "studieren → Partizip II: ___", "**no ge-** (verbs in -ieren): studiert."),
+    F("verstanden", "verstehen → Partizip II: ___", "**no ge-** (non-separable prefix): verstanden."),
+    F("aufgestanden", "aufstehen → Partizip II: ___", "**ge- in the middle** (separable): aufgestanden."),
+    F("eingekauft", "einkaufen → Partizip II: ___", "separable: **eingekauft**."),
+  ],
+};
+
+// Vokalwechsel (er-Form Präsens)
+const STEM_CHANGING: DrillSet = {
+  key: "stem-changing-verbs", unitSlug: "stem-changing-verbs", title: "Verbs that change their vowel",
+  items: [
+    F("fährt", "fahren → er ___", "a → ä: **fährt**."),
+    F("schläft", "schlafen → er ___", "a → ä: **schläft**."),
+    F("trägt", "tragen → er ___", "a → ä: **trägt**."),
+    F("fällt", "fallen → er ___", "a → ä: **fällt**."),
+    F("hält", "halten → er ___", "a → ä: **hält**."),
+    F("läuft", "laufen → er ___", "au → äu: **läuft**."),
+    F("spricht", "sprechen → er ___", "e → i: **spricht**."),
+    F("isst", "essen → er ___", "e → i: **isst**."),
+    F("gibt", "geben → er ___", "e → i: **gibt**."),
+    F("hilft", "helfen → er ___", "e → i: **hilft**."),
+    F("trifft", "treffen → er ___", "e → i: **trifft**."),
+    F("vergisst", "vergessen → er ___", "e → i: **vergisst**."),
+    F("sieht", "sehen → er ___", "e → ie: **sieht**."),
+    F("liest", "lesen → er ___", "e → ie: **liest**."),
+    F("nimmt", "nehmen → er ___", "special: **nimmt** (h drops, m doubles)."),
+    F("wird", "werden → er ___", "special: **wird**."),
+  ],
+};
+
+// Komparativ
+const COMPARISONS: DrillSet = {
+  key: "comparisons", unitSlug: "comparisons", title: "Comparing things",
+  items: [
+    F("kleiner", "klein → ___ (comparative)", "**-er**: kleiner."),
+    F("größer", "groß → ___ (comparative)", "Umlaut + -er: **größer**."),
+    F("älter", "alt → ___ (comparative)", "Umlaut + -er: **älter**."),
+    F("jünger", "jung → ___ (comparative)", "Umlaut + -er: **jünger**."),
+    F("länger", "lang → ___ (comparative)", "Umlaut + -er: **länger**."),
+    F("kürzer", "kurz → ___ (comparative)", "Umlaut + -er: **kürzer**."),
+    F("schneller", "schnell → ___ (comparative)", "**-er**: schneller."),
+    F("langsamer", "langsam → ___ (comparative)", "**-er**: langsamer."),
+    F("schöner", "schön → ___ (comparative)", "**-er**: schöner."),
+    F("besser", "gut → ___ (comparative)", "irregular: **besser**."),
+    F("mehr", "viel → ___ (comparative)", "irregular: **mehr**."),
+    F("lieber", "gern → ___ (comparative)", "irregular: **lieber**."),
+    F("höher", "hoch → ___ (comparative)", "irregular: **höher**."),
+    F("wärmer", "warm → ___ (comparative)", "Umlaut + -er: **wärmer**."),
+    F("kälter", "kalt → ___ (comparative)", "Umlaut + -er: **kälter**."),
+    F("stärker", "stark → ___ (comparative)", "Umlaut + -er: **stärker**."),
+    F("interessanter", "interessant → ___ (comparative)", "**-er**, no mehr: interessanter."),
+    F("teurer", "teuer → ___ (comparative)", "the e drops: **teurer**."),
+  ],
+};
+
 const SETS: Record<string, DrillSet> = {
   [FIXED_PREPOSITIONS.unitSlug]: FIXED_PREPOSITIONS,
   [ARTICLES.unitSlug]: ARTICLES,
   [RELATIVE_PRONOUNS.unitSlug]: RELATIVE_PRONOUNS,
   [NOUN_VERB.unitSlug]: NOUN_VERB,
+  [PLURALS.unitSlug]: PLURALS,
+  [PRETERITE.unitSlug]: PRETERITE,
+  [PARTIZIP.unitSlug]: PARTIZIP,
+  [STEM_CHANGING.unitSlug]: STEM_CHANGING,
+  [COMPARISONS.unitSlug]: COMPARISONS,
 };
 
 export function getDrillForUnit(unitSlug: string): DrillSet | null {
