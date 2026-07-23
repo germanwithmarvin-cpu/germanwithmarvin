@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 // Bewusst anders als der Vokabeltest unter /exam: der schaetzt das Level,
 // dieser findet THEMEN. Beides zusammen ergibt ein Bild.
 //
-// Aufbau: 11 Themen mal 3 Fragen. Drei, nicht eine - bei einer einzigen Frage
+// Aufbau: 14 Themen mal 3 Fragen. Drei, nicht eine - bei einer einzigen Frage
 // diagnostiziert ein Fluechtigkeitsfehler eine Schwaeche, die keine ist.
 // Alles Auswahlfragen, damit der Check in unter zehn Minuten durch ist.
 //
@@ -58,6 +58,28 @@ export const CHECK_QUESTIONS: CheckQuestion[] = [
     prompt: "Ich arbeite heute ___ .",
     options: ["kein", "keine", "nicht", "nichts"], correct: 2 },
 
+  // ── A1 · Vokalwechsel ────────────────────────────────────────────────────
+  { unit: "stem-changing-verbs", level: "A1", topic: "Verbs that change their vowel",
+    prompt: "Er ___ nach Berlin. (fahren)",
+    options: ["fahrt", "fährt", "fahren", "fahre"], correct: 1 },
+  { unit: "stem-changing-verbs", level: "A1", topic: "Verbs that change their vowel",
+    prompt: "Er ___ einen Apfel. (essen)",
+    options: ["esst", "isst", "esset", "est"], correct: 1 },
+  { unit: "stem-changing-verbs", level: "A1", topic: "Verbs that change their vowel",
+    prompt: "Which form is correct?",
+    options: ["er sprecht Deutsch", "er spricht Deutsch", "er spracht Deutsch", "er sprichtet Deutsch"], correct: 1 },
+
+  // ── A1 · Datum ───────────────────────────────────────────────────────────
+  { unit: "dates-ordinals", level: "A1", topic: "Dates and ordinal numbers",
+    prompt: "Write the ordinal: 3 → der ___",
+    options: ["dreite", "dritte", "drittte", "dreitte"], correct: 1 },
+  { unit: "dates-ordinals", level: "A1", topic: "Dates and ordinal numbers",
+    prompt: "Ich komme ___ ersten Mai. (on that day)",
+    options: ["an", "am", "in", "zu"], correct: 1 },
+  { unit: "dates-ordinals", level: "A1", topic: "Dates and ordinal numbers",
+    prompt: "How do you say the year 1990?",
+    options: ["neunzehn neunzig", "neunzehnhundertneunzig", "eintausendneunhundertneunzig", "neunzig hundert"], correct: 1 },
+
   // ── A2 · Fälle ───────────────────────────────────────────────────────────
   { unit: "cases", level: "A2", topic: "The four cases",
     prompt: "Ich sehe ___ Mann.",
@@ -68,6 +90,17 @@ export const CHECK_QUESTIONS: CheckQuestion[] = [
   { unit: "cases", level: "A2", topic: "The four cases",
     prompt: "Der Mann gibt der Frau das Buch. Which case is der Frau?",
     options: ["Nominativ", "Akkusativ", "Dativ", "Genitiv"], correct: 2 },
+
+  // ── A2 · Grundpräpositionen ──────────────────────────────────────────────
+  { unit: "prepositions", level: "A2", topic: "Prepositions (accusative/dative)",
+    prompt: "Ich fahre mit ___ Auto.",
+    options: ["der", "den", "dem", "das"], correct: 2 },
+  { unit: "prepositions", level: "A2", topic: "Prepositions (accusative/dative)",
+    prompt: "Das Geschenk ist für ___ Mann.",
+    options: ["der", "den", "dem", "des"], correct: 1 },
+  { unit: "prepositions", level: "A2", topic: "Prepositions (accusative/dative)",
+    prompt: "Which preposition always takes the dative?",
+    options: ["für", "ohne", "mit", "um"], correct: 2 },
 
   // ── A2 · Perfekt ─────────────────────────────────────────────────────────
   { unit: "perfekt", level: "A2", topic: "The past (Perfekt)",
