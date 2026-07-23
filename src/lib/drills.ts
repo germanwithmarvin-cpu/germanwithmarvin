@@ -665,6 +665,72 @@ const DATES_ORDINALS: DrillSet = {
   ],
 };
 
+// Possessivartikel – wie ein-Wörter gebeugt. (Person · Genus) ist gegeben,
+// gesucht ist die volle Form mit Endung.
+const POSSESSIVES: DrillSet = {
+  key: "possessives", unitSlug: "possessives", title: "Possessive articles",
+  items: [
+    F("mein", "___ Vater ist nett. (my · m)", "Nom masc → **mein** Vater (no ending)."),
+    F("meine", "___ Mutter ist nett. (my · f)", "Nom fem → **meine** Mutter."),
+    F("mein", "___ Auto ist neu. (my · n)", "Nom neut → **mein** Auto (no ending)."),
+    F("meinen", "Ich sehe ___ Vater. (my · m)", "Akk masc → **meinen** Vater."),
+    F("meine", "Ich sehe ___ Mutter. (my · f)", "Akk fem → **meine** Mutter."),
+    F("meinem", "Ich helfe ___ Vater. (my · m)", "Dativ masc → **meinem** Vater."),
+    F("meiner", "Ich helfe ___ Mutter. (my · f)", "Dativ fem → **meiner** Mutter."),
+    F("dein", "___ Bruder wohnt hier. (your · m)", "Nom masc → **dein** Bruder."),
+    F("deine", "___ Schwester wohnt hier. (your · f)", "Nom fem → **deine** Schwester."),
+    F("sein", "Das ist ___ Hund. (his · m)", "Nom masc → **sein** Hund."),
+    F("ihre", "Das ist ___ Katze. (her · f)", "her + fem noun → **ihre** Katze."),
+    F("unser", "Wir lieben ___ Land. (our · n)", "Akk neut → **unser** Land (no ending)."),
+    F("meinem", "Ich spiele mit ___ Hund. (my · m)", "mit + Dativ masc → **meinem** Hund."),
+    F("meinem", "Ich fahre mit ___ Auto. (my · n)", "mit + Dativ neut → **meinem** Auto."),
+  ],
+};
+
+// Verneinung: kein (verneint Nomen ohne/mit unbestimmtem Artikel) vs. nicht
+// (verneint Verben, Adjektive, bestimmte Nomen). Beides in einem Drill.
+const NEGATION: DrillSet = {
+  key: "negation", unitSlug: "negation", title: "Negation: nicht or kein",
+  items: [
+    F("keine", "Ich habe ___ Zeit.", "noun, no article → **keine** Zeit (fem)."),
+    F("kein", "Ich habe ___ Auto.", "noun, no article → **kein** Auto (neut)."),
+    F("kein", "Das ist ___ Problem.", "noun, no article → **kein** Problem (neut)."),
+    F("keinen", "Ich habe ___ Hunger.", "noun, Akk masc → **keinen** Hunger."),
+    F("keinen", "Sie hat ___ Freund.", "noun, Akk masc → **keinen** Freund."),
+    F("keinen", "Ich trinke ___ Kaffee.", "noun, Akk masc → **keinen** Kaffee."),
+    F("keine", "Ich habe ___ Kinder.", "plural noun → **keine** Kinder."),
+    F("nicht", "Ich verstehe das ___ .", "negates the verb/definite → **nicht**."),
+    F("nicht", "Ich komme heute ___ .", "negates the verb → **nicht**."),
+    F("nicht", "Das Auto ist ___ teuer.", "negates an adjective → **nicht** teuer."),
+    F("nicht", "Ich mag ihn ___ .", "negates the verb → **nicht**."),
+    F("nicht", "Er wohnt ___ hier.", "negates the verb → **nicht**."),
+    F("nicht", "Ich sehe den Film ___ .", "definite article → **nicht** (not kein)."),
+    F("keine", "Wir haben ___ Milch mehr.", "noun, no article → **keine** Milch (fem)."),
+  ],
+};
+
+// Trennbare Verben – die Vorsilbe wandert ans Satzende. Cue ist die englische
+// Bedeutung (nicht der Infinitiv), damit die Vorsilbe nicht abschreibbar ist.
+const SEPARABLE_VERBS: DrillSet = {
+  key: "separable-verbs", unitSlug: "separable-verbs", title: "Separable verbs",
+  items: [
+    F("auf", "to get up → Ich stehe um 7 ___ .", "aufstehen → prefix **auf** goes to the end."),
+    F("ein", "to go shopping → Wir kaufen heute ___ .", "einkaufen → prefix **ein**."),
+    F("an", "to call (phone) → Ich rufe dich später ___ .", "anrufen → prefix **an**."),
+    F("fern", "to watch TV → Am Abend sehe ich ___ .", "fernsehen → prefix **fern**."),
+    F("auf", "to tidy up → Ich räume mein Zimmer ___ .", "aufräumen → prefix **auf**."),
+    F("mit", "to come along → Kommst du ___ ?", "mitkommen → prefix **mit**."),
+    F("ab", "to depart → Der Zug fährt um 8 ___ .", "abfahren → prefix **ab**."),
+    F("an", "to arrive → Wir kommen um 10 ___ .", "ankommen → prefix **an**."),
+    F("ein", "to invite → Ich lade dich ___ .", "einladen → prefix **ein**."),
+    F("zu", "to close → Mach bitte die Tür ___ !", "zumachen → prefix **zu**."),
+    F("auf", "to open → Mach das Fenster ___ !", "aufmachen → prefix **auf**."),
+    F("weg", "to leave → Er geht früh ___ .", "weggehen → prefix **weg**."),
+    F("zurück", "to come back → Ich komme bald ___ .", "zurückkommen → prefix **zurück**."),
+    F("vor", "to prepare → Ich bereite das Essen ___ .", "vorbereiten → prefix **vor**."),
+  ],
+};
+
 const SETS: Record<string, DrillSet> = {
   [FIXED_PREPOSITIONS.unitSlug]: FIXED_PREPOSITIONS,
   [ARTICLES.unitSlug]: ARTICLES,
@@ -691,6 +757,9 @@ const SETS: Record<string, DrillSet> = {
   [KONJUNKTIV_2.unitSlug]: KONJUNKTIV_2,
   [ADJECTIVE_ENDINGS.unitSlug]: ADJECTIVE_ENDINGS,
   [DATES_ORDINALS.unitSlug]: DATES_ORDINALS,
+  [POSSESSIVES.unitSlug]: POSSESSIVES,
+  [NEGATION.unitSlug]: NEGATION,
+  [SEPARABLE_VERBS.unitSlug]: SEPARABLE_VERBS,
 };
 
 export function getDrillForUnit(unitSlug: string): DrillSet | null {
