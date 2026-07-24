@@ -14,10 +14,9 @@ export const SITE = {
   // Stripe-Zahlungslink für das Monats-Abo (Managed Payments / Merchant of Record) – LIVE.
   // Pay-first für NEUE Kunden: Success-URL → /register (Konto entsteht nach Zahlung).
   stripePaymentLink: "https://buy.stripe.com/6oU9AT7INcJE505chl7Re00",
-  // Rabattierter Zahlungslink für Trial-Absolventen ($19, Coupon fest eingebaut).
+  // Rabattierter Zahlungslink für Trial-Absolventen ($19, Preis fest eingebaut).
   // Diese sind schon registriert → im Stripe-Link Success-URL auf .../dashboard setzen.
-  // Leer lassen, bis der Link steht; dann hier eintragen (sonst Promo-Code-Rückfall).
-  discountPaymentLink: "",
+  discountPaymentLink: "https://buy.stripe.com/7sY00j5AF5hccsx6X17Re01",
 };
 
 // Pay-first: Der Kunde zahlt zuerst; das Konto entsteht danach. Die Zuordnung
