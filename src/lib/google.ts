@@ -172,6 +172,40 @@ export async function createEvent(opts: { startISO: string; endISO: string; atte
   return { eventId: json.id, meetLink: json.hangoutLink ?? json.conferenceData?.entryPoints?.find((e: { entryPointType: string; uri: string }) => e.entryPointType === "video")?.uri };
 }
 
+// Legt fehlende Google-Termine für die künftigen Buchungen eines Schülers an
+// (z. B. die per feste-Zeit-Materialisierung entstandenen). Idempotent: nur
+// Buchungen ohne google_event_id. Best effort – ohne Google-Verbindung passiert
+// nichts. Gibt die Zahl neu angelegter Termine zurück.
+export async function syncStudentGoogleEvents(userId: string): Promise<number> {
+  const db = admin();
+  const { data: authRes } = await db.auth.admin.getUserById(userId);
+  const email = authRes?.user?.email ?? null;
+  const name = (authRes?.user?.user_metadata?.full_name as string) || email || null;
+
+  const { data: settings } = await db.from("lesson_teacher_settings").select("slot_minutes, timezone").eq("id", 1).maybeSingle();
+  const tz = settings?.timezone ?? "Europe/Berlin";
+
+  const { data: bookings } = await db
+    .from("lesson_bookings")
+    .select("id, starts_at, ends_at")
+    .eq("student_id", userId)
+    .eq("status", "booked")
+    .is("google_event_id", null)
+    .gt("starts_at", new Date().toISOString());
+
+  let n = 0;
+  for (const b of (bookings ?? []) as { id: string; starts_at: string; ends_at: string }[]) {
+    try {
+      const { eventId, meetLink } = await createEvent({ startISO: b.starts_at, endISO: b.ends_at, attendeeEmail: email, timezone: tz, studentName: name });
+      if (eventId || meetLink) {
+        await db.from("lesson_bookings").update({ google_event_id: eventId ?? null, meet_link: meetLink ?? null }).eq("id", b.id);
+        n += 1;
+      }
+    } catch { /* einzelne Termine best effort */ }
+  }
+  return n;
+}
+
 // Diagnose: welches Konto ist verbunden, funktioniert der Zugriff, welche
 // Rechte/Termine sind da. Nur für die Fehlersuche.
 export async function diagnose(): Promise<Record<string, unknown>> {

@@ -195,6 +195,8 @@ export async function getMyRecurring(): Promise<Recurring | null> {
 export async function setRecurring(weekday: number, startMin: number): Promise<{ booked?: number; error?: string }> {
   const { data, error } = await createClient().rpc("set_recurring", { p_weekday: weekday, p_start_min: startMin });
   if (error) return { error: error.message };
+  // Google-Termine/Meet-Links für die frisch gebuchten Wochen anlegen (best effort).
+  try { await fetch("/api/lesson-sync-google", { method: "POST" }); } catch { /* egal */ }
   return { booked: (data as number) ?? 0 };
 }
 

@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { LESSON } from "@/lib/config";
+import { syncStudentGoogleEvents } from "@/lib/google";
 
 // Stripe meldet hierher: bezahlt / gekündigt / Zahlung fehlgeschlagen.
 // Zwei Abos laufen über diesen Endpunkt:
@@ -134,8 +135,12 @@ export async function POST(req: Request) {
         // Nur saubere Monats-Gutschriften; Upgrades schreibt die Verwaltungs-Route direkt gut.
         if (inv.billing_reason === "subscription_create" || inv.billing_reason === "subscription_cycle") {
           await grantLessonCredits(userId, subQuantity(sub), inv.id ?? `${subId}_${inv.period_end}`);
-          // Feste Zeit der neuen Periode automatisch nachbuchen (falls gesetzt).
-          try { await admin().rpc("materialize_recurring", { p_student: userId }); } catch { /* best effort */ }
+          // Feste Zeit der neuen Periode automatisch nachbuchen (falls gesetzt) +
+          // Google-Termine/Meet-Links für die neuen Buchungen anlegen.
+          try {
+            await admin().rpc("materialize_recurring", { p_student: userId });
+            await syncStudentGoogleEvents(userId);
+          } catch { /* best effort */ }
         }
         break;
       }
