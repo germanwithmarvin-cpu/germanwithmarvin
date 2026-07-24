@@ -13,8 +13,36 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Marvin Graf — German Simplified",
-  description: "Deutsch lernen mit Videos, interaktiven Quizzen und persönlichem Coaching.",
+  metadataBase: new URL("https://www.germanwithmarvin.com"),
+  title: {
+    default: "German Simplified — Learn German with Marvin",
+    template: "%s · German Simplified",
+  },
+  description:
+    "Learn German the simple way: video lessons, interactive exercises, a smart flashcard trainer and reading stories — from A1 to B2, with Marvin Graf.",
+  applicationName: "German Simplified",
+  authors: [{ name: "Marvin Graf" }],
+  keywords: [
+    "learn German", "German course", "German A1", "German A2", "German B1", "German B2",
+    "German flashcards", "German grammar", "German exercises", "Deutsch lernen", "Marvin Graf",
+  ],
+  openGraph: {
+    type: "website",
+    siteName: "German Simplified",
+    title: "German Simplified — Learn German with Marvin",
+    description:
+      "Video lessons, interactive exercises, a flashcard trainer and reading stories — from A1 to B2.",
+    url: "https://www.germanwithmarvin.com",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "German Simplified — Learn German with Marvin",
+    description:
+      "Video lessons, interactive exercises, a flashcard trainer and reading stories — from A1 to B2.",
+  },
+  alternates: { canonical: "https://www.germanwithmarvin.com" },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({

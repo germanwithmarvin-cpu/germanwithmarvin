@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import { createClient } from "@/lib/supabase/client";
+import { SITE } from "@/lib/config";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -58,6 +59,10 @@ export default function RegisterPage() {
               <span className="text-gold-bright font-bold">exact same email you paid with</span>.
             </p>
             <p className="text-xs text-cream-dim mt-1">That’s how your access is unlocked automatically.</p>
+            <p className="text-xs text-cream-dim mt-2">
+              Paid but stuck? Email{" "}
+              <a href={`mailto:${SITE.contactEmail}`} className="text-gold-bright underline underline-offset-4">{SITE.contactEmail}</a>.
+            </p>
           </div>
 
           <form className="mt-5 space-y-4" onSubmit={handleRegister}>

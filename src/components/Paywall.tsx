@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { checkoutUrl, priceLabel } from "@/lib/config";
+import { checkoutUrl, priceLabel, SITE } from "@/lib/config";
 import { createClient } from "@/lib/supabase/client";
 
 // Wird angezeigt, wenn ein Inhalt ohne Vollzugang geöffnet wird.
@@ -39,6 +39,11 @@ export default function Paywall({ title = "Unlock full access" }: { title?: stri
         <p className="text-sm text-cream-dim">Learning with me on Preply or Skool?</p>
         <Link href="/redeem" className="btn-outline px-4 py-2 text-sm mt-2 inline-block">I have a code</Link>
       </div>
+
+      <p className="text-xs text-cream-dim mt-5">
+        Already paid but still locked out? Make sure you signed up with the email you paid with, or email{" "}
+        <a href={`mailto:${SITE.contactEmail}`} className="text-gold-bright underline underline-offset-4">{SITE.contactEmail}</a>.
+      </p>
     </div>
   );
 }

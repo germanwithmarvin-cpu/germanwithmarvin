@@ -6,7 +6,7 @@
 export const SITE = {
   // Verkaufsvideo auf der Startseite (YouTube). Kann Link oder reine ID sein.
   introVideoId: "1U2sTcL5BBA",
-  contactEmail: "hallo@marvingraf.de",
+  contactEmail: "germanwithmarvin@gmail.com",
   // Für "Nur Vokabel"-Nutzer (Skool): Link zu deinem Skool-Kurs mit den Videos.
   skoolUrl: "https://www.skool.com/german-with-marvin-5887/about",
   // Verkaufskanäle (Zugang läuft über diese Plattformen – dort gibt es die Codes).
