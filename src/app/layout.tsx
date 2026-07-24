@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import PwaRegister from "@/components/PwaRegister";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,6 +44,18 @@ export const metadata: Metadata = {
   },
   alternates: { canonical: "https://www.germanwithmarvin.com" },
   robots: { index: true, follow: true },
+  appleWebApp: {
+    capable: true,
+    title: "German Simplified",
+    statusBarStyle: "default",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#fff1d2",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -58,6 +71,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col relative">
         <div className="app-bg" aria-hidden="true" />
         <div className="relative z-10 flex-1 flex flex-col">{children}</div>
+        <PwaRegister />
       </body>
     </html>
   );
