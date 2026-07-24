@@ -5,7 +5,7 @@
 // zählt als echte FSRS-Wiederholung (feeds Streak, Statistik, Fälligkeit) und
 // bringt XP – also "mehr als ein Spiel".
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { getLearnedItems, reviewCard, type StudyItem } from "@/lib/study";
 import { getAccess } from "@/lib/access";
@@ -262,7 +262,8 @@ export default function GamePage() {
             {q.options.map((opt, i) => {
               const isAnswer = norm(opt) === norm(q.answer);
               const isPicked = picked !== null && norm(opt) === norm(picked);
-              let bg = "var(--bordeaux-deep)", color = "var(--cream)", ring = "transparent";
+              let bg = "var(--bordeaux-deep)", color = "var(--cream)";
+              const ring = "transparent";
               if (locked && isAnswer) { bg = "var(--green-accent)"; color = "#fff"; }
               else if (locked && isPicked && !isAnswer) { bg = "var(--red-accent)"; color = "#fff"; }
               return (

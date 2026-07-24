@@ -53,7 +53,7 @@ export default function WelcomePage() {
   const [aiFeedback, setAiFeedback] = useState<AiFeedback | null>(null);
   const [checking, setChecking] = useState(false);
   const [firstLessonId, setFirstLessonId] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | undefined>();
+  const [, setUserId] = useState<string | undefined>();
   const [email, setEmail] = useState<string | undefined>();
 
   useEffect(() => {

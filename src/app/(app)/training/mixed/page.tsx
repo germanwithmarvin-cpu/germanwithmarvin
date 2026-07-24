@@ -44,7 +44,7 @@ export default function MixedPracticePage() {
   const [given, setGiven] = useState("");
   const [locked, setLocked] = useState(false);
   const [ok, setOk] = useState(false);
-  const [showRule, setShowRule] = useState(false);
+  const [, setShowRule] = useState(false);
 
   const [firstPassRight, setFirstPassRight] = useState(0);
   const [total, setTotal] = useState(0);
