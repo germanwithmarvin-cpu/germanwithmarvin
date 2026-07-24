@@ -88,9 +88,11 @@ async function accessToken(): Promise<string | null> {
 }
 
 // IDs aller Kalender des Kontos (Fallback: nur "primary").
+// minAccessRole=freeBusyReader → auch Kalender, die nur mit „Frei/Gebucht"
+// geteilt sind (z. B. Marvins Privatkalender), zählen für die Belegtzeiten.
 async function calendarIds(token: string): Promise<string[]> {
   try {
-    const res = await fetch(`${CAL}/users/me/calendarList?minAccessRole=reader`, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await fetch(`${CAL}/users/me/calendarList?minAccessRole=freeBusyReader`, { headers: { Authorization: `Bearer ${token}` } });
     if (!res.ok) return ["primary"];
     const json = await res.json();
     const ids = ((json.items as Record<string, unknown>[]) ?? []).map((c) => c.id as string).filter(Boolean);
