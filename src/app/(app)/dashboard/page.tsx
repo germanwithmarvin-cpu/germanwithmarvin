@@ -11,7 +11,7 @@ import { getStats } from "@/lib/stats";
 import { getMyAvatar } from "@/lib/profile";
 import { getAccess, type Access } from "@/lib/access";
 import { createClient } from "@/lib/supabase/client";
-import { checkoutUrl, priceLabel } from "@/lib/config";
+import { checkoutUrl, priceLabel, TAX_NOTE } from "@/lib/config";
 import Lena from "@/components/training/Lena";
 import { hasBeenWelcomed } from "@/lib/onboarding";
 import { useRouter } from "next/navigation";
@@ -159,7 +159,7 @@ export default function Dashboard() {
           <div>
             <div className="font-semibold">🔓 Unlock full access</div>
             <div className="text-sm text-cream-dim mt-0.5">
-              Get <span className="text-cream">German Simplified — All-Access</span>: all videos, exercises, flashcards & stories for {priceLabel()}/month. Cancel anytime.
+              Get <span className="text-cream">German Simplified — All-Access</span>: all videos, exercises, flashcards & stories for {priceLabel()}/month ({TAX_NOTE}). Cancel anytime.
             </div>
           </div>
           <div className="flex flex-col items-stretch sm:items-end gap-1.5 shrink-0">

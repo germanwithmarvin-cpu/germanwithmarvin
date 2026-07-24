@@ -57,7 +57,8 @@ function TermsEN() {
       <Section title="4. Price & payment">
         <p>
           The subscription costs {priceLabel()} per month and renews automatically each month until cancelled.
-          Payment is processed by Stripe. Prices include applicable taxes where required.
+          Payment is processed by Stripe. Prices shown exclude tax; any applicable VAT/sales tax is added at
+          checkout based on your location.
         </p>
       </Section>
       <Section title="5. Term & cancellation">
@@ -157,7 +158,8 @@ function TermsDE() {
       <Section title="4. Preis & Zahlung">
         <p>
           Das Abo kostet {priceLabel()} pro Monat und verlängert sich automatisch monatlich, bis es gekündigt
-          wird. Die Zahlung wickelt Stripe ab. Preise enthalten – soweit anwendbar – die jeweilige Steuer.
+          wird. Die Zahlung wickelt Stripe ab. Die angegebenen Preise verstehen sich zzgl. der jeweils
+          anwendbaren Steuer (USt./VAT), die Stripe standortabhängig an der Kasse aufschlägt.
         </p>
       </Section>
       <Section title="5. Laufzeit & Kündigung">

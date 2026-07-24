@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { checkoutUrl, discountCheckoutUrl, priceLabel, discountPriceLabel, hasDiscountLink, SITE } from "@/lib/config";
+import { checkoutUrl, discountCheckoutUrl, priceLabel, discountPriceLabel, hasDiscountLink, TAX_NOTE, SITE } from "@/lib/config";
 import { createClient } from "@/lib/supabase/client";
 import { getAccess } from "@/lib/access";
 
@@ -46,7 +46,7 @@ export default function Paywall({ title = "Unlock full access" }: { title?: stri
         Get full access — {payLabel}/month
       </a>
       <p className="text-xs text-cream-dim mt-2">
-        Cancel anytime{useDiscount ? "" : " · got a discount code? Enter it at checkout"}.
+        {TAX_NOTE} · cancel anytime{useDiscount ? "" : " · got a discount code? Enter it at checkout"}.
       </p>
 
       <div className="mt-5 pt-4 border-t border-gold/15">

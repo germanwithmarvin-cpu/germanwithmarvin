@@ -50,6 +50,12 @@ export function discountPriceLabel(): string {
   return `$${DISCOUNT_PRICE % 1 === 0 ? DISCOUNT_PRICE : DISCOUNT_PRICE.toFixed(2)}`;
 }
 
+// Preise sind netto; Stripe schlägt an der Kasse standortabhängig Steuer (VAT/
+// Sales Tax) auf. Kurzer, rechtssicherer Hinweis überall an den Preisen.
+export const TAX_NOTE = "plus applicable tax";
+export const TAX_NOTE_LONG =
+  "Prices shown exclude tax. Applicable VAT/sales tax is added at checkout based on your location.";
+
 // ---- 1-zu-1 Stunden: Monats-Abo mit Stunden-Guthaben ------------------------
 export const LESSON = {
   stripePriceId: "price_1TurQzEsa6rPVhI2C2QoyaeH", // Volume-Staffel: bis 7 = $59, ab 8 = $56,05

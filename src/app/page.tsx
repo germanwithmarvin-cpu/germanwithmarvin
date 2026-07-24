@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import VideoPlayer from "@/components/VideoPlayer";
-import { SITE, checkoutUrl, priceLabel } from "@/lib/config";
+import { SITE, checkoutUrl, priceLabel, TAX_NOTE } from "@/lib/config";
 import { REVIEWS, PREPLY_STATS } from "@/lib/reviews";
 
 const benefits = [
@@ -118,6 +118,7 @@ export default function Home() {
           <div className="mt-3">
             <span className="text-5xl font-bold text-[#8A3030]">{priceLabel()}</span>
             <span className="text-[#3B2922]/60"> / month</span>
+            <div className="text-xs text-[#3B2922]/55 mt-1">{TAX_NOTE}</div>
           </div>
           <ul className="text-sm text-[#3B2922]/75 space-y-2 my-7 inline-block text-left">
             {included.map((f) => <li key={f}>✓ {f}</li>)}

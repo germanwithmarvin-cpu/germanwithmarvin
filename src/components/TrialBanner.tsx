@@ -26,14 +26,15 @@ export default function TrialBanner() {
   if (days === null) return null;
 
   return (
-    <div
-      className="w-full flex justify-center py-2 px-4"
-      style={{
-        background: "color-mix(in srgb, var(--gold) 22%, transparent)",
-        borderBottom: "1px solid color-mix(in srgb, var(--gold) 40%, transparent)",
-      }}
-    >
-      <p className="text-sm text-center" style={{ color: "var(--cream)" }}>
+    <div className="w-full flex justify-center px-4 pt-3">
+      <p
+        className="text-sm text-center rounded-full px-5 py-1.5"
+        style={{
+          color: "var(--cream)",
+          background: "color-mix(in srgb, var(--gold) 20%, transparent)",
+          border: "1px solid color-mix(in srgb, var(--gold) 40%, transparent)",
+        }}
+      >
         🎁 Free trial — <b className="text-gold-bright">{days} day{days === 1 ? "" : "s"} left</b>.{" "}
         <a href={href} className="underline underline-offset-2 hover:opacity-90">
           Keep your access for {discountPriceLabel()}/mo →

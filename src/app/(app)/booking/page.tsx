@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LESSON, lessonPriceLabel } from "@/lib/config";
+import { LESSON, lessonPriceLabel, TAX_NOTE } from "@/lib/config";
 import { getMySubscription, getMyCredits, startLessonCheckout, manageLessonSubscription, type LessonSubscription, type CreditInfo } from "@/lib/booking";
 import { getMyBookings, getAllBookings, getStudentNames, getGoogleEvents, getMyRecurring, cancelRecurring, type Booking, type ExternalEvent, type Recurring } from "@/lib/schedule";
 import { createClient } from "@/lib/supabase/client";
@@ -230,7 +230,7 @@ export default function BookingPage() {
               <button onClick={subscribe} disabled={busy} className="btn-gold w-full py-3 disabled:opacity-50">
                 {busy ? "Redirecting to checkout…" : `Subscribe — ${lessonPriceLabel(hours)}/mo`}
               </button>
-              <p className="text-xs text-cream-dim text-center">Secure payment via Stripe · cancel anytime · monthly, renews automatically.</p>
+              <p className="text-xs text-cream-dim text-center">Secure payment via Stripe · {TAX_NOTE} · cancel anytime · monthly, renews automatically.</p>
             </div>
           )}
         </>
