@@ -159,16 +159,13 @@ export async function getAllBookings(): Promise<Booking[]> {
 
 // Schülernamen zu IDs (für die Lehrer-Wochenansicht).
 export async function getStudentNames(ids: string[]): Promise<Record<string, string>> {
-  const unique = new Set(ids);
-  if (unique.size === 0) return {};
-  // Über die sichere Lehrer-RPC: Namen liegen in den Konto-Metadaten und sind
-  // in profiles nicht direkt RLS-lesbar. teacher_students liefert alle Schüler.
-  const { data } = await createClient().rpc("teacher_students");
+  const unique = [...new Set(ids)];
+  if (unique.length === 0) return {};
+  // Löst den Namen JEDES Buchenden auf (auch Test-/Lehrer-Konten) – sichere
+  // Lehrer-RPC, liest full_name/E-Mail aus den Konto-Metadaten.
+  const { data } = await createClient().rpc("booking_student_names", { p_ids: unique });
   const map: Record<string, string> = {};
-  for (const r of (data as Record<string, unknown>[] | null) ?? []) {
-    const id = r.student_id as string;
-    if (unique.has(id)) map[id] = (r.full_name as string) || (r.email as string) || "Student";
-  }
+  for (const r of (data as { id: string; name: string }[] | null) ?? []) map[r.id] = r.name || "Student";
   return map;
 }
 
