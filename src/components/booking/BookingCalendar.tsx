@@ -5,16 +5,36 @@ import { getTeacherSettings, getBlocks, getTakenMs, getGoogleBusy, generateSlots
 
 const studentTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-const dayLabel = (iso: string) => new Date(iso).toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", timeZone: studentTz });
-const fullDayLabel = (iso: string) => new Date(iso).toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: studentTz });
 const dayKey = (iso: string) => new Date(iso).toLocaleDateString("en-CA", { timeZone: studentTz });
 const timeLabel = (iso: string) => new Date(iso).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", timeZone: studentTz });
+const fullDayLabel = (iso: string) => new Date(iso).toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: studentTz });
+
+// Datums-Schlüssel (YYYY-MM-DD) sind zeitzonen-neutral; wir rechnen darauf in UTC,
+// damit Wochen-/Wochentagsberechnungen nicht driften.
+const weekdayLabel = (key: string) => new Date(key + "T12:00:00Z").toLocaleDateString(undefined, { weekday: "short", timeZone: "UTC" });
+const dayNumLabel = (key: string) => new Date(key + "T12:00:00Z").toLocaleDateString(undefined, { day: "numeric", month: "short", timeZone: "UTC" });
+const mondayKey = (key: string) => {
+  const d = new Date(key + "T00:00:00Z");
+  const dow = d.getUTCDay(); // 0=So..6=Sa
+  d.setUTCDate(d.getUTCDate() + (dow === 0 ? -6 : 1 - dow));
+  return d.toISOString().slice(0, 10);
+};
+const addDaysKey = (key: string, n: number) => {
+  const d = new Date(key + "T00:00:00Z");
+  d.setUTCDate(d.getUTCDate() + n);
+  return d.toISOString().slice(0, 10);
+};
+const rangeLabel = (mon: string) => {
+  const a = new Date(mon + "T12:00:00Z"), b = new Date(addDaysKey(mon, 6) + "T12:00:00Z");
+  const f = (d: Date) => d.toLocaleDateString(undefined, { day: "numeric", month: "short", timeZone: "UTC" });
+  return `${f(a)} – ${f(b)}`;
+};
 
 export default function BookingCalendar({ canBook, onBooked }: { canBook: boolean; onBooked: () => void }) {
   const [slots, setSlots] = useState<Slot[]>([]);
   const [slotMin, setSlotMin] = useState(50);
   const [loading, setLoading] = useState(true);
-  const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [weekIdx, setWeekIdx] = useState(0);
   const [confirm, setConfirm] = useState<Slot | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -43,8 +63,14 @@ export default function BookingCalendar({ canBook, onBooked }: { canBook: boolea
     }
     return m;
   }, [slots]);
-  const days = useMemo(() => [...byDay.keys()], [byDay]);
-  useEffect(() => { if (!selectedDay && days.length) setSelectedDay(days[0]); }, [days, selectedDay]);
+
+  // Wochen (Montag-Schlüssel), die überhaupt freie Zeiten haben.
+  const weeks = useMemo(() => {
+    const set = new Set<string>();
+    for (const k of byDay.keys()) set.add(mondayKey(k));
+    return [...set].sort();
+  }, [byDay]);
+  useEffect(() => { if (weekIdx > weeks.length - 1) setWeekIdx(0); }, [weeks, weekIdx]);
 
   async function book(iso: string) {
     setBusy(true); setErr(null);
@@ -61,32 +87,66 @@ export default function BookingCalendar({ canBook, onBooked }: { canBook: boolea
   if (loading) return <div className="card p-5 text-cream-dim text-sm">Loading available times…</div>;
   if (slots.length === 0) return <div className="card p-5 text-cream-dim text-sm">No free times right now — please check back soon.</div>;
 
-  const daySlots = selectedDay ? byDay.get(selectedDay) ?? [] : [];
+  const mon = weeks[Math.min(weekIdx, weeks.length - 1)];
+  const days = mon ? Array.from({ length: 7 }, (_, i) => addDaysKey(mon, i)) : [];
 
   return (
     <div className="card p-5 space-y-4">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
         <div className="font-semibold text-lg">Book a lesson</div>
         <span className="text-xs text-cream-dim">Times shown in {studentTz}</span>
       </div>
+
+      {/* Wochen-Navigation */}
+      <div className="flex items-center justify-between gap-2">
+        <button
+          onClick={() => setWeekIdx((i) => Math.max(0, i - 1))}
+          disabled={weekIdx <= 0}
+          className="btn-outline px-3 py-1.5 text-sm disabled:opacity-30"
+          aria-label="Previous week"
+        >‹</button>
+        <div className="text-sm font-medium">{mon ? rangeLabel(mon) : ""}</div>
+        <button
+          onClick={() => setWeekIdx((i) => Math.min(weeks.length - 1, i + 1))}
+          disabled={weekIdx >= weeks.length - 1}
+          className="btn-outline px-3 py-1.5 text-sm disabled:opacity-30"
+          aria-label="Next week"
+        >›</button>
+      </div>
+
       {err && !confirm && <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-2">{err}</p>}
 
-      <div className="flex gap-2 overflow-x-auto pb-1">
-        {days.map((d) => (
-          <button key={d} onClick={() => setSelectedDay(d)} className={`shrink-0 px-3 py-2 rounded-xl text-sm border transition ${selectedDay === d ? "btn-gold" : "border-gold/25 text-cream-dim hover:border-gold/50"}`}>
-            <div className="font-medium">{dayLabel(byDay.get(d)![0].startISO)}</div>
-            <div className="text-xs opacity-70">{byDay.get(d)!.length} {byDay.get(d)!.length === 1 ? "slot" : "slots"}</div>
-          </button>
-        ))}
+      {/* Wochen-Raster: 7 Tagesspalten */}
+      <div className="overflow-x-auto -mx-1 px-1">
+        <div className="grid grid-cols-7 gap-2 min-w-[640px]">
+          {days.map((k) => {
+            const daySlots = byDay.get(k) ?? [];
+            const isToday = k === dayKey(new Date().toISOString());
+            return (
+              <div key={k} className="min-w-0">
+                <div className={`text-center pb-2 mb-1 border-b ${isToday ? "border-gold/50" : "border-gold/15"}`}>
+                  <div className={`text-xs font-semibold ${isToday ? "text-gold-bright" : "text-cream"}`}>{weekdayLabel(k)}</div>
+                  <div className="text-[11px] text-cream-dim">{dayNumLabel(k)}</div>
+                </div>
+                <div className="space-y-1.5">
+                  {daySlots.length === 0
+                    ? <div className="text-center text-cream-dim/50 text-xs py-2">—</div>
+                    : daySlots.map((s) => (
+                        <button
+                          key={s.startISO}
+                          onClick={() => { setErr(null); setConfirm(s); }}
+                          className="w-full btn-outline py-1.5 text-xs sm:text-sm"
+                        >
+                          {timeLabel(s.startISO)}
+                        </button>
+                      ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
-      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-        {daySlots.map((s) => (
-          <button key={s.startISO} onClick={() => { setErr(null); setConfirm(s); }} className="btn-outline py-2.5 text-sm">
-            {timeLabel(s.startISO)}
-          </button>
-        ))}
-      </div>
       {!canBook && <p className="text-xs text-cream-dim">You need lesson hours to book — subscribe or top up above.</p>}
 
       {/* Bestätigungs-Zusammenfassung vor dem Buchen */}
