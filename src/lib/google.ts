@@ -140,7 +140,7 @@ export async function listEvents(fromISO: string, toISO: string): Promise<{ summ
       const json = await res.json();
       for (const e of (json.items as Record<string, unknown>[] | undefined) ?? []) {
         if (e.status === "cancelled" || e.transparency === "transparent") continue;
-        if (e.summary === "German lesson (1-on-1)") continue; // eigene App-Termine
+        if (typeof e.summary === "string" && e.summary.startsWith("German lesson")) continue; // eigene App-Termine
         const s = e.start as { dateTime?: string; date?: string } | undefined;
         const en = e.end as { dateTime?: string; date?: string } | undefined;
         const start = s?.dateTime ?? (s?.date ? `${s.date}T00:00:00Z` : null);
@@ -153,14 +153,14 @@ export async function listEvents(fromISO: string, toISO: string): Promise<{ summ
 }
 
 // Termin + Meet-Link anlegen. Gibt eventId + meetLink zurück (oder leer).
-export async function createEvent(opts: { startISO: string; endISO: string; attendeeEmail?: string | null; timezone: string }): Promise<{ eventId?: string; meetLink?: string }> {
+export async function createEvent(opts: { startISO: string; endISO: string; attendeeEmail?: string | null; timezone: string; studentName?: string | null }): Promise<{ eventId?: string; meetLink?: string }> {
   const token = await accessToken();
   if (!token) return {};
   const res = await fetch(`${CAL}/calendars/primary/events?conferenceDataVersion=1&sendUpdates=all`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      summary: "German lesson (1-on-1)",
+      summary: opts.studentName ? `German lesson — ${opts.studentName}` : "German lesson (1-on-1)",
       start: { dateTime: opts.startISO, timeZone: opts.timezone },
       end: { dateTime: opts.endISO, timeZone: opts.timezone },
       attendees: opts.attendeeEmail ? [{ email: opts.attendeeEmail }] : undefined,

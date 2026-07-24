@@ -6,7 +6,7 @@ import { cancelLesson, type Booking } from "@/lib/schedule";
 const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const fmt = (iso: string) => new Date(iso).toLocaleString(undefined, { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
-export default function LessonsList({ bookings, onChange, teacher = false }: { bookings: Booking[]; onChange: () => void; teacher?: boolean }) {
+export default function LessonsList({ bookings, onChange, teacher = false, names = {} }: { bookings: Booking[]; onChange: () => void; teacher?: boolean; names?: Record<string, string> }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
@@ -38,7 +38,8 @@ export default function LessonsList({ bookings, onChange, teacher = false }: { b
             <div>
               <div className="font-medium">{fmt(b.startsAt)}</div>
               <div className="text-xs text-cream-dim">
-                {teacher ? "Student lesson" : "Your lesson"}
+                {teacher ? <b className="text-cream">{names[b.studentId] ?? "Student"}</b> : "Your lesson"}
+                {b.recurringId && <span className="text-gold-bright"> · 🔁 weekly</span>}
                 {b.meetLink && <> · <a href={b.meetLink} target="_blank" rel="noreferrer" className="text-gold-bright underline">Join</a></>}
                 {soon && <span className="text-red-700"> · under 24 h (no refund)</span>}
               </div>

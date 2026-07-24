@@ -139,7 +139,7 @@ export default function BookingPage() {
           <div className="space-y-3">
             <div className="font-semibold text-lg">Your schedule</div>
             <WeekSchedule bookings={bookings} names={names} external={extEvents} />
-            <LessonsList bookings={bookings} onChange={refresh} teacher />
+            <LessonsList bookings={bookings} onChange={refresh} teacher names={names} />
           </div>
         </>
       ) : (

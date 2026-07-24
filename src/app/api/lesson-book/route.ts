@@ -38,7 +38,8 @@ export async function POST(req: Request) {
     const slotMin = settings?.slot_minutes ?? 50;
     const tz = settings?.timezone ?? "Europe/Berlin";
     const endISO = new Date(new Date(start).getTime() + slotMin * 60e3).toISOString();
-    const { eventId, meetLink } = await createEvent({ startISO: start, endISO, attendeeEmail: user.email, timezone: tz });
+    const studentName = (user.user_metadata?.full_name as string) || user.email || null;
+    const { eventId, meetLink } = await createEvent({ startISO: start, endISO, attendeeEmail: user.email, timezone: tz, studentName });
     if (eventId || meetLink) {
       await db.from("lesson_bookings").update({ google_event_id: eventId ?? null, meet_link: meetLink ?? null }).eq("id", bookingId);
       return json({ id: bookingId, meetLink: meetLink ?? null });
