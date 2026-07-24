@@ -3,6 +3,8 @@
 import { usePathname } from "next/navigation";
 import AppNav from "@/components/AppNav";
 import LegalFooter from "@/components/LegalFooter";
+import SupportWidget from "@/components/SupportWidget";
+import IntroTour from "@/components/IntroTour";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -17,6 +19,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <main className={fullBleed ? "flex-1 w-full" : "flex-1 p-6 max-w-4xl mx-auto w-full"}>{children}</main>
         <LegalFooter />
       </div>
+      <SupportWidget />
+      <IntroTour />
     </div>
   );
 }
