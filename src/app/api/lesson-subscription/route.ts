@@ -59,16 +59,22 @@ export async function POST(req: Request) {
 
       if (newQty > current) {
         // Erhöhen: sofort, anteilig berechnet.
-        await stripe.subscriptions.update(subId, {
-          items: [{ id: itemId, quantity: newQty }],
-          proration_behavior: "always_invoice",
-        });
+        // Doppelklick-/Retry-Schutz: ein für kurze Zeit stabiler Schlüssel (30-s-
+        // Fenster) sichert die Stripe-Berechnung (idempotencyKey) UND die
+        // Gutschrift (onConflict). Ein echter späterer Increase bekommt einen
+        // neuen Schlüssel und funktioniert normal.
+        const opKey = `inc_${subId}_${newQty}_${Math.floor(Date.now() / 30000)}`;
+        await stripe.subscriptions.update(
+          subId,
+          { items: [{ id: itemId, quantity: newQty }], proration_behavior: "always_invoice" },
+          { idempotencyKey: opKey },
+        );
         // Guthaben-Delta sofort gutschreiben (die Proration-Rechnung wird im
         // Webhook bewusst NICHT gutgeschrieben, um Doppelung zu vermeiden).
         const delta = newQty - current;
         const expires = new Date(Date.now() + LESSON.creditValidityDays * 86400000).toISOString();
         await admin().from("lesson_credit_grants").upsert(
-          { user_id: user.id, credits_granted: delta, credits_remaining: delta, expires_at: expires, stripe_invoice_id: `increase_${subId}_${Date.now()}` },
+          { user_id: user.id, credits_granted: delta, credits_remaining: delta, expires_at: expires, stripe_invoice_id: opKey },
           { onConflict: "stripe_invoice_id", ignoreDuplicates: true },
         );
         await admin().from("lesson_subscriptions").update({ quantity: newQty, updated_at: new Date().toISOString() }).eq("user_id", user.id);

@@ -75,13 +75,18 @@ returns setof timestamptz language sql security definer stable as $$
    where status = 'booked' and starts_at >= p_from and starts_at < p_to;
 $$;
 
--- Buchen: prüft Vorlauf/Horizont, Slot frei, Guthaben vorhanden; zieht 1 Stunde ab.
+-- Buchen: Vorlauf/Horizont + Verfügbarkeitsfenster + Blocker + Überlappung +
+-- Guthaben. Zieht 1 Stunde ab. (Siehe auch lesson-booking-hardening.sql.)
 create or replace function public.book_lesson(p_start timestamptz)
 returns uuid language plpgsql security definer as $$
 declare
   uid uuid := auth.uid();
   s public.lesson_teacher_settings;
   v_end timestamptz;
+  v_local timestamp;
+  v_dow int;
+  v_mins int;
+  v_ok boolean;
   v_grant uuid;
   v_booking uuid;
 begin
@@ -95,9 +100,28 @@ begin
   if p_start > now() + make_interval(days => coalesce(s.horizon_days, 28)) then
     raise exception 'too_far';
   end if;
-  if exists (select 1 from public.lesson_bookings where starts_at = p_start and status = 'booked') then
-    raise exception 'slot_taken';
-  end if;
+
+  -- Muss in ein wöchentliches Verfügbarkeitsfenster passen (Lehrer-Zeitzone).
+  v_local := p_start at time zone coalesce(s.timezone, 'Europe/Berlin');
+  v_dow  := extract(dow from v_local);                       -- 0=So..6=Sa
+  v_mins := extract(hour from v_local) * 60 + extract(minute from v_local);
+  select exists (
+    select 1 from jsonb_array_elements(coalesce(s.weekly, '[]'::jsonb)) w
+     where (w->>'weekday')::int = v_dow
+       and v_mins >= split_part(w->>'start', ':', 1)::int * 60 + split_part(w->>'start', ':', 2)::int
+       and v_mins + coalesce(s.slot_minutes, 50)
+             <= split_part(w->>'end', ':', 1)::int * 60 + split_part(w->>'end', ':', 2)::int
+  ) into v_ok;
+  if not v_ok then raise exception 'outside_hours'; end if;
+
+  if exists (
+    select 1 from public.lesson_blocks where p_start < ends_at and v_end > starts_at
+  ) then raise exception 'blocked'; end if;
+
+  if exists (
+    select 1 from public.lesson_bookings
+     where status = 'booked' and p_start < ends_at and v_end > starts_at
+  ) then raise exception 'slot_taken'; end if;
 
   select id into v_grant from public.lesson_credit_grants
     where user_id = uid and credits_remaining > 0 and expires_at > now()
@@ -117,21 +141,25 @@ exception when unique_violation then
 end;
 $$;
 
--- Absagen: >24 h vorher = Guthaben zurück; sonst verfällt die Stunde.
+-- Absagen: Lehrer-Absage IMMER erstatten; Schüler-Absage nur >24 h vorher.
+-- Erstattung geht auf die ursprünglich verbrauchte Gutschrift zurück.
 create or replace function public.cancel_lesson(p_booking uuid)
 returns text language plpgsql security definer as $$
 declare
   uid uuid := auth.uid();
   b public.lesson_bookings;
+  by_teacher boolean;
   is_free boolean;
+  v_grant public.lesson_credit_grants;
 begin
   if uid is null then raise exception 'not_authenticated'; end if;
   select * into b from public.lesson_bookings where id = p_booking;
   if b.id is null then raise exception 'not_found'; end if;
-  if b.student_id <> uid and not public.is_teacher() then raise exception 'forbidden'; end if;
+  by_teacher := public.is_teacher();
+  if b.student_id <> uid and not by_teacher then raise exception 'forbidden'; end if;
   if b.status <> 'booked' then raise exception 'not_active'; end if;
 
-  is_free := b.starts_at > now() + interval '24 hours';
+  is_free := by_teacher or b.starts_at > now() + interval '24 hours';
 
   update public.lesson_bookings
      set status = case when is_free then 'cancelled_free' else 'cancelled_late' end,
@@ -139,8 +167,15 @@ begin
    where id = b.id;
 
   if is_free then
-    insert into public.lesson_credit_grants (user_id, credits_granted, credits_remaining, expires_at)
-      values (b.student_id, 1, 1, now() + interval '35 days');
+    if b.grant_id is not null then
+      select * into v_grant from public.lesson_credit_grants where id = b.grant_id;
+    end if;
+    if v_grant.id is not null and v_grant.expires_at > now() then
+      update public.lesson_credit_grants set credits_remaining = credits_remaining + 1 where id = v_grant.id;
+    else
+      insert into public.lesson_credit_grants (user_id, credits_granted, credits_remaining, expires_at)
+        values (b.student_id, 1, 1, now() + interval '35 days');
+    end if;
   end if;
 
   return case when is_free then 'refunded' else 'forfeited' end;

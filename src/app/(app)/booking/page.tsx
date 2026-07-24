@@ -54,6 +54,19 @@ export default function BookingPage() {
     setGoogleState(q.get("google"));
   }, []);
 
+  // Nach erfolgreichem Checkout schreibt der Stripe-Webhook das Guthaben erst
+  // ein paar Sekunden später gut – kurz nachpollen, damit es ohne Reload auftaucht.
+  useEffect(() => {
+    if (checkoutState !== "success") return;
+    let n = 0;
+    const iv = setInterval(() => {
+      n += 1;
+      refresh();
+      if (n >= 5) clearInterval(iv);
+    }, 2500);
+    return () => clearInterval(iv);
+  }, [checkoutState]);
+
   const active = sub && ["active", "past_due"].includes(sub.status);
 
   async function subscribe() {

@@ -14,6 +14,8 @@ const friendly = (m: string) =>
   : m.includes("slot_taken") ? "That time was just taken — please pick another."
   : m.includes("too_soon") ? "That time is too soon — please book a bit further ahead."
   : m.includes("too_far") ? "That time is too far in the future."
+  : m.includes("outside_hours") ? "That time isn't offered — please pick one of the available slots."
+  : m.includes("blocked") ? "That time is blocked — please pick another slot."
   : m;
 
 // Bucht die Stunde (DB-Funktion, zieht Guthaben ab) und legt – falls der
