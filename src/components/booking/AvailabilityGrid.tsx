@@ -13,7 +13,7 @@ const DAYS = [
 ];
 const START_HOUR = 6;
 const END_HOUR = 24;
-const STEP = 30; // Minuten je Zeile
+const STEP = 60; // Minuten je Zeile – ganze Stunden, damit keine :30-Fenster entstehen
 const ROWS = ((END_HOUR - START_HOUR) * 60) / STEP;
 
 const rowToMin = (row: number) => START_HOUR * 60 + row * STEP;
