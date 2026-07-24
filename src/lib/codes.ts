@@ -10,6 +10,7 @@ export type AccessCode = {
   used_count: number;
   active: boolean;
   expires_at: string | null;
+  grant_days: number | null; // null = dauerhaft, sonst Trial-Tage (z. B. 14)
   note: string;
   created_at: string;
 };
@@ -35,13 +36,15 @@ function randomCode(): string {
 }
 
 // Erzeugt Codes. singleUse=true → Einzel-Codes (max_uses=1); false → Community (unbegrenzt).
-export async function createCodes(opts: { scope: CodeScope; count: number; singleUse: boolean; note?: string }): Promise<{ error?: string; codes: string[] }> {
+// grantDays gesetzt → Trial-Code (Zugang läuft nach so vielen Tagen ab).
+export async function createCodes(opts: { scope: CodeScope; count: number; singleUse: boolean; note?: string; grantDays?: number | null }): Promise<{ error?: string; codes: string[] }> {
   const supabase = createClient();
   const rows = Array.from({ length: Math.max(1, Math.min(200, opts.count)) }, () => ({
     code: randomCode(),
     scope: opts.scope,
     max_uses: opts.singleUse ? 1 : null,
     note: opts.note ?? "",
+    grant_days: opts.grantDays ?? null,
   }));
   const { error } = await supabase.from("access_codes").insert(rows);
   return { error: error?.message, codes: rows.map((r) => r.code) };

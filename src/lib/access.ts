@@ -6,7 +6,9 @@ import { createClient } from "@/lib/supabase/client";
 //  - full: Lehrer, per Code freigeschaltet ODER aktives Stripe-Abo (per E-Mail).
 //  - none: kein Zugang → Paywall.
 export type AccessTier = "full" | "none";
-export type Access = { tier: AccessTier };
+// trialExpiresAt: gesetzt, wenn der Zugang über einen Trial-Code läuft
+// (Zukunft = aktiver Trial, Vergangenheit = abgelaufen → Paywall mit Rabatt).
+export type Access = { tier: AccessTier; trialExpiresAt?: string | null };
 
 export async function getAccess(): Promise<Access> {
   const supabase = createClient();
@@ -15,15 +17,21 @@ export async function getAccess(): Promise<Access> {
 
   // Zugang wird serverseitig sicher abgeleitet (Code ODER aktives Stripe-Abo).
   const { data, error } = await supabase.rpc("my_access");
-  if (!error) return { tier: data === "full" ? "full" : "none" };
-
-  // Fallback, falls my_access() noch nicht installiert ist: Lehrer + Code weiterhin freischalten.
   const { data: profile } = await supabase
     .from("profiles")
-    .select("is_teacher, access_scope")
+    .select("is_teacher, access_scope, access_expires_at")
     .eq("id", user.id)
-    .single();
-  return { tier: profile?.is_teacher || profile?.access_scope === "full" ? "full" : "none" };
+    .maybeSingle();
+  const trialExpiresAt =
+    profile?.access_scope === "full" && profile?.access_expires_at ? (profile.access_expires_at as string) : null;
+
+  if (!error) return { tier: data === "full" ? "full" : "none", trialExpiresAt };
+
+  // Fallback, falls my_access() noch nicht installiert ist: Lehrer + (nicht abgelaufener) Code.
+  const full =
+    Boolean(profile?.is_teacher) ||
+    (profile?.access_scope === "full" && (!profile?.access_expires_at || new Date(profile.access_expires_at as string) > new Date()));
+  return { tier: full ? "full" : "none", trialExpiresAt };
 }
 
 export function hasAccess(tier: AccessTier): boolean {

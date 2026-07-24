@@ -12,6 +12,7 @@ export default function CodesAdmin() {
   const [kind, setKind] = useState<"single" | "community">("single");
   const [count, setCount] = useState(10);
   const [note, setNote] = useState("");
+  const [trial, setTrial] = useState(false);
   const [busy, setBusy] = useState(false);
   const [justCreated, setJustCreated] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +28,7 @@ export default function CodesAdmin() {
     setError(null);
     setJustCreated([]);
     const single = kind === "single";
-    const { error, codes: created } = await createCodes({ scope, count: single ? count : 1, singleUse: single, note });
+    const { error, codes: created } = await createCodes({ scope, count: single ? count : 1, singleUse: single, note, grantDays: trial ? 14 : null });
     setBusy(false);
     if (error) { setError(error); return; }
     setJustCreated(created);
@@ -68,6 +69,10 @@ export default function CodesAdmin() {
             <label className="block text-sm mb-1 text-cream-dim">Note (optional)</label>
             <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Preply July" className={`${inputCls} w-full`} />
           </div>
+          <label className="flex items-center gap-2 text-sm sm:col-span-2 cursor-pointer">
+            <input type="checkbox" checked={trial} onChange={(e) => setTrial(e.target.checked)} style={{ accentColor: "var(--gold)" }} />
+            <span>2-week trial <span className="text-cream-dim">— access expires 14 days after redemption, then the paywall (discounted plan) kicks in</span></span>
+          </label>
         </div>
         {error && <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-2">{error}</p>}
         <button onClick={generate} disabled={busy} className="btn-gold px-5 py-2.5 text-sm disabled:opacity-50">
@@ -101,6 +106,7 @@ export default function CodesAdmin() {
                   {c.scope === "vocab" ? "vocab" : "full"} ·
                   {c.max_uses === null ? " community" : ` single-use`} ·
                   used {c.used_count}{c.max_uses ? `/${c.max_uses}` : ""}
+                  {c.grant_days ? ` · ${c.grant_days}-day trial` : ""}
                   {c.note ? ` · ${c.note}` : ""}
                   {!c.active ? " · inactive" : ""}
                 </span>
