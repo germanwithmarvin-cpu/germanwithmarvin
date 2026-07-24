@@ -6,6 +6,7 @@ import LegalFooter from "@/components/LegalFooter";
 import SupportWidget from "@/components/SupportWidget";
 import IntroTour from "@/components/IntroTour";
 import TrialBanner from "@/components/TrialBanner";
+import NewsWidget from "@/components/NewsWidget";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -24,6 +25,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
       <SupportWidget />
+      <NewsWidget />
       <IntroTour />
     </div>
   );
