@@ -18,7 +18,9 @@ export type Booking = {
   endsAt: string;
   status: string;
   meetLink: string | null;
+  recurringId: string | null;
 };
+export type Recurring = { weekday: number; startMin: number };
 export type Slot = { startISO: string };
 
 export const DEFAULT_SETTINGS: TeacherSettings = {
@@ -173,7 +175,38 @@ function mapBooking(r: Record<string, unknown>): Booking {
     endsAt: r.ends_at as string,
     status: r.status as string,
     meetLink: (r.meet_link as string) ?? null,
+    recurringId: (r.recurring_id as string) ?? null,
   };
+}
+
+// ── Feste wöchentliche Zeit ─────────────────────────────────────────────────
+export async function getMyRecurring(): Promise<Recurring | null> {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data } = await supabase.from("lesson_recurring")
+    .select("weekday, start_min").eq("student_id", user.id).eq("status", "active").maybeSingle();
+  return data ? { weekday: data.weekday as number, startMin: data.start_min as number } : null;
+}
+
+// Setzt/ändert die feste Zeit und bucht die laufende Periode sofort nach.
+export async function setRecurring(weekday: number, startMin: number): Promise<{ booked?: number; error?: string }> {
+  const { data, error } = await createClient().rpc("set_recurring", { p_weekday: weekday, p_start_min: startMin });
+  if (error) return { error: error.message };
+  return { booked: (data as number) ?? 0 };
+}
+
+export async function cancelRecurring(): Promise<{ error?: string }> {
+  const { error } = await createClient().rpc("cancel_recurring");
+  return { error: error?.message };
+}
+
+// Gehaltene Zeiten (feste Zeiten aller Schüler) – zum Ausblenden aus den Slots.
+export async function getHeldMs(fromISO: string, toISO: string): Promise<Set<number>> {
+  const { data } = await createClient().rpc("held_recurring_slots", { p_from: fromISO, p_to: toISO });
+  const set = new Set<number>();
+  for (const t of (data as string[] | null) ?? []) set.add(new Date(t).getTime());
+  return set;
 }
 
 // Buchen/Absagen laufen über Server-Routen (DB-Funktion + Google-Kalender).

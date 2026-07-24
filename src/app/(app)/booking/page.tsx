@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { LESSON, lessonPriceLabel } from "@/lib/config";
 import { getMySubscription, getMyCredits, startLessonCheckout, manageLessonSubscription, type LessonSubscription, type CreditInfo } from "@/lib/booking";
-import { getMyBookings, getAllBookings, getStudentNames, getGoogleEvents, type Booking, type ExternalEvent } from "@/lib/schedule";
+import { getMyBookings, getAllBookings, getStudentNames, getGoogleEvents, getMyRecurring, cancelRecurring, type Booking, type ExternalEvent, type Recurring } from "@/lib/schedule";
 import { createClient } from "@/lib/supabase/client";
 import AvailabilityEditor from "@/components/booking/AvailabilityEditor";
 import BookingCalendar from "@/components/booking/BookingCalendar";
@@ -23,6 +23,7 @@ export default function BookingPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [names, setNames] = useState<Record<string, string>>({});
   const [extEvents, setExtEvents] = useState<ExternalEvent[]>([]);
+  const [myRecurring, setMyRecurring] = useState<Recurring | null>(null);
 
   async function refresh() {
     const supabase = createClient();
@@ -33,10 +34,11 @@ export default function BookingPage() {
       teacher = Boolean(data?.is_teacher);
     }
     setIsTeacher(teacher);
-    const [s, c, b] = await Promise.all([getMySubscription(), getMyCredits(), teacher ? getAllBookings() : getMyBookings()]);
+    const [s, c, b, rec] = await Promise.all([getMySubscription(), getMyCredits(), teacher ? getAllBookings() : getMyBookings(), teacher ? Promise.resolve(null) : getMyRecurring()]);
     setSub(s);
     setCredits(c);
     setBookings(b);
+    setMyRecurring(rec);
     if (teacher) {
       if (b.length) setNames(await getStudentNames(b.map((x) => x.studentId)));
       const from = new Date(Date.now() - 7 * 86400e3).toISOString();
@@ -68,6 +70,9 @@ export default function BookingPage() {
   }, [checkoutState]);
 
   const active = sub && ["active", "past_due"].includes(sub.status);
+  const nextRecurring = bookings
+    .filter((x) => x.recurringId && x.status === "booked" && new Date(x.startsAt).getTime() > Date.now())
+    .sort((a, b) => a.startsAt.localeCompare(b.startsAt))[0];
 
   async function subscribe() {
     setBusy(true); setErr(null);
@@ -87,6 +92,15 @@ export default function BookingPage() {
   async function toggleCancel() {
     setBusy(true); setErr(null);
     const { error } = await manageLessonSubscription(sub?.cancelAtPeriodEnd ? "resume" : "cancel");
+    if (error) setErr(error);
+    await refresh();
+    setBusy(false);
+  }
+
+  async function cancelWeekly() {
+    if (!confirm("Cancel your weekly time? Lessons already booked stay — cancel those individually if you want.")) return;
+    setBusy(true); setErr(null);
+    const { error } = await cancelRecurring();
     if (error) setErr(error);
     await refresh();
     setBusy(false);
@@ -131,6 +145,19 @@ export default function BookingPage() {
       ) : (
         // -------- Schüler: Guthaben + Kalender (falls Abo ODER Guthaben) + Paket --------
         <>
+          {myRecurring && (
+            <div className="card p-5 flex flex-wrap items-center justify-between gap-3" style={{ borderLeft: "5px solid var(--gold)" }}>
+              <div className="min-w-0">
+                <div className="font-semibold flex items-center gap-2">🔁 Your weekly lesson</div>
+                <p className="text-sm text-cream-dim mt-0.5">
+                  {nextRecurring
+                    ? <>Every <b className="text-cream">{new Date(nextRecurring.startsAt).toLocaleDateString(undefined, { weekday: "long" })}</b> at <b className="text-cream">{new Date(nextRecurring.startsAt).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })}</b> — booked automatically each period.</>
+                    : "Your weekly time is set — lessons are booked when your plan renews."}
+                </p>
+              </div>
+              <button onClick={cancelWeekly} disabled={busy} className="btn-outline px-4 py-2 text-sm shrink-0 disabled:opacity-50">Cancel weekly time</button>
+            </div>
+          )}
           {(active || credits.balance > 0) && (
             <>
               <div className="card study-card p-6">

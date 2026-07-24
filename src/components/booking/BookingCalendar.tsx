@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getTeacherSettings, getBlocks, getTakenMs, getGoogleBusy, generateSlots, bookLesson, type Slot } from "@/lib/schedule";
+import { getTeacherSettings, getBlocks, getTakenMs, getGoogleBusy, getHeldMs, generateSlots, bookLesson, setRecurring, type Slot } from "@/lib/schedule";
 
 const studentTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -33,6 +33,7 @@ const rangeLabel = (mon: string) => {
 export default function BookingCalendar({ canBook, onBooked }: { canBook: boolean; onBooked: () => void }) {
   const [slots, setSlots] = useState<Slot[]>([]);
   const [slotMin, setSlotMin] = useState(50);
+  const [teacherTz, setTeacherTz] = useState("Europe/Berlin");
   const [loading, setLoading] = useState(true);
   const [weekIdx, setWeekIdx] = useState(0);
   const [confirm, setConfirm] = useState<Slot | null>(null);
@@ -43,14 +44,17 @@ export default function BookingCalendar({ canBook, onBooked }: { canBook: boolea
     setLoading(true);
     const settings = await getTeacherSettings();
     setSlotMin(settings.slotMinutes);
+    setTeacherTz(settings.timezone);
     const now = new Date();
     const to = new Date(now.getTime() + (settings.horizonDays + 1) * 86400e3);
-    const [blocks, taken, gbusy] = await Promise.all([
+    const [blocks, taken, gbusy, held] = await Promise.all([
       getBlocks(),
       getTakenMs(now.toISOString(), to.toISOString()),
       getGoogleBusy(now.toISOString(), to.toISOString()),
+      getHeldMs(now.toISOString(), to.toISOString()),
     ]);
-    setSlots(generateSlots(settings, taken, [...blocks, ...gbusy], now));
+    // Belegte + für feste Zeiten gehaltene Slots ausblenden.
+    setSlots(generateSlots(settings, new Set([...taken, ...held]), [...blocks, ...gbusy], now));
     setLoading(false);
   }, []);
   useEffect(() => { load(); }, [load]);
@@ -75,6 +79,22 @@ export default function BookingCalendar({ canBook, onBooked }: { canBook: boolea
   async function book(iso: string) {
     setBusy(true); setErr(null);
     const { error } = await bookLesson(iso);
+    setBusy(false);
+    if (error) { setErr(error); return; }
+    setConfirm(null);
+    await load();
+    onBooked();
+  }
+
+  // Feste wöchentliche Zeit setzen. Wochentag + Uhrzeit werden in der LEHRER-
+  // Zeitzone bestimmt (so speichert die DB die Reservierung).
+  async function makeWeekly(iso: string) {
+    setBusy(true); setErr(null);
+    const dtf = new Intl.DateTimeFormat("en-US", { timeZone: teacherTz, hour12: false, weekday: "short", hour: "2-digit", minute: "2-digit" });
+    const m: Record<string, string> = {};
+    for (const p of dtf.formatToParts(new Date(iso))) m[p.type] = p.value;
+    const wd: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+    const { error } = await setRecurring(wd[m.weekday] ?? 0, (Number(m.hour) % 24) * 60 + Number(m.minute));
     setBusy(false);
     if (error) { setErr(error); return; }
     setConfirm(null);
@@ -164,11 +184,17 @@ export default function BookingCalendar({ canBook, onBooked }: { canBook: boolea
               <li>• Free cancellation up to 24 h before</li>
             </ul>
             {err && <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-2">{err}</p>}
-            <div className="flex gap-2">
-              <button onClick={() => setConfirm(null)} disabled={busy} className="btn-outline flex-1 py-2.5 disabled:opacity-50">Back</button>
-              <button onClick={() => canBook ? book(confirm.startISO) : setErr("You have no lesson hours left.")} disabled={busy} className="btn-gold flex-1 py-2.5 disabled:opacity-50">
-                {busy ? "Booking…" : "Confirm booking"}
+            <div className="space-y-2">
+              <button onClick={() => makeWeekly(confirm.startISO)} disabled={busy} className="btn-gold w-full py-2.5 font-bold disabled:opacity-50">
+                {busy ? "…" : "🔁 Make this my weekly time"}
               </button>
+              <p className="text-[11px] text-cream-dim text-center">Recommended — books this time every week while your plan lasts.</p>
+              <div className="flex gap-2 pt-1">
+                <button onClick={() => setConfirm(null)} disabled={busy} className="btn-outline flex-1 py-2.5 disabled:opacity-50">Back</button>
+                <button onClick={() => canBook ? book(confirm.startISO) : setErr("You have no lesson hours left.")} disabled={busy} className="btn-outline flex-1 py-2.5 disabled:opacity-50">
+                  {busy ? "Booking…" : "Book just once"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
