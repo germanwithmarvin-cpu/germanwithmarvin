@@ -75,7 +75,7 @@ export default function BookingCalendar({ canBook, onBooked }: { canBook: boolea
         {days.map((d) => (
           <button key={d} onClick={() => setSelectedDay(d)} className={`shrink-0 px-3 py-2 rounded-xl text-sm border transition ${selectedDay === d ? "btn-gold" : "border-gold/25 text-cream-dim hover:border-gold/50"}`}>
             <div className="font-medium">{dayLabel(byDay.get(d)![0].startISO)}</div>
-            <div className="text-xs opacity-70">{byDay.get(d)!.length} slots</div>
+            <div className="text-xs opacity-70">{byDay.get(d)!.length} {byDay.get(d)!.length === 1 ? "slot" : "slots"}</div>
           </button>
         ))}
       </div>

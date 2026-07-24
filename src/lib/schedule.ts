@@ -68,7 +68,15 @@ export function generateSlots(
 ): Slot[] {
   const earliest = now.getTime() + settings.leadHours * 3600e3;
   const latest = now.getTime() + settings.horizonDays * 86400e3;
-  const blockRanges = blocks.map((b) => [new Date(b.starts_at).getTime(), new Date(b.ends_at).getTime()] as const);
+  const slotMs = settings.slotMinutes * 60e3;
+  // Belegte Zeiten als INTERVALLE: bestehende Buchungen (Start + Dauer) sowie
+  // Blocker/Google-Belegtzeiten. Dadurch werden auch ÜBERLAPPENDE Slots
+  // ausgeblendet, nicht nur exakt gleiche Startzeiten – sonst taucht z. B. 13:30
+  // auf, obwohl 13:00–13:50 schon belegt ist.
+  const busyRanges = [
+    ...blocks.map((b) => [new Date(b.starts_at).getTime(), new Date(b.ends_at).getTime()] as const),
+    ...[...takenMs].map((s) => [s, s + slotMs] as const),
+  ];
   const seen = new Set<number>();
   const out: Slot[] = [];
 
@@ -81,8 +89,8 @@ export function generateSlots(
       for (let mins = sh * 60 + sm; mins + settings.slotMinutes <= endMins; mins += settings.slotMinutes + settings.bufferMinutes) {
         const utc = zonedWallToUtc(p.year, p.month, p.day, Math.floor(mins / 60), mins % 60, settings.timezone);
         const t = utc.getTime();
-        if (t < earliest || t > latest || seen.has(t) || takenMs.has(t)) continue;
-        if (blockRanges.some(([a, b]) => t < b && t + settings.slotMinutes * 60e3 > a)) continue;
+        if (t < earliest || t > latest || seen.has(t)) continue;
+        if (busyRanges.some(([a, b]) => t < b && t + slotMs > a)) continue;
         seen.add(t);
         out.push({ startISO: utc.toISOString() });
       }
