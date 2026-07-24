@@ -86,7 +86,12 @@ export function generateSlots(
       const [sh, sm] = w.start.split(":").map(Number);
       const [eh, em] = w.end.split(":").map(Number);
       const endMins = eh * 60 + em;
-      for (let mins = sh * 60 + sm; mins + settings.slotMinutes <= endMins; mins += settings.slotMinutes + settings.bufferMinutes) {
+      // Nur volle Stunden buchbar: bei der ersten vollen Stunde im Fenster
+      // beginnen und in Stundenschritten weiter (Schritt mind. so groß, dass
+      // Stundenlänge + Puffer passen). So gibt es nie :30- o. ä. Startzeiten.
+      const startMins = Math.ceil((sh * 60 + sm) / 60) * 60;
+      const stepMins = Math.max(60, Math.ceil((settings.slotMinutes + settings.bufferMinutes) / 60) * 60);
+      for (let mins = startMins; mins + settings.slotMinutes <= endMins; mins += stepMins) {
         const utc = zonedWallToUtc(p.year, p.month, p.day, Math.floor(mins / 60), mins % 60, settings.timezone);
         const t = utc.getTime();
         if (t < earliest || t > latest || seen.has(t)) continue;
