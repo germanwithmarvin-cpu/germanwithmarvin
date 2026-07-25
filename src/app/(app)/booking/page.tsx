@@ -10,6 +10,7 @@ import BookingCalendar from "@/components/booking/BookingCalendar";
 import LessonsList from "@/components/booking/LessonsList";
 import LessonCalendar from "@/components/booking/LessonCalendar";
 import WeekSchedule from "@/components/booking/WeekSchedule";
+import TeacherProfiles from "@/components/booking/TeacherProfiles";
 
 export default function BookingPage() {
   const [checkoutState, setCheckoutState] = useState<string | null>(null);
@@ -113,8 +114,10 @@ export default function BookingPage() {
     <div className="max-w-2xl space-y-6">
       <div>
         <h1 className="text-2xl font-bold">1-on-1 lessons 🗓️</h1>
-        <p className="text-cream-dim mt-1">Choose a monthly plan of {LESSON.durationMin}-minute lessons and book your times with me.</p>
+        <p className="text-cream-dim mt-1">Choose a monthly plan of {LESSON.durationMin}-minute lessons and book your times.</p>
       </div>
+
+      <TeacherProfiles />
 
       {checkoutState === "success" && (
         <p className="text-sm text-green-700 bg-green-accent/15 rounded-lg p-3">✓ Payment received — your lesson hours are being added. This can take a few seconds.</p>

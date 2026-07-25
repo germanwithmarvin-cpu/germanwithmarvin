@@ -15,6 +15,40 @@ export type CreditInfo = {
   nextExpiry: string | null; // wann das nächste Guthaben verfällt
 };
 
+export type TeacherProfile = {
+  id: number;
+  slug: string;
+  name: string;
+  role: string;
+  bio: string;
+  highlights: string[];
+  languages: string;
+  photoUrl: string;
+  hourlyRate: number | null; // in USD
+  active: boolean;
+};
+
+// Alle Lehrer-Profile (für die 1:1-Seite). Inaktive kommen mit, werden aber als
+// „bald buchbar" markiert. Foto: teachers.photo_url oder Konvention /teachers/<slug>.jpg.
+export async function getTeachers(): Promise<TeacherProfile[]> {
+  const { data } = await createClient()
+    .from("teachers")
+    .select("id, slug, name, display_role, bio, highlights, languages, photo_url, hourly_rate_cents, active, sort_order")
+    .order("sort_order", { ascending: true });
+  return (data ?? []).map((t) => ({
+    id: t.id,
+    slug: t.slug,
+    name: t.name,
+    role: t.display_role ?? "",
+    bio: t.bio ?? "",
+    highlights: Array.isArray(t.highlights) ? (t.highlights as string[]) : [],
+    languages: t.languages ?? "",
+    photoUrl: t.photo_url || `/teachers/${t.slug}.jpg`,
+    hourlyRate: t.hourly_rate_cents != null ? t.hourly_rate_cents / 100 : null,
+    active: Boolean(t.active),
+  }));
+}
+
 // Aktuelles Abo des eingeloggten Schülers bei einem Lehrer (oder null, wenn keins).
 // teacherId default 1 = Marvin (bestehendes Verhalten unverändert).
 export async function getMySubscription(teacherId = 1): Promise<LessonSubscription | null> {
