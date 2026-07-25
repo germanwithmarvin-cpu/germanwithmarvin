@@ -7,19 +7,24 @@ import { REVIEWS, PREPLY_STATS } from "@/lib/reviews";
 
 const benefits = [
   { icon: "🎬", title: "Clear video lessons", text: "Step-by-step explanations that make grammar and vocabulary easy to understand." },
+  { icon: "🗂️", title: "Smart flashcard trainer", text: "2,600+ cards with spaced repetition that shows each word right before you'd forget it." },
+  { icon: "🚀", title: "Vocab game", text: "Race the clock in a fast word game — practice that actually feels like play." },
   { icon: "⚡", title: "Interactive exercises", text: "Practice what you learn with engaging exercises and instant feedback." },
-  { icon: "🗂️", title: "Smart flashcard trainer", text: "Remember more with a spaced-repetition system that adapts to you." },
   { icon: "📖", title: "Reading stories", text: "Short German stories at your level to build a real feel for the language." },
-  { icon: "🧭", title: "One guided path", text: "A clear path from beginner to advanced — no guessing what to learn next." },
   { icon: "📊", title: "See your progress", text: "Track completed lessons, learned cards and your streak as you go." },
 ];
 
 const included = [
   "All video lessons (A1–B2)",
   "Interactive exercises after every lesson",
-  "The full flashcard trainer (1,800+ cards)",
-  "Reading stories & downloadable material",
+  "Smart flashcard trainer — 2,600+ cards",
+  "The vocab game & reading stories",
   "Statistics & progress tracking",
+];
+
+const teachers = [
+  { name: "Marvin Graf", role: "Founder & your main teacher", photo: "/teachers/marvin.jpg", blurb: "Teaching German full-time for 4+ years, with thousands of 1-on-1 hours. Levels A1–C1." },
+  { name: "Thanh Ha Nguyen", role: "German teacher · trilingual", photo: "/teachers/thanh-ha.jpg", blurb: "Speaks Vietnamese, English & German fluently — a great fit for Vietnamese- and English-speaking learners." },
 ];
 
 function Stars() {
@@ -48,8 +53,8 @@ export default function Home() {
             Learn German with me —<br /><span className="text-[#8A3030]">the simple way.</span>
           </h1>
           <p className="mt-5 text-lg text-[#3B2922]/75 max-w-md">
-            Video lessons, interactive exercises, a smart flashcard trainer and reading stories — everything you
-            need to actually speak German, in one place.
+            Video lessons, a smart flashcard trainer, a fast vocab game and reading stories — plus
+            1-on-1 lessons with real teachers. Everything you need to actually speak German, in one place.
           </p>
 
           <RefLink href={checkoutUrl()} className="mt-8 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
@@ -74,7 +79,7 @@ export default function Home() {
           </div>
           <div className="absolute -right-2 top-28 bg-[#FBF2DA] rounded-xl shadow-md border border-black/5 px-4 py-3 flex items-center gap-2">
             <span className="text-xl">🗂️</span>
-            <div className="leading-tight"><div className="font-bold text-sm">1,800+</div><div className="text-xs text-[#3B2922]/60">cards</div></div>
+            <div className="leading-tight"><div className="font-bold text-sm">2,600+</div><div className="text-xs text-[#3B2922]/60">cards</div></div>
           </div>
         </div>
       </section>
@@ -92,6 +97,34 @@ export default function Home() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* 1:1-Lehrer */}
+      <section className="max-w-6xl mx-auto px-6 py-14">
+        <div className="text-center max-w-2xl mx-auto mb-9">
+          <span className="inline-block text-xs tracking-[0.3em] text-[#E3A12F] uppercase font-semibold mb-3">1-on-1 lessons</span>
+          <h2 className="text-2xl sm:text-3xl font-bold">Learn with real teachers</h2>
+          <p className="mt-3 text-[#3B2922]/75">
+            Self-study gets you far — but sometimes you just want a real person. Book private 1-on-1 lessons
+            with us, right inside the app.
+          </p>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
+          {teachers.map((t) => (
+            <div key={t.name} className="bg-[#FBF2DA] rounded-2xl p-7 shadow-sm border border-black/5 flex flex-col items-center text-center">
+              <img src={t.photo} alt={t.name} className="w-28 h-28 rounded-2xl object-cover shadow-sm" style={{ objectPosition: "center top" }} />
+              <div className="mt-4 font-bold text-lg">{t.name}</div>
+              <div className="text-sm text-[#3B2922]/60">{t.role}</div>
+              <p className="mt-3 text-sm text-[#3B2922]/75">{t.blurb}</p>
+            </div>
+          ))}
+        </div>
+        <div className="text-center mt-9">
+          <RefLink href={checkoutUrl()} className="inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
+            Join now — {priceLabel()}/month
+          </RefLink>
+          <p className="mt-2 text-sm text-[#3B2922]/60">Private 1-on-1 lessons from $25/hour · booked inside the app.</p>
         </div>
       </section>
 
