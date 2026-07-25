@@ -21,26 +21,40 @@ export async function POST(req: Request) {
     return json({ error: `Please choose between ${LESSON.minHours} and ${LESSON.maxHours} hours.` }, 400);
   }
 
-  // Schon ein aktives Stunden-Abo? Dann über "Verwalten" ändern statt neu buchen.
+  // Welcher Lehrer? Default 1 = Marvin (bestehendes Verhalten). Preis + Aktiv-Status
+  // kommen aus der teachers-Tabelle; nur aktive Lehrer sind buchbar.
+  const teacherId = Number.isFinite(Number(body.teacher_id)) ? Math.round(Number(body.teacher_id)) : 1;
+  const { data: teacher } = await supabase
+    .from("teachers")
+    .select("stripe_price_id, active")
+    .eq("id", teacherId)
+    .maybeSingle();
+  if (!teacher || !teacher.active) return json({ error: "This teacher is not available." }, 400);
+  const priceId = teacher.stripe_price_id || (teacherId === 1 ? LESSON.stripePriceId : null);
+  if (!priceId) return json({ error: "No price configured for this teacher." }, 400);
+
+  // Schon ein aktives Stunden-Abo BEI DIESEM LEHRER? Dann über "Verwalten" ändern.
   const { data: existing } = await supabase
     .from("lesson_subscriptions")
     .select("status")
     .eq("user_id", user.id)
+    .eq("teacher_id", teacherId)
     .maybeSingle();
   if (existing && ["active", "past_due"].includes(existing.status)) {
-    return json({ error: "You already have an active plan — change the hours under 'Manage'." }, 409);
+    return json({ error: "You already have an active plan with this teacher — change the hours under 'Manage'." }, 409);
   }
 
   const stripe = new Stripe(secretKey);
   const origin = req.headers.get("origin") ?? new URL(req.url).origin;
 
+  const meta = { kind: "lesson", user_id: user.id, teacher_id: String(teacherId) };
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
-    line_items: [{ price: LESSON.stripePriceId, quantity }],
+    line_items: [{ price: priceId, quantity }],
     customer_email: user.email ?? undefined,
     client_reference_id: user.id,
-    metadata: { kind: "lesson", user_id: user.id },
-    subscription_data: { metadata: { kind: "lesson", user_id: user.id } },
+    metadata: meta,
+    subscription_data: { metadata: meta },
     allow_promotion_codes: true,
     success_url: `${origin}/booking?checkout=success`,
     cancel_url: `${origin}/booking?checkout=cancel`,

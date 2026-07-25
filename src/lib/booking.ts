@@ -15,8 +15,9 @@ export type CreditInfo = {
   nextExpiry: string | null; // wann das nächste Guthaben verfällt
 };
 
-// Aktuelles Abo des eingeloggten Schülers (oder null, wenn keins).
-export async function getMySubscription(): Promise<LessonSubscription | null> {
+// Aktuelles Abo des eingeloggten Schülers bei einem Lehrer (oder null, wenn keins).
+// teacherId default 1 = Marvin (bestehendes Verhalten unverändert).
+export async function getMySubscription(teacherId = 1): Promise<LessonSubscription | null> {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
@@ -24,6 +25,7 @@ export async function getMySubscription(): Promise<LessonSubscription | null> {
     .from("lesson_subscriptions")
     .select("*")
     .eq("user_id", user.id)
+    .eq("teacher_id", teacherId)
     .maybeSingle();
   if (!data) return null;
   return {
@@ -35,8 +37,8 @@ export async function getMySubscription(): Promise<LessonSubscription | null> {
   };
 }
 
-// Verfügbares Stunden-Guthaben (Summe noch gültiger Gutschriften).
-export async function getMyCredits(): Promise<CreditInfo> {
+// Verfügbares Stunden-Guthaben bei einem Lehrer (Summe noch gültiger Gutschriften).
+export async function getMyCredits(teacherId = 1): Promise<CreditInfo> {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { balance: 0, nextExpiry: null };
@@ -45,6 +47,7 @@ export async function getMyCredits(): Promise<CreditInfo> {
     .from("lesson_credit_grants")
     .select("credits_remaining, expires_at")
     .eq("user_id", user.id)
+    .eq("teacher_id", teacherId)
     .gt("expires_at", nowISO)
     .gt("credits_remaining", 0)
     .order("expires_at", { ascending: true });
@@ -53,12 +56,12 @@ export async function getMyCredits(): Promise<CreditInfo> {
   return { balance, nextExpiry: rows[0]?.expires_at ?? null };
 }
 
-// Stripe-Checkout für ein neues Stunden-Abo starten.
-export async function startLessonCheckout(quantity: number): Promise<{ url?: string; error?: string }> {
+// Stripe-Checkout für ein neues Stunden-Abo bei einem Lehrer starten.
+export async function startLessonCheckout(quantity: number, teacherId = 1): Promise<{ url?: string; error?: string }> {
   const res = await fetch("/api/lesson-checkout", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ quantity }),
+    body: JSON.stringify({ quantity, teacher_id: teacherId }),
   });
   const json = await res.json();
   if (!res.ok) return { error: json.error ?? "Checkout failed" };
@@ -69,11 +72,12 @@ export async function startLessonCheckout(quantity: number): Promise<{ url?: str
 export async function manageLessonSubscription(
   action: "set_quantity" | "cancel" | "resume",
   quantity?: number,
+  teacherId = 1,
 ): Promise<{ error?: string }> {
   const res = await fetch("/api/lesson-subscription", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action, quantity }),
+    body: JSON.stringify({ action, quantity, teacher_id: teacherId }),
   });
   const json = await res.json().catch(() => ({}));
   if (!res.ok) return { error: json.error ?? "Update failed" };

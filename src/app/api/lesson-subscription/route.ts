@@ -23,12 +23,14 @@ export async function POST(req: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return json({ error: "Not signed in" }, 401);
 
-  const { action, quantity } = await req.json().catch(() => ({}));
+  const { action, quantity, teacher_id } = await req.json().catch(() => ({}));
+  const teacherId = Number.isFinite(Number(teacher_id)) ? Math.round(Number(teacher_id)) : 1;
 
   const { data: sub } = await supabase
     .from("lesson_subscriptions")
     .select("stripe_subscription_id, quantity")
     .eq("user_id", user.id)
+    .eq("teacher_id", teacherId)
     .maybeSingle();
   if (!sub?.stripe_subscription_id) return json({ error: "No active plan found." }, 404);
 
@@ -39,12 +41,12 @@ export async function POST(req: Request) {
   try {
     if (action === "cancel") {
       await stripe.subscriptions.update(subId, { cancel_at_period_end: true });
-      await admin().from("lesson_subscriptions").update({ cancel_at_period_end: true, updated_at: new Date().toISOString() }).eq("user_id", user.id);
+      await admin().from("lesson_subscriptions").update({ cancel_at_period_end: true, updated_at: new Date().toISOString() }).eq("user_id", user.id).eq("teacher_id", teacherId);
       return json({ ok: true });
     }
     if (action === "resume") {
       await stripe.subscriptions.update(subId, { cancel_at_period_end: false });
-      await admin().from("lesson_subscriptions").update({ cancel_at_period_end: false, updated_at: new Date().toISOString() }).eq("user_id", user.id);
+      await admin().from("lesson_subscriptions").update({ cancel_at_period_end: false, updated_at: new Date().toISOString() }).eq("user_id", user.id).eq("teacher_id", teacherId);
       return json({ ok: true });
     }
     if (action === "set_quantity") {
@@ -74,10 +76,10 @@ export async function POST(req: Request) {
         const delta = newQty - current;
         const expires = new Date(Date.now() + LESSON.creditValidityDays * 86400000).toISOString();
         await admin().from("lesson_credit_grants").upsert(
-          { user_id: user.id, credits_granted: delta, credits_remaining: delta, expires_at: expires, stripe_invoice_id: opKey },
+          { user_id: user.id, teacher_id: teacherId, credits_granted: delta, credits_remaining: delta, expires_at: expires, stripe_invoice_id: opKey },
           { onConflict: "stripe_invoice_id", ignoreDuplicates: true },
         );
-        await admin().from("lesson_subscriptions").update({ quantity: newQty, updated_at: new Date().toISOString() }).eq("user_id", user.id);
+        await admin().from("lesson_subscriptions").update({ quantity: newQty, updated_at: new Date().toISOString() }).eq("user_id", user.id).eq("teacher_id", teacherId);
       } else {
         // Senken: gilt zum nächsten Abrechnungszyklus, keine Rückerstattung.
         // Aktuelles Guthaben bleibt bestehen (bereits gutgeschrieben).
@@ -85,7 +87,7 @@ export async function POST(req: Request) {
           items: [{ id: itemId, quantity: newQty }],
           proration_behavior: "none",
         });
-        await admin().from("lesson_subscriptions").update({ quantity: newQty, updated_at: new Date().toISOString() }).eq("user_id", user.id);
+        await admin().from("lesson_subscriptions").update({ quantity: newQty, updated_at: new Date().toISOString() }).eq("user_id", user.id).eq("teacher_id", teacherId);
       }
       return json({ ok: true });
     }

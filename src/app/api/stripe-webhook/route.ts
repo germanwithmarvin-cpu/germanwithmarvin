@@ -46,25 +46,39 @@ function periodEndISO(sub: Stripe.Subscription): string {
   return secs ? new Date(secs * 1000).toISOString() : new Date().toISOString();
 }
 
-async function upsertLessonSub(userId: string, customerId: string | null, sub: Stripe.Subscription) {
+// Lehrer aus den Stripe-Metadaten lesen (Default 1 = Marvin; alte Abos ohne
+// teacher_id landen dadurch unverändert bei Marvin).
+function teacherIdOf(meta: Stripe.Metadata | null | undefined): number {
+  const t = Number(meta?.teacher_id);
+  return Number.isFinite(t) && t > 0 ? Math.round(t) : 1;
+}
+
+// Manuelles Upsert nach (user_id, teacher_id) — bewusst OHNE onConflict, damit es
+// vor UND nach der Phase-2-Migration (zusammengesetzter PK) funktioniert und es
+// kein Bruchfenster für den laufenden Betrieb gibt.
+async function upsertLessonSub(userId: string, teacherId: number, customerId: string | null, sub: Stripe.Subscription) {
   const custom = customerId ?? (typeof sub.customer === "string" ? sub.customer : sub.customer.id);
-  await admin().from("lesson_subscriptions").upsert(
-    {
-      user_id: userId,
-      stripe_customer_id: custom,
-      stripe_subscription_id: sub.id,
-      quantity: subQuantity(sub),
-      status: sub.status,
-      current_period_end: periodEndISO(sub),
-      cancel_at_period_end: sub.cancel_at_period_end,
-      updated_at: new Date().toISOString(),
-    },
-    { onConflict: "user_id" },
-  );
+  const row = {
+    user_id: userId,
+    teacher_id: teacherId,
+    stripe_customer_id: custom,
+    stripe_subscription_id: sub.id,
+    quantity: subQuantity(sub),
+    status: sub.status,
+    current_period_end: periodEndISO(sub),
+    cancel_at_period_end: sub.cancel_at_period_end,
+    updated_at: new Date().toISOString(),
+  };
+  const db = admin();
+  const { data: existing } = await db.from("lesson_subscriptions")
+    .select("user_id").eq("user_id", userId).eq("teacher_id", teacherId).maybeSingle();
+  if (existing) await db.from("lesson_subscriptions").update(row).eq("user_id", userId).eq("teacher_id", teacherId);
+  else await db.from("lesson_subscriptions").insert(row);
 }
 
 async function onLessonSubChange(sub: Stripe.Subscription, forceStatus?: string) {
   const userId = sub.metadata?.user_id;
+  const teacherId = teacherIdOf(sub.metadata);
   const patch = {
     quantity: subQuantity(sub),
     status: forceStatus ?? sub.status,
@@ -73,15 +87,15 @@ async function onLessonSubChange(sub: Stripe.Subscription, forceStatus?: string)
     updated_at: new Date().toISOString(),
   };
   const db = admin();
-  if (userId) await db.from("lesson_subscriptions").update(patch).eq("user_id", userId);
+  if (userId) await db.from("lesson_subscriptions").update(patch).eq("user_id", userId).eq("teacher_id", teacherId);
   else await db.from("lesson_subscriptions").update(patch).eq("stripe_subscription_id", sub.id);
 }
 
-async function grantLessonCredits(userId: string, credits: number, invoiceId: string) {
+async function grantLessonCredits(userId: string, teacherId: number, credits: number, invoiceId: string) {
   if (credits <= 0) return;
   const expires = new Date(Date.now() + LESSON.creditValidityDays * 86400000).toISOString();
   await admin().from("lesson_credit_grants").upsert(
-    { user_id: userId, credits_granted: credits, credits_remaining: credits, expires_at: expires, stripe_invoice_id: invoiceId },
+    { user_id: userId, teacher_id: teacherId, credits_granted: credits, credits_remaining: credits, expires_at: expires, stripe_invoice_id: invoiceId },
     { onConflict: "stripe_invoice_id", ignoreDuplicates: true },
   );
 }
@@ -137,7 +151,7 @@ export async function POST(req: Request) {
           const customerId = typeof s.customer === "string" ? s.customer : s.customer?.id ?? null;
           if (userId && subId) {
             const sub = await stripe.subscriptions.retrieve(subId);
-            await upsertLessonSub(userId, customerId, sub);
+            await upsertLessonSub(userId, teacherIdOf(s.metadata), customerId, sub);
           }
         } else {
           const email = s.customer_details?.email ?? s.customer_email ?? null;
@@ -157,16 +171,19 @@ export async function POST(req: Request) {
         if (sub.metadata?.kind !== "lesson") break; // nur unser Stunden-Abo
         const userId = sub.metadata?.user_id;
         if (!userId) break;
-        await upsertLessonSub(userId, null, sub); // Zustand aktuell halten
+        const teacherId = teacherIdOf(sub.metadata);
+        await upsertLessonSub(userId, teacherId, null, sub); // Zustand aktuell halten
         // Nur saubere Monats-Gutschriften; Upgrades schreibt die Verwaltungs-Route direkt gut.
         if (inv.billing_reason === "subscription_create" || inv.billing_reason === "subscription_cycle") {
-          await grantLessonCredits(userId, subQuantity(sub), inv.id ?? `${subId}_${inv.period_end}`);
-          // Feste Zeit der neuen Periode automatisch nachbuchen (falls gesetzt) +
-          // Google-Termine/Meet-Links für die neuen Buchungen anlegen.
-          try {
-            await admin().rpc("materialize_recurring", { p_student: userId });
-            await syncStudentGoogleEvents(userId);
-          } catch { /* best effort */ }
+          await grantLessonCredits(userId, teacherId, subQuantity(sub), inv.id ?? `${subId}_${inv.period_end}`);
+          // Feste Zeit + Google-Termine gibt es bislang nur für Marvin (Lehrer 1);
+          // für weitere Lehrer folgt das in einer späteren Phase.
+          if (teacherId === 1) {
+            try {
+              await admin().rpc("materialize_recurring", { p_student: userId });
+              await syncStudentGoogleEvents(userId);
+            } catch { /* best effort */ }
+          }
         }
         break;
       }
