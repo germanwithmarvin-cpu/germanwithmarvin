@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { LESSON, lessonPriceLabel, TAX_NOTE } from "@/lib/config";
-import { getMySubscription, getMyCredits, startLessonCheckout, manageLessonSubscription, type LessonSubscription, type CreditInfo } from "@/lib/booking";
+import { getMySubscription, getMyCredits, startLessonCheckout, manageLessonSubscription, getTeachers, type LessonSubscription, type CreditInfo, type TeacherProfile } from "@/lib/booking";
 import { getMyBookings, getAllBookings, getStudentNames, getGoogleEvents, getMyRecurring, cancelRecurring, type Booking, type ExternalEvent, type Recurring } from "@/lib/schedule";
 import { createClient } from "@/lib/supabase/client";
 import AvailabilityEditor from "@/components/booking/AvailabilityEditor";
@@ -25,6 +25,8 @@ export default function BookingPage() {
   const [names, setNames] = useState<Record<string, string>>({});
   const [extEvents, setExtEvents] = useState<ExternalEvent[]>([]);
   const [myRecurring, setMyRecurring] = useState<Recurring | null>(null);
+  const [teachers, setTeachers] = useState<TeacherProfile[]>([]);
+  const [selectedId, setSelectedId] = useState(1); // gewählter Lehrer (Default: Marvin)
 
   async function refresh() {
     const supabase = createClient();
@@ -52,6 +54,7 @@ export default function BookingPage() {
   const [googleState, setGoogleState] = useState<string | null>(null);
   useEffect(() => {
     refresh();
+    getTeachers().then(setTeachers);
     const q = new URLSearchParams(window.location.search);
     setCheckoutState(q.get("checkout"));
     setGoogleState(q.get("google"));
@@ -71,6 +74,7 @@ export default function BookingPage() {
   }, [checkoutState]);
 
   const active = sub && ["active", "past_due"].includes(sub.status);
+  const selected = teachers.find((t) => t.id === selectedId) ?? null;
   const nextRecurring = bookings
     .filter((x) => x.recurringId && x.status === "booked" && new Date(x.startsAt).getTime() > Date.now())
     .sort((a, b) => a.startsAt.localeCompare(b.startsAt))[0];
@@ -117,7 +121,7 @@ export default function BookingPage() {
         <p className="text-cream-dim mt-1">Choose a monthly plan of {LESSON.durationMin}-minute lessons and book your times.</p>
       </div>
 
-      <TeacherProfiles />
+      <TeacherProfiles teachers={teachers} selectedId={selectedId} onSelect={setSelectedId} />
 
       {checkoutState === "success" && (
         <p className="text-sm text-green-700 bg-green-accent/15 rounded-lg p-3">✓ Payment received — your lesson hours are being added. This can take a few seconds.</p>
@@ -146,8 +150,29 @@ export default function BookingPage() {
           </div>
         </>
       ) : (
-        // -------- Schüler: Guthaben + Kalender (falls Abo ODER Guthaben) + Paket --------
+        // -------- Schüler: gewählter Lehrer → Vorstellung + Buchung --------
         <>
+          {selected && (selected.bio || selected.highlights.length > 0) && (
+            <div className="card p-6 space-y-3">
+              {selected.bio && <p className="text-[15px] text-cream-dim leading-relaxed">{selected.bio}</p>}
+              {selected.highlights.length > 0 && (
+                <ul className="space-y-2 text-[15px]">
+                  {selected.highlights.map((h, i) => (
+                    <li key={i} className="flex gap-2.5 text-cream-dim"><span className="text-gold-bright shrink-0">✓</span><span>{h}</span></li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
+          {selectedId !== 1 ? (
+            <div className="card p-8 text-center space-y-2">
+              <div className="text-4xl">🗓️</div>
+              <div className="text-lg font-semibold text-cream">Booking with {selected?.name?.split(" ")[0] ?? "this teacher"} opens soon</div>
+              <p className="text-cream-dim max-w-sm mx-auto">You’ll be able to book here shortly. In the meantime, pick Marvin above to book a lesson now.</p>
+            </div>
+          ) : (
+          <>
           {myRecurring && (
             <div className="card p-5 flex flex-wrap items-center justify-between gap-3" style={{ borderLeft: "5px solid var(--gold)" }}>
               <div className="min-w-0">
@@ -235,6 +260,8 @@ export default function BookingPage() {
               </button>
               <p className="text-xs text-cream-dim text-center">Secure payment via Stripe · {TAX_NOTE} · cancel anytime · monthly, renews automatically.</p>
             </div>
+          )}
+          </>
           )}
         </>
       )}

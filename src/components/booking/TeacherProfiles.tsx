@@ -1,27 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getTeachers, type TeacherProfile } from "@/lib/booking";
+import { useState } from "react";
+import type { TeacherProfile } from "@/lib/booking";
 
-// „Meet your teachers" — Profilkarten auf der 1:1-Seite. Rein informativ (Phase 3);
-// die lehrer-spezifische Buchung folgt. Inaktive Lehrer erscheinen mit dem Badge
-// „Booking opens soon".
-export default function TeacherProfiles() {
-  const [teachers, setTeachers] = useState<TeacherProfile[]>([]);
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    getTeachers().then((t) => { setTeachers(t); setLoaded(true); });
-  }, []);
-
-  if (!loaded || teachers.length === 0) return null;
+// Ruhiger „Lehrer wählen"-Auswähler: kompakte Karten (großes Foto, Name, Rolle,
+// Sprache, Preis). Klick wählt den Lehrer aus; die ausführliche Vorstellung +
+// Buchung erscheinen darunter (in der Buchungsseite). Inaktive Lehrer sind
+// wählbar (zeigen ihre Vorstellung + „Booking opens soon").
+export default function TeacherProfiles({
+  teachers,
+  selectedId,
+  onSelect,
+}: {
+  teachers: TeacherProfile[];
+  selectedId: number;
+  onSelect: (id: number) => void;
+}) {
+  if (teachers.length === 0) return null;
 
   return (
-    <div className="space-y-3">
-      <div className="font-semibold text-lg">Meet your teachers</div>
+    <div className="space-y-4">
+      <div className="font-semibold text-lg">Choose your teacher</div>
       <div className="grid gap-4 sm:grid-cols-2">
         {teachers.map((t) => (
-          <TeacherCard key={t.id} t={t} />
+          <TeacherCard key={t.id} t={t} selected={t.id === selectedId} onSelect={() => onSelect(t.id)} />
         ))}
       </div>
     </div>
@@ -32,52 +34,56 @@ function initials(name: string): string {
   return name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase() ?? "").join("");
 }
 
-function TeacherCard({ t }: { t: TeacherProfile }) {
+function TeacherCard({ t, selected, onSelect }: { t: TeacherProfile; selected: boolean; onSelect: () => void }) {
   const [imgOk, setImgOk] = useState(true);
   return (
-    <div className={`card p-5 flex flex-col gap-3 ${t.active ? "" : "opacity-95"}`}>
-      <div className="flex items-start gap-4">
-        {/* Foto (object-top hält das Gesicht im Bild) oder Initialen-Fallback */}
-        <div className="shrink-0 w-20 h-20 rounded-2xl overflow-hidden bg-bordeaux-deep/60 grid place-items-center"
-             style={{ border: "1.5px solid color-mix(in srgb, var(--gold) 35%, transparent)" }}>
-          {imgOk ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={t.photoUrl} alt={t.name} className="w-full h-full object-cover" style={{ objectPosition: "center top" }} onError={() => setImgOk(false)} />
-          ) : (
-            <span className="text-xl font-bold text-gold-bright">{initials(t.name)}</span>
-          )}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-bold text-cream">{t.name}</span>
-            {!t.active && (
-              <span className="text-[11px] uppercase tracking-wide rounded-full px-2 py-0.5"
-                    style={{ background: "color-mix(in srgb, var(--gold) 18%, transparent)", color: "var(--gold-bright)" }}>
-                Booking opens soon
-              </span>
-            )}
-          </div>
-          <div className="text-sm text-cream-dim mt-0.5">{t.role}</div>
-          <div className="flex items-center gap-2 mt-2 flex-wrap text-xs">
-            {t.languages && (
-              <span className="rounded-full px-2 py-0.5 bg-bordeaux-deep/60 text-cream-dim">🗣 {t.languages}</span>
-            )}
-            {t.hourlyRate != null && (
-              <span className="rounded-full px-2 py-0.5 bg-bordeaux-deep/60 text-cream-dim">${t.hourlyRate % 1 === 0 ? t.hourlyRate : t.hourlyRate.toFixed(2)}/hour</span>
-            )}
-          </div>
-        </div>
+    <button
+      type="button"
+      onClick={onSelect}
+      aria-pressed={selected}
+      className="card w-full text-center p-7 flex flex-col items-center gap-4 transition hover:brightness-[1.03]"
+      style={selected ? { outline: "2px solid var(--gold)", outlineOffset: "2px" } : undefined}
+    >
+      {/* Großes Foto, ruhig zentriert */}
+      <div className="w-28 h-28 rounded-3xl overflow-hidden bg-bordeaux-deep/60 grid place-items-center"
+           style={{ border: "1.5px solid color-mix(in srgb, var(--gold) 35%, transparent)" }}>
+        {imgOk ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={t.photoUrl} alt={t.name} className="w-full h-full object-cover" style={{ objectPosition: "center top" }} onError={() => setImgOk(false)} />
+        ) : (
+          <span className="text-2xl font-bold text-gold-bright">{initials(t.name)}</span>
+        )}
       </div>
 
-      {t.bio && <p className="text-sm text-cream-dim leading-relaxed">{t.bio}</p>}
+      <div className="space-y-1">
+        <div className="text-xl font-bold text-cream leading-tight">{t.name}</div>
+        <div className="text-cream-dim">{t.role}</div>
+      </div>
 
-      {t.highlights.length > 0 && (
-        <ul className="text-sm text-cream-dim space-y-1">
-          {t.highlights.map((h, i) => (
-            <li key={i} className="flex gap-2"><span className="text-gold-bright shrink-0">✓</span><span>{h}</span></li>
-          ))}
-        </ul>
+      <div className="flex items-center justify-center gap-2 flex-wrap text-sm text-cream-dim">
+        {t.languages && <span>🗣 {t.languages}</span>}
+        {t.hourlyRate != null && (
+          <span>· <span className="text-cream font-semibold">${t.hourlyRate % 1 === 0 ? t.hourlyRate : t.hourlyRate.toFixed(2)}</span>/hour</span>
+        )}
+      </div>
+
+      {/* Status / Auswahl */}
+      {!t.active ? (
+        <span className="text-sm rounded-full px-4 py-1.5 mt-1"
+              style={{ background: "color-mix(in srgb, var(--gold) 14%, transparent)", color: "var(--gold-bright)" }}>
+          Booking opens soon
+        </span>
+      ) : selected ? (
+        <span className="text-sm font-semibold rounded-full px-4 py-1.5 mt-1"
+              style={{ background: "color-mix(in srgb, var(--gold) 22%, transparent)", color: "var(--gold-bright)" }}>
+          ✓ Selected
+        </span>
+      ) : (
+        <span className="text-sm rounded-full px-4 py-1.5 mt-1 border"
+              style={{ borderColor: "color-mix(in srgb, var(--gold) 40%, transparent)", color: "var(--cream)" }}>
+          Choose
+        </span>
       )}
-    </div>
+    </button>
   );
 }
