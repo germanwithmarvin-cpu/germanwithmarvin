@@ -2,6 +2,7 @@
 import Link from "next/link";
 import VideoPlayer from "@/components/VideoPlayer";
 import { SITE, checkoutUrl, priceLabel, TAX_NOTE } from "@/lib/config";
+import RefLink from "@/components/RefLink";
 import { REVIEWS, PREPLY_STATS } from "@/lib/reviews";
 
 const benefits = [
@@ -35,7 +36,7 @@ export default function Home() {
         </Link>
         <nav className="flex items-center gap-3">
           <Link href="/login" className="px-4 py-2 text-sm rounded-lg border border-[#8A3030] text-[#8A3030] hover:bg-[#8A3030]/5 transition">Sign in</Link>
-          <a href={checkoutUrl()} className="px-4 py-2 text-sm rounded-lg bg-[#8A3030] text-white hover:brightness-110 transition">Join now</a>
+          <RefLink href={checkoutUrl()} className="px-4 py-2 text-sm rounded-lg bg-[#8A3030] text-white hover:brightness-110 transition">Join now</RefLink>
         </nav>
       </header>
 
@@ -51,9 +52,9 @@ export default function Home() {
             need to actually speak German, in one place.
           </p>
 
-          <a href={checkoutUrl()} className="mt-8 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
+          <RefLink href={checkoutUrl()} className="mt-8 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
             Join now — {priceLabel()}/month
-          </a>
+          </RefLink>
           <p className="mt-2 text-sm text-[#3B2922]/60">Cancel anytime · instant access</p>
 
           <p className="mt-5 text-sm flex items-center gap-2 flex-wrap">
@@ -123,9 +124,9 @@ export default function Home() {
           <ul className="text-sm text-[#3B2922]/75 space-y-2 my-7 inline-block text-left">
             {included.map((f) => <li key={f}>✓ {f}</li>)}
           </ul>
-          <a href={checkoutUrl()} className="block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition">
+          <RefLink href={checkoutUrl()} className="block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition">
             Join now — {priceLabel()}/month
-          </a>
+          </RefLink>
           <p className="text-sm text-[#3B2922]/60 mt-3">Cancel anytime. Instant access after checkout.</p>
           <div className="mt-6 pt-5 border-t border-black/10 text-sm text-[#3B2922]/70 space-y-1">
             <p>

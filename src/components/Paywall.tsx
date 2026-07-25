@@ -5,6 +5,7 @@ import Link from "next/link";
 import { checkoutUrl, discountCheckoutUrl, priceLabel, discountPriceLabel, hasDiscountLink, TAX_NOTE, SITE } from "@/lib/config";
 import { createClient } from "@/lib/supabase/client";
 import { getAccess } from "@/lib/access";
+import { appendRef } from "@/lib/referral";
 
 // Wird angezeigt, wenn ein Inhalt ohne Vollzugang geöffnet wird.
 // Zugang: entweder Abo (Stripe) oder Freischaltcode (Preply / Skool).
@@ -22,7 +23,7 @@ export default function Paywall({ title = "Unlock full access" }: { title?: stri
   // Trial-Absolventen bekommen den rabattierten Link/Preis – aber nur, wenn er
   // hinterlegt ist. Sonst normaler Link + „Rabattcode beim Checkout"-Hinweis.
   const useDiscount = trialEnded && hasDiscountLink();
-  const payHref = useDiscount ? discountCheckoutUrl(email) : checkoutUrl(email);
+  const payHref = appendRef(useDiscount ? discountCheckoutUrl(email) : checkoutUrl(email));
   const payLabel = useDiscount ? discountPriceLabel() : priceLabel();
 
   return (

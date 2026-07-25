@@ -7,10 +7,11 @@ import StoriesAdmin from "@/components/StoriesAdmin";
 import StudentsAdmin from "@/components/StudentsAdmin";
 import DecksAdmin from "@/components/admin/DecksAdmin";
 import CodesAdmin from "@/components/admin/CodesAdmin";
+import ReferralAdmin from "@/components/admin/ReferralAdmin";
 import CheckResultsAdmin from "@/components/admin/CheckResultsAdmin";
 import { createClient } from "@/lib/supabase/client";
 
-const tabs = ["Students", "Weak spots", "Lessons", "Stories", "Vocabulary", "Codes"] as const;
+const tabs = ["Students", "Weak spots", "Lessons", "Stories", "Vocabulary", "Codes", "Referral"] as const;
 type Tab = (typeof tabs)[number];
 
 export default function AdminPage() {
@@ -65,6 +66,8 @@ export default function AdminPage() {
       {tab === "Vocabulary" && <DecksAdmin />}
 
       {tab === "Codes" && <CodesAdmin />}
+
+      {tab === "Referral" && <ReferralAdmin />}
     </div>
   );
 }

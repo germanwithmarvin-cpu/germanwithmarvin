@@ -86,6 +86,31 @@ async function grantLessonCredits(userId: string, credits: number, invoiceId: st
   );
 }
 
+// ---- Empfehlungs-/Provisions-Codes (Affiliate) ----------------------------
+// Kam die Zahlung über ?ref=CODE, steht der Code als client_reference_id in der
+// Checkout-Session. Nur verbuchen, wenn der Code existiert (sonst ignorieren).
+// Idempotent über stripe_session_id. Fehler hier dürfen den Webhook nie stören.
+async function recordReferral(s: Stripe.Checkout.Session) {
+  const code = s.client_reference_id;
+  if (!code) return;
+  try {
+    const db = admin();
+    const { data: rc } = await db.from("referral_codes").select("code").eq("code", code).maybeSingle();
+    if (!rc) return; // client_reference_id war kein Empfehlungscode (z. B. Lesson-user_id)
+    const email = s.customer_details?.email ?? s.customer_email ?? null;
+    await db.from("referral_conversions").upsert(
+      {
+        code,
+        email: email ? email.toLowerCase() : null,
+        stripe_session_id: s.id,
+        amount_total: s.amount_total ?? null,
+        currency: s.currency ?? null,
+      },
+      { onConflict: "stripe_session_id", ignoreDuplicates: true },
+    );
+  } catch { /* best effort */ }
+}
+
 export async function POST(req: Request) {
   const secretKey = process.env.STRIPE_SECRET_KEY;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -118,6 +143,7 @@ export async function POST(req: Request) {
           const email = s.customer_details?.email ?? s.customer_email ?? null;
           const customerId = typeof s.customer === "string" ? s.customer : s.customer?.id ?? null;
           await upsertPaid(email, customerId, "active");
+          await recordReferral(s); // Provision: Zahlung ggf. einem Empfehlungscode zuordnen
         }
         break;
       }
