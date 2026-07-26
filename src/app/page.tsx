@@ -24,7 +24,7 @@ const included = [
 
 const teachers = [
   { name: "Marvin Graf", role: "Founder & your main teacher", photo: "/teachers/marvin.jpg", blurb: "Teaching German full-time for 4+ years, with thousands of 1-on-1 hours. Levels A1–C1." },
-  { name: "Thanh Ha Nguyen", role: "German teacher · trilingual", photo: "/teachers/thanh-ha.jpg", blurb: "Speaks Vietnamese, English & German fluently — a great fit for Vietnamese- and English-speaking learners." },
+  { name: "Thanh Ha Nguyen", role: "German teacher · trilingual", photo: "/teachers/thanh-ha.jpg?v=2", blurb: "Trilingual linguist with a Master’s in Linguistics, specializing in teaching German to Vietnamese and English native speakers — clear explanations in your own language for smooth learning." },
 ];
 
 function Stars() {
@@ -124,7 +124,7 @@ export default function Home() {
           <RefLink href={checkoutUrl()} className="inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
             Join now — {priceLabel()}/month
           </RefLink>
-          <p className="mt-2 text-sm text-[#3B2922]/60">Private 1-on-1 lessons from $25/hour · booked inside the app.</p>
+          <p className="mt-2 text-sm text-[#3B2922]/60">Private 1-on-1 lessons from $30/hour · booked inside the app.</p>
         </div>
       </section>
 
