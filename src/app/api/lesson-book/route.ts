@@ -25,21 +25,23 @@ export async function POST(req: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return json({ error: "Not signed in" }, 401);
 
-  const { start } = await req.json().catch(() => ({}));
+  const { start, teacher_id } = await req.json().catch(() => ({}));
   if (!start) return json({ error: "Missing start" }, 400);
+  const teacherId = Number.isFinite(Number(teacher_id)) ? Math.round(Number(teacher_id)) : 1;
 
-  const { data: bookingId, error } = await supabase.rpc("book_lesson", { p_start: start });
+  const { data: bookingId, error } = await supabase.rpc("book_lesson", { p_teacher: teacherId, p_start: start });
   if (error) return json({ error: friendly(error.message) }, 400);
 
   // Google-Termin (best effort – Buchung bleibt gültig, auch wenn das scheitert).
+  // Termin landet im Kalender des gewählten Lehrers.
   try {
     const db = admin();
-    const { data: settings } = await db.from("lesson_teacher_settings").select("slot_minutes, timezone").eq("id", 1).maybeSingle();
+    const { data: settings } = await db.from("lesson_teacher_settings").select("slot_minutes, timezone").eq("teacher_id", teacherId).maybeSingle();
     const slotMin = settings?.slot_minutes ?? 50;
     const tz = settings?.timezone ?? "Europe/Berlin";
     const endISO = new Date(new Date(start).getTime() + slotMin * 60e3).toISOString();
     const studentName = (user.user_metadata?.full_name as string) || user.email || null;
-    const { eventId, meetLink } = await createEvent({ startISO: start, endISO, attendeeEmail: user.email, timezone: tz, studentName });
+    const { eventId, meetLink } = await createEvent({ startISO: start, endISO, attendeeEmail: user.email, timezone: tz, studentName, teacherId });
     if (eventId || meetLink) {
       await db.from("lesson_bookings").update({ google_event_id: eventId ?? null, meet_link: meetLink ?? null }).eq("id", bookingId);
       return json({ id: bookingId, meetLink: meetLink ?? null });

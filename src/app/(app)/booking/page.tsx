@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { LESSON, lessonPriceLabel, TAX_NOTE } from "@/lib/config";
 import { getMySubscription, getMyCredits, startLessonCheckout, manageLessonSubscription, getTeachers, type LessonSubscription, type CreditInfo, type TeacherProfile } from "@/lib/booking";
 import { getMyBookings, getTeacherBookings, getMyTeacherId, getStudentNames, getGoogleEvents, getMyRecurring, cancelRecurring, type Booking, type ExternalEvent, type Recurring } from "@/lib/schedule";
-import { createClient } from "@/lib/supabase/client";
 import AvailabilityEditor from "@/components/booking/AvailabilityEditor";
 import BookingCalendar from "@/components/booking/BookingCalendar";
 import LessonsList from "@/components/booking/LessonsList";
@@ -36,7 +35,8 @@ export default function BookingPage() {
     setMyTeacherId(myTid);
     const teacher = myTid != null;
     setIsTeacher(teacher);
-    const [s, c, b, rec] = await Promise.all([getMySubscription(), getMyCredits(), teacher ? getTeacherBookings(myTid!) : getMyBookings(), teacher ? Promise.resolve(null) : getMyRecurring()]);
+    // Schüler: Abo/Guthaben für den aktuell GEWÄHLTEN Lehrer (selectedId).
+    const [s, c, b, rec] = await Promise.all([getMySubscription(selectedId), getMyCredits(selectedId), teacher ? getTeacherBookings(myTid!) : getMyBookings(), teacher ? Promise.resolve(null) : getMyRecurring()]);
     setSub(s);
     setCredits(c);
     setBookings(b);
@@ -52,12 +52,13 @@ export default function BookingPage() {
   }
   const [googleState, setGoogleState] = useState<string | null>(null);
   useEffect(() => {
-    refresh();
     getTeachers().then(setTeachers);
     const q = new URLSearchParams(window.location.search);
     setCheckoutState(q.get("checkout"));
     setGoogleState(q.get("google"));
   }, []);
+  // Bei Wechsel des gewählten Lehrers Guthaben/Abo/Kalender neu laden (läuft auch initial).
+  useEffect(() => { refresh(); }, [selectedId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Nach erfolgreichem Checkout schreibt der Stripe-Webhook das Guthaben erst
   // ein paar Sekunden später gut – kurz nachpollen, damit es ohne Reload auftaucht.
@@ -80,14 +81,14 @@ export default function BookingPage() {
 
   async function subscribe() {
     setBusy(true); setErr(null);
-    const { url, error } = await startLessonCheckout(hours);
+    const { url, error } = await startLessonCheckout(hours, selectedId);
     if (error) { setErr(error); setBusy(false); return; }
     if (url) window.location.href = url;
   }
 
   async function changeHours(newHours: number) {
     setBusy(true); setErr(null);
-    const { error } = await manageLessonSubscription("set_quantity", newHours);
+    const { error } = await manageLessonSubscription("set_quantity", newHours, selectedId);
     if (error) setErr(error);
     await refresh();
     setBusy(false);
@@ -95,7 +96,7 @@ export default function BookingPage() {
 
   async function toggleCancel() {
     setBusy(true); setErr(null);
-    const { error } = await manageLessonSubscription(sub?.cancelAtPeriodEnd ? "resume" : "cancel");
+    const { error } = await manageLessonSubscription(sub?.cancelAtPeriodEnd ? "resume" : "cancel", undefined, selectedId);
     if (error) setErr(error);
     await refresh();
     setBusy(false);
@@ -112,6 +113,13 @@ export default function BookingPage() {
 
   const fmtDate = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" }) : "");
   const perHour = hours >= LESSON.discountThreshold ? LESSON.discountedPerHour : LESSON.pricePerHour;
+  // Preis-Anzeige je gewähltem Lehrer: Marvin (1) mit config-Staffelpreis, weitere
+  // Lehrer mit flachem Stundensatz aus der teachers-Tabelle (z. B. Thanh Ha $30).
+  const isMarvin = selectedId === 1;
+  const teacherRate = selected?.hourlyRate ?? LESSON.pricePerHour;
+  const money = (n: number) => `$${n % 1 === 0 ? n : n.toFixed(2)}`;
+  const planLabel = (h: number) => (isMarvin ? lessonPriceLabel(h) : money(h * teacherRate));
+  const perHourNow = isMarvin ? perHour : teacherRate;
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -164,7 +172,7 @@ export default function BookingPage() {
             </div>
           )}
 
-          {selectedId !== 1 ? (
+          {selected && !selected.active ? (
             <div className="card p-8 text-center space-y-2">
               <div className="text-4xl">🗓️</div>
               <div className="text-lg font-semibold text-cream">Booking with {selected?.name?.split(" ")[0] ?? "this teacher"} opens soon</div>
@@ -172,7 +180,7 @@ export default function BookingPage() {
             </div>
           ) : (
           <>
-          {myRecurring && (
+          {selectedId === 1 && myRecurring && (
             <div className="card p-5 flex flex-wrap items-center justify-between gap-3" style={{ borderLeft: "5px solid var(--gold)" }}>
               <div className="min-w-0">
                 <div className="font-semibold flex items-center gap-2">🔁 Your weekly lesson</div>
@@ -199,7 +207,7 @@ export default function BookingPage() {
                   {active && sub && (
                     <div className="text-right text-sm">
                       <div className="text-cream-dim">Your plan</div>
-                      <div className="font-semibold">{sub.quantity} h / month · {lessonPriceLabel(sub.quantity)}</div>
+                      <div className="font-semibold">{sub.quantity} h / month · {planLabel(sub.quantity)}</div>
                       <div className="text-xs text-cream-dim mt-1">
                         {sub.cancelAtPeriodEnd ? <span className="text-red-700">Ends on {fmtDate(sub.currentPeriodEnd)}</span> : <>Renews on {fmtDate(sub.currentPeriodEnd)}</>}
                       </div>
@@ -211,7 +219,7 @@ export default function BookingPage() {
                 )}
               </div>
 
-              <BookingCalendar canBook={credits.balance > 0} onBooked={refresh} />
+              <BookingCalendar canBook={credits.balance > 0} onBooked={refresh} teacherId={selectedId} />
 
               <div className="space-y-3">
                 <div className="font-semibold">Your upcoming lessons</div>
@@ -226,7 +234,7 @@ export default function BookingPage() {
                     <p className="text-xs text-cream-dim">Increases apply right away (charged pro-rata, hours added now). Decreases take effect next month — you keep your current hours.</p>
                     <HourStepper value={hours} onChange={setHours} />
                     <div className="flex items-center justify-between gap-3">
-                      <div className="text-sm text-cream-dim">{lessonPriceLabel(hours)}/mo{hours >= LESSON.discountThreshold && <span className="text-gold-bright"> · 5% off</span>}</div>
+                      <div className="text-sm text-cream-dim">{planLabel(hours)}/mo{isMarvin && hours >= LESSON.discountThreshold && <span className="text-gold-bright"> · 5% off</span>}</div>
                       <button onClick={() => changeHours(hours)} disabled={busy || hours === sub.quantity} className="btn-gold px-5 py-2.5 text-sm disabled:opacity-40">
                         {hours > sub.quantity ? "Add hours now" : hours < sub.quantity ? "Lower from next month" : "No change"}
                       </button>
@@ -246,16 +254,16 @@ export default function BookingPage() {
               <HourStepper value={hours} onChange={setHours} />
               <div className="rounded-xl p-4" style={{ background: "color-mix(in srgb, var(--gold) 10%, var(--surface))", border: "1px solid color-mix(in srgb, var(--gold) 22%, transparent)" }}>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold text-gold-bright">{lessonPriceLabel(hours)}</span>
+                  <span className="text-4xl font-bold text-gold-bright">{planLabel(hours)}</span>
                   <span className="text-cream-dim">/ month</span>
                 </div>
                 <div className="text-sm text-cream-dim mt-1">
-                  {hours} lessons × {LESSON.durationMin} min · ${perHour.toFixed(2)} per lesson
-                  {hours >= LESSON.discountThreshold ? <span className="text-gold-bright"> (5% off — 8+ hours)</span> : <span> · reach 8 h for 5% off</span>}
+                  {hours} lessons × {LESSON.durationMin} min · {money(perHourNow)} per lesson
+                  {isMarvin && (hours >= LESSON.discountThreshold ? <span className="text-gold-bright"> (5% off — 8+ hours)</span> : <span> · reach 8 h for 5% off</span>)}
                 </div>
               </div>
               <button onClick={subscribe} disabled={busy} className="btn-gold w-full py-3 disabled:opacity-50">
-                {busy ? "Redirecting to checkout…" : `Subscribe — ${lessonPriceLabel(hours)}/mo`}
+                {busy ? "Redirecting to checkout…" : `Subscribe — ${planLabel(hours)}/mo`}
               </button>
               <p className="text-xs text-cream-dim text-center">Secure payment via Stripe · {TAX_NOTE} · cancel anytime · monthly, renews automatically.</p>
             </div>

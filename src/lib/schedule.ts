@@ -146,8 +146,8 @@ export async function getBlocks(teacherId = 1): Promise<{ starts_at: string; end
   return data ?? [];
 }
 
-export async function getTakenMs(fromISO: string, toISO: string): Promise<Set<number>> {
-  const { data } = await createClient().rpc("taken_lesson_slots", { p_from: fromISO, p_to: toISO });
+export async function getTakenMs(fromISO: string, toISO: string, teacherId = 1): Promise<Set<number>> {
+  const { data } = await createClient().rpc("taken_lesson_slots", { p_teacher: teacherId, p_from: fromISO, p_to: toISO });
   const set = new Set<number>();
   for (const t of (data as string[] | null) ?? []) set.add(new Date(t).getTime());
   return set;
@@ -221,7 +221,9 @@ export async function cancelRecurring(): Promise<{ error?: string }> {
 }
 
 // Gehaltene Zeiten (feste Zeiten aller Schüler) – zum Ausblenden aus den Slots.
-export async function getHeldMs(fromISO: string, toISO: string): Promise<Set<number>> {
+export async function getHeldMs(fromISO: string, toISO: string, teacherId = 1): Promise<Set<number>> {
+  // Feste wöchentliche Zeiten gibt es bisher nur bei Marvin (Lehrer 1).
+  if (teacherId !== 1) return new Set<number>();
   const { data } = await createClient().rpc("held_recurring_slots", { p_from: fromISO, p_to: toISO });
   const set = new Set<number>();
   for (const t of (data as string[] | null) ?? []) set.add(new Date(t).getTime());
@@ -229,8 +231,8 @@ export async function getHeldMs(fromISO: string, toISO: string): Promise<Set<num
 }
 
 // Buchen/Absagen laufen über Server-Routen (DB-Funktion + Google-Kalender).
-export async function bookLesson(startISO: string): Promise<{ id?: string; error?: string }> {
-  const res = await fetch("/api/lesson-book", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ start: startISO }) });
+export async function bookLesson(startISO: string, teacherId = 1): Promise<{ id?: string; error?: string }> {
+  const res = await fetch("/api/lesson-book", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ start: startISO, teacher_id: teacherId }) });
   const json = await res.json().catch(() => ({}));
   if (!res.ok) return { error: json.error ?? "Booking failed" };
   return { id: json.id };
@@ -257,9 +259,9 @@ export async function getGoogleEvents(fromISO: string, toISO: string): Promise<E
 }
 
 // Belegte Zeiten aus dem Google-Kalender (leer, wenn nicht verbunden) als Blöcke.
-export async function getGoogleBusy(fromISO: string, toISO: string): Promise<{ starts_at: string; ends_at: string }[]> {
+export async function getGoogleBusy(fromISO: string, toISO: string, teacherId = 1): Promise<{ starts_at: string; ends_at: string }[]> {
   try {
-    const res = await fetch(`/api/google/busy?from=${encodeURIComponent(fromISO)}&to=${encodeURIComponent(toISO)}`);
+    const res = await fetch(`/api/google/busy?from=${encodeURIComponent(fromISO)}&to=${encodeURIComponent(toISO)}&teacher=${teacherId}`);
     const json = await res.json();
     return ((json.busy as { start: string; end: string }[]) ?? []).map((b) => ({ starts_at: b.start, ends_at: b.end }));
   } catch {

@@ -155,8 +155,8 @@ export async function listEvents(fromISO: string, toISO: string, teacherId = 1):
 }
 
 // Termin + Meet-Link anlegen. Gibt eventId + meetLink zurück (oder leer).
-export async function createEvent(opts: { startISO: string; endISO: string; attendeeEmail?: string | null; timezone: string; studentName?: string | null }): Promise<{ eventId?: string; meetLink?: string }> {
-  const token = await accessToken();
+export async function createEvent(opts: { startISO: string; endISO: string; attendeeEmail?: string | null; timezone: string; studentName?: string | null; teacherId?: number }): Promise<{ eventId?: string; meetLink?: string }> {
+  const token = await accessToken(opts.teacherId ?? 1);
   if (!token) return {};
   const res = await fetch(`${CAL}/calendars/primary/events?conferenceDataVersion=1&sendUpdates=all`, {
     method: "POST",
