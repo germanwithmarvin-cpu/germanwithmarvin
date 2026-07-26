@@ -26,7 +26,12 @@ as $$
 $$;
 grant execute on function public.my_teacher_id() to authenticated;
 
--- 2) Thanh Ha verknuepfen (ihr Konto existiert jetzt) + Verfuegbarkeits-Zeile
+-- 2) Singleton-Sperre aus der Ein-Lehrer-Zeit entfernen (erzwang genau id=1).
+--    Ohne das koennte kein zweiter Lehrer Settings/Google-Zeilen bekommen.
+alter table public.lesson_teacher_settings drop constraint if exists single_row;
+alter table public.teacher_google          drop constraint if exists single_row;
+
+-- 3) Thanh Ha verknuepfen (ihr Konto existiert jetzt) + Verfuegbarkeits-Zeile
 update public.teachers
 set user_id = (select id from auth.users where email = $$thanhhang.de@gmail.com$$)
 where id = 2;
@@ -35,7 +40,7 @@ insert into public.lesson_teacher_settings (id, teacher_id, timezone, slot_minut
 values (2, 2, $$Europe/Berlin$$, 50, 12, 28, 10, $$[]$$)
 on conflict (teacher_id) do nothing;
 
--- 3) RLS: Buchungs-Lehrer verwaltet SEINS (additiv zu den bestehenden Policies)
+-- 4) RLS: Buchungs-Lehrer verwaltet SEINS (additiv zu den bestehenden Policies)
 drop policy if exists "booking teacher writes own settings" on public.lesson_teacher_settings;
 create policy "booking teacher writes own settings" on public.lesson_teacher_settings
   for update using (teacher_id = public.my_teacher_id()) with check (teacher_id = public.my_teacher_id());
