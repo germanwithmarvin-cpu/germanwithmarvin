@@ -8,13 +8,13 @@ const TZ_CHOICES = ["Europe/Berlin", "Europe/London", "America/New_York", "Ameri
 
 type GoogleStatus = { connected: boolean; email: string | null; configured: boolean };
 
-export default function AvailabilityEditor() {
+export default function AvailabilityEditor({ teacherId = 1 }: { teacherId?: number }) {
   const [s, setS] = useState<TeacherSettings | null>(null);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [google, setGoogle] = useState<GoogleStatus | null>(null);
 
-  useEffect(() => { getTeacherSettings().then(setS); }, []);
+  useEffect(() => { getTeacherSettings(teacherId).then(setS); }, [teacherId]);
   useEffect(() => { fetch("/api/google/status").then((r) => r.json()).then(setGoogle).catch(() => {}); }, []);
 
   async function disconnectGoogle() {
@@ -29,7 +29,7 @@ export default function AvailabilityEditor() {
 
   async function save() {
     setSaving(true); setMsg(null);
-    const { error } = await saveTeacherSettings(s!);
+    const { error } = await saveTeacherSettings(s!, teacherId);
     setSaving(false);
     setMsg(error ? error : "✓ Saved");
   }

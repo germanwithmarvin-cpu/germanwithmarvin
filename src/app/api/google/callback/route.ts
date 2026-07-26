@@ -9,16 +9,18 @@ export async function GET(req: Request) {
   const code = url.searchParams.get("code");
   const origin = url.origin;
 
-  // Nur der Lehrer darf den Token setzen.
+  // Nur ein Buchungs-Lehrer darf den Token setzen. Welcher Lehrer: aus dem
+  // OAuth-state (t:<id>), gegen den eingeloggten Nutzer verifiziert.
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (user) {
-    const { data: profile } = await supabase.from("profiles").select("is_teacher").eq("id", user.id).single();
-    if (!profile?.is_teacher) return Response.redirect(new URL("/booking", origin));
-  }
+  const { data: teacher } = user
+    ? await supabase.from("teachers").select("id").eq("user_id", user.id).maybeSingle()
+    : { data: null };
+  if (!teacher) return Response.redirect(new URL("/booking", origin));
 
   if (!code) return Response.redirect(new URL("/booking?google=error", origin));
 
-  const { error } = await exchangeCode(code, `${origin}/api/google/callback`);
+  // Token immer beim eingeloggten Lehrer speichern (nicht dem state vertrauen).
+  const { error } = await exchangeCode(code, `${origin}/api/google/callback`, teacher.id);
   return Response.redirect(new URL(`/booking?google=${error ? "error" : "connected"}`, origin));
 }

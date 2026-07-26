@@ -35,7 +35,7 @@ export function authUrl(redirectUri: string, state: string): string {
 }
 
 // Autorisierungs-Code → Tokens (inkl. refresh_token) und speichern.
-export async function exchangeCode(code: string, redirectUri: string): Promise<{ email?: string; error?: string }> {
+export async function exchangeCode(code: string, redirectUri: string, teacherId = 1): Promise<{ email?: string; error?: string }> {
   const res = await fetch(TOKEN_URL, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -56,22 +56,22 @@ export async function exchangeCode(code: string, redirectUri: string): Promise<{
     email = (await info.json()).email;
   } catch { /* egal */ }
 
-  await admin().from("teacher_google").upsert({ id: 1, refresh_token: json.refresh_token, connected_email: email ?? null, updated_at: new Date().toISOString() }, { onConflict: "id" });
+  await admin().from("teacher_google").upsert({ id: teacherId, teacher_id: teacherId, refresh_token: json.refresh_token, connected_email: email ?? null, updated_at: new Date().toISOString() }, { onConflict: "teacher_id" });
   return { email };
 }
 
-export async function getConnection(): Promise<{ connected: boolean; email: string | null }> {
-  const { data } = await admin().from("teacher_google").select("connected_email, refresh_token").eq("id", 1).maybeSingle();
+export async function getConnection(teacherId = 1): Promise<{ connected: boolean; email: string | null }> {
+  const { data } = await admin().from("teacher_google").select("connected_email, refresh_token").eq("teacher_id", teacherId).maybeSingle();
   return { connected: Boolean(data?.refresh_token), email: data?.connected_email ?? null };
 }
 
-export async function disconnect(): Promise<void> {
-  await admin().from("teacher_google").upsert({ id: 1, refresh_token: null, connected_email: null, updated_at: new Date().toISOString() }, { onConflict: "id" });
+export async function disconnect(teacherId = 1): Promise<void> {
+  await admin().from("teacher_google").update({ refresh_token: null, connected_email: null, updated_at: new Date().toISOString() }).eq("teacher_id", teacherId);
 }
 
 // Frisches Access-Token aus dem gespeicherten Refresh-Token.
-async function accessToken(): Promise<string | null> {
-  const { data } = await admin().from("teacher_google").select("refresh_token").eq("id", 1).maybeSingle();
+async function accessToken(teacherId = 1): Promise<string | null> {
+  const { data } = await admin().from("teacher_google").select("refresh_token").eq("teacher_id", teacherId).maybeSingle();
   if (!data?.refresh_token) return null;
   const res = await fetch(TOKEN_URL, {
     method: "POST",
@@ -104,8 +104,8 @@ async function calendarIds(token: string): Promise<string[]> {
 
 // Belegte Zeiten aus ALLEN Kalendern des Lehrers (leer, wenn nicht verbunden).
 // Nutzt freeBusy über alle Kalender – braucht calendar.readonly.
-export async function busyIntervals(fromISO: string, toISO: string): Promise<{ start: string; end: string }[]> {
-  const token = await accessToken();
+export async function busyIntervals(fromISO: string, toISO: string, teacherId = 1): Promise<{ start: string; end: string }[]> {
+  const token = await accessToken(teacherId);
   if (!token) return [];
   const ids = await calendarIds(token);
   const res = await fetch(`${CAL}/freeBusy`, {
@@ -125,8 +125,8 @@ export async function busyIntervals(fromISO: string, toISO: string): Promise<{ s
 // Alle Termine (mit Titel) über alle Kalender – für die Lehrer-Wochenansicht.
 // Überspringt abgesagte/als frei markierte und unsere eigenen App-Termine
 // (die sind bereits als Buchung sichtbar).
-export async function listEvents(fromISO: string, toISO: string): Promise<{ summary: string; start: string; end: string }[]> {
-  const token = await accessToken();
+export async function listEvents(fromISO: string, toISO: string, teacherId = 1): Promise<{ summary: string; start: string; end: string }[]> {
+  const token = await accessToken(teacherId);
   if (!token) return [];
   const ids = await calendarIds(token);
   const out: { summary: string; start: string; end: string }[] = [];

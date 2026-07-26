@@ -107,8 +107,17 @@ export function generateSlots(
 }
 
 // ---- Datenzugriff ----------------------------------------------------------
-export async function getTeacherSettings(): Promise<TeacherSettings> {
-  const { data } = await createClient().from("lesson_teacher_settings").select("*").eq("id", 1).maybeSingle();
+// teacher_id des eingeloggten Nutzers (Buchungs-Lehrer) oder null (Schüler).
+export async function getMyTeacherId(): Promise<number | null> {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data } = await supabase.from("teachers").select("id").eq("user_id", user.id).maybeSingle();
+  return data?.id ?? null;
+}
+
+export async function getTeacherSettings(teacherId = 1): Promise<TeacherSettings> {
+  const { data } = await createClient().from("lesson_teacher_settings").select("*").eq("teacher_id", teacherId).maybeSingle();
   if (!data) return DEFAULT_SETTINGS;
   return {
     timezone: data.timezone ?? DEFAULT_SETTINGS.timezone,
@@ -120,7 +129,7 @@ export async function getTeacherSettings(): Promise<TeacherSettings> {
   };
 }
 
-export async function saveTeacherSettings(s: TeacherSettings): Promise<{ error?: string }> {
+export async function saveTeacherSettings(s: TeacherSettings, teacherId = 1): Promise<{ error?: string }> {
   const { error } = await createClient().from("lesson_teacher_settings").update({
     timezone: s.timezone,
     slot_minutes: s.slotMinutes,
@@ -128,12 +137,12 @@ export async function saveTeacherSettings(s: TeacherSettings): Promise<{ error?:
     horizon_days: s.horizonDays,
     buffer_minutes: s.bufferMinutes,
     weekly: s.weekly,
-  }).eq("id", 1);
+  }).eq("teacher_id", teacherId);
   return { error: error?.message };
 }
 
-export async function getBlocks(): Promise<{ starts_at: string; ends_at: string }[]> {
-  const { data } = await createClient().from("lesson_blocks").select("starts_at, ends_at");
+export async function getBlocks(teacherId = 1): Promise<{ starts_at: string; ends_at: string }[]> {
+  const { data } = await createClient().from("lesson_blocks").select("starts_at, ends_at").eq("teacher_id", teacherId);
   return data ?? [];
 }
 
@@ -154,6 +163,12 @@ export async function getMyBookings(): Promise<Booking[]> {
 
 export async function getAllBookings(): Promise<Booking[]> {
   const { data } = await createClient().from("lesson_bookings").select("*").order("starts_at", { ascending: true });
+  return (data ?? []).map(mapBooking);
+}
+
+// Buchungen EINES Lehrers (für seine eigene Wochenansicht/Terminliste).
+export async function getTeacherBookings(teacherId: number): Promise<Booking[]> {
+  const { data } = await createClient().from("lesson_bookings").select("*").eq("teacher_id", teacherId).order("starts_at", { ascending: true });
   return (data ?? []).map(mapBooking);
 }
 

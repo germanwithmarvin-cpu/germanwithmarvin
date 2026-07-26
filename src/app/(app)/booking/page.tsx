@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { LESSON, lessonPriceLabel, TAX_NOTE } from "@/lib/config";
 import { getMySubscription, getMyCredits, startLessonCheckout, manageLessonSubscription, getTeachers, type LessonSubscription, type CreditInfo, type TeacherProfile } from "@/lib/booking";
-import { getMyBookings, getAllBookings, getStudentNames, getGoogleEvents, getMyRecurring, cancelRecurring, type Booking, type ExternalEvent, type Recurring } from "@/lib/schedule";
+import { getMyBookings, getTeacherBookings, getMyTeacherId, getStudentNames, getGoogleEvents, getMyRecurring, cancelRecurring, type Booking, type ExternalEvent, type Recurring } from "@/lib/schedule";
 import { createClient } from "@/lib/supabase/client";
 import AvailabilityEditor from "@/components/booking/AvailabilityEditor";
 import BookingCalendar from "@/components/booking/BookingCalendar";
@@ -21,6 +21,7 @@ export default function BookingPage() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [isTeacher, setIsTeacher] = useState(false);
+  const [myTeacherId, setMyTeacherId] = useState<number | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [names, setNames] = useState<Record<string, string>>({});
   const [extEvents, setExtEvents] = useState<ExternalEvent[]>([]);
@@ -29,15 +30,13 @@ export default function BookingPage() {
   const [selectedId, setSelectedId] = useState(1); // gewählter Lehrer (Default: Marvin)
 
   async function refresh() {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    let teacher = false;
-    if (user) {
-      const { data } = await supabase.from("profiles").select("is_teacher").eq("id", user.id).single();
-      teacher = Boolean(data?.is_teacher);
-    }
+    // „Buchungs-Lehrer" = eigener Eintrag in teachers (Marvin ODER Thanh Ha),
+    // getrennt vom Admin. teacherId steuert, wessen Verfügbarkeit/Termine gezeigt werden.
+    const myTid = await getMyTeacherId();
+    setMyTeacherId(myTid);
+    const teacher = myTid != null;
     setIsTeacher(teacher);
-    const [s, c, b, rec] = await Promise.all([getMySubscription(), getMyCredits(), teacher ? getAllBookings() : getMyBookings(), teacher ? Promise.resolve(null) : getMyRecurring()]);
+    const [s, c, b, rec] = await Promise.all([getMySubscription(), getMyCredits(), teacher ? getTeacherBookings(myTid!) : getMyBookings(), teacher ? Promise.resolve(null) : getMyRecurring()]);
     setSub(s);
     setCredits(c);
     setBookings(b);
@@ -142,7 +141,7 @@ export default function BookingPage() {
       ) : isTeacher ? (
         // -------- Lehrer: Verfügbarkeit + alle Termine --------
         <>
-          <AvailabilityEditor />
+          <AvailabilityEditor teacherId={myTeacherId ?? 1} />
           <div className="space-y-3">
             <div className="font-semibold text-lg">Your schedule</div>
             <WeekSchedule bookings={bookings} names={names} external={extEvents} />
