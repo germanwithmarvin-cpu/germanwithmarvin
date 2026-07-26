@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { appendRef } from "@/lib/referral";
+import { trackCheckoutClick } from "@/lib/track";
 
 // Checkout-Link, der einen evtl. gespeicherten Empfehlungscode als
 // client_reference_id an den Stripe-Link hängt. Fällt ohne Code auf den
@@ -21,7 +22,7 @@ export default function RefLink({
     setFinalHref(appendRef(href));
   }, [href]);
   return (
-    <a href={finalHref} className={className}>
+    <a href={finalHref} className={className} onClick={trackCheckoutClick}>
       {children}
     </a>
   );

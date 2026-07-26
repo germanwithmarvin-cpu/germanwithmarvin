@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import PwaRegister from "@/components/PwaRegister";
 import RefTracker from "@/components/RefTracker";
+import MetaPixel from "@/components/MetaPixel";
+import GoogleAds from "@/components/GoogleAds";
 import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
@@ -75,6 +77,8 @@ export default function RootLayout({
         <div className="relative z-10 flex-1 flex flex-col">{children}</div>
         <PwaRegister />
         <RefTracker />
+        <MetaPixel />
+        <GoogleAds />
         <Analytics />
       </body>
     </html>
