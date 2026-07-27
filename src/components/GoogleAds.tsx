@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 
-// Google-Ads-Tag (gtag.js). Lädt nur, wenn NEXT_PUBLIC_GOOGLE_ADS_ID gesetzt ist
-// (Format: AW-XXXXXXXXX, aus Google Ads → Tools → Conversions). Feuert PageView/config.
-const ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
+// Google-Ads-Tag (gtag.js). Feuert PageView/config. Konto-Tag von Marvin fest
+// hinterlegt; per NEXT_PUBLIC_GOOGLE_ADS_ID in Vercel überschreibbar.
+const ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || "AW-18352653705";
 
 export default function GoogleAds() {
   useEffect(() => {
