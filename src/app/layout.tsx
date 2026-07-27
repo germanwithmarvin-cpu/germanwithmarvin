@@ -5,6 +5,7 @@ import PwaRegister from "@/components/PwaRegister";
 import RefTracker from "@/components/RefTracker";
 import MetaPixel from "@/components/MetaPixel";
 import GoogleAds from "@/components/GoogleAds";
+import ConsentBanner from "@/components/ConsentBanner";
 import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
@@ -79,6 +80,7 @@ export default function RootLayout({
         <RefTracker />
         <MetaPixel />
         <GoogleAds />
+        <ConsentBanner />
         <Analytics />
       </body>
     </html>
