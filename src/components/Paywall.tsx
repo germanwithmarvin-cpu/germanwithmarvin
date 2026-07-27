@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { checkoutUrl, discountCheckoutUrl, priceLabel, discountPriceLabel, hasDiscountLink, TAX_NOTE, SITE } from "@/lib/config";
 import { createClient } from "@/lib/supabase/client";
-import { getAccess } from "@/lib/access";
+import { getAccess, isCodeRedeemer } from "@/lib/access";
 import { appendRef } from "@/lib/referral";
 
 // Wird angezeigt, wenn ein Inhalt ohne Vollzugang geöffnet wird.
@@ -12,17 +12,19 @@ import { appendRef } from "@/lib/referral";
 export default function Paywall({ title = "Unlock full access" }: { title?: string }) {
   const [email, setEmail] = useState<string | undefined>();
   const [trialEnded, setTrialEnded] = useState(false);
+  const [redeemer, setRedeemer] = useState(false);
 
   useEffect(() => {
     createClient().auth.getUser().then(({ data: { user } }) => {
       setEmail(user?.email ?? undefined);
     });
     getAccess().then((a) => setTrialEnded(Boolean(a.trialExpiresAt) && new Date(a.trialExpiresAt!).getTime() < Date.now()));
+    isCodeRedeemer().then(setRedeemer);
   }, []);
 
-  // Trial-Absolventen bekommen den rabattierten Link/Preis – aber nur, wenn er
-  // hinterlegt ist. Sonst normaler Link + „Rabattcode beim Checkout"-Hinweis.
-  const useDiscount = trialEnded && hasDiscountLink();
+  // Nur Code-Nutzer (Preply/Skool) bekommen den $19-Rabatt; Self-Service-Trial-
+  // Nutzer sehen den vollen Preis. (Rabatt nur, wenn der Link hinterlegt ist.)
+  const useDiscount = trialEnded && hasDiscountLink() && redeemer;
   const payHref = appendRef(useDiscount ? discountCheckoutUrl(email) : checkoutUrl(email));
   const payLabel = useDiscount ? discountPriceLabel() : priceLabel();
 

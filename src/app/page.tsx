@@ -41,7 +41,7 @@ export default function Home() {
         </Link>
         <nav className="flex items-center gap-3">
           <Link href="/login" className="px-4 py-2 text-sm rounded-lg border border-[#8A3030] text-[#8A3030] hover:bg-[#8A3030]/5 transition">Sign in</Link>
-          <RefLink href={checkoutUrl()} className="px-4 py-2 text-sm rounded-lg bg-[#8A3030] text-white hover:brightness-110 transition">Join now</RefLink>
+          <Link href="/register" className="px-4 py-2 text-sm rounded-lg bg-[#8A3030] text-white hover:brightness-110 transition">Start free</Link>
         </nav>
       </header>
 
@@ -57,10 +57,10 @@ export default function Home() {
             1-on-1 lessons with real teachers. Everything you need to actually speak German, in one place.
           </p>
 
-          <RefLink href={checkoutUrl()} className="mt-8 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
-            Join now — {priceLabel()}/month
-          </RefLink>
-          <p className="mt-2 text-sm text-[#3B2922]/60">Cancel anytime · instant access</p>
+          <Link href="/register" className="mt-8 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
+            Start your 5-day free trial
+          </Link>
+          <p className="mt-2 text-sm text-[#3B2922]/60">No credit card · full access · then {priceLabel()}/month</p>
 
           <p className="mt-5 text-sm flex items-center gap-2 flex-wrap">
             <Stars /> <span className="font-bold">{PREPLY_STATS.rating}</span>
@@ -121,9 +121,9 @@ export default function Home() {
           ))}
         </div>
         <div className="text-center mt-9">
-          <RefLink href={checkoutUrl()} className="inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
-            Join now — {priceLabel()}/month
-          </RefLink>
+          <Link href="/register" className="inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
+            Start your 5-day free trial
+          </Link>
           <p className="mt-2 text-sm text-[#3B2922]/60">Private 1-on-1 lessons from $30/hour · booked inside the app.</p>
         </div>
       </section>
@@ -148,19 +148,22 @@ export default function Home() {
       {/* Preis / Abschluss-CTA */}
       <section className="max-w-2xl mx-auto px-6 pb-16">
         <div className="bg-[#FBF2DA] rounded-2xl p-8 sm:p-10 text-center shadow-md border border-[#E3A12F]/40">
-          <h2 className="text-2xl font-bold">German Simplified — All-Access</h2>
+          <h2 className="text-2xl font-bold">Try everything — free for 5 days</h2>
           <div className="mt-3">
-            <span className="text-5xl font-bold text-[#8A3030]">{priceLabel()}</span>
-            <span className="text-[#3B2922]/60"> / month</span>
-            <div className="text-xs text-[#3B2922]/55 mt-1">{TAX_NOTE}</div>
+            <span className="text-5xl font-bold text-[#8A3030]">5 days free</span>
+            <div className="text-sm text-[#3B2922]/70 mt-1">then {priceLabel()}/month · {TAX_NOTE}</div>
           </div>
           <ul className="text-sm text-[#3B2922]/75 space-y-2 my-7 inline-block text-left">
             {included.map((f) => <li key={f}>✓ {f}</li>)}
           </ul>
-          <RefLink href={checkoutUrl()} className="block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition">
-            Join now — {priceLabel()}/month
-          </RefLink>
-          <p className="text-sm text-[#3B2922]/60 mt-3">Cancel anytime. Instant access after checkout.</p>
+          <Link href="/register" className="block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition">
+            Start your 5-day free trial
+          </Link>
+          <p className="text-sm text-[#3B2922]/60 mt-3">No credit card needed · cancel anytime.</p>
+          <p className="text-xs text-[#3B2922]/55 mt-2">
+            Prefer to subscribe right away?{" "}
+            <RefLink href={checkoutUrl()} className="text-[#8A3030] underline underline-offset-4 font-semibold">Join now →</RefLink>
+          </p>
           <div className="mt-6 pt-5 border-t border-black/10 text-sm text-[#3B2922]/70 space-y-1">
             <p>
               Got a code from <a href={SITE.preplyUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Preply</a> or{" "}

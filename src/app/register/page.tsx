@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import { createClient } from "@/lib/supabase/client";
-import { SITE } from "@/lib/config";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -15,6 +14,7 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [marketing, setMarketing] = useState(false);
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
@@ -25,7 +25,7 @@ export default function RegisterPage() {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName } },
+      options: { data: { full_name: fullName, marketing_consent: marketing } },
     });
     if (error) {
       setError(error.message);
@@ -49,19 +49,18 @@ export default function RegisterPage() {
       </header>
       <main className="flex-1 grid place-items-center px-6 py-10">
         <div className="card p-8 w-full max-w-sm">
-          <h1 className="text-2xl font-bold text-center">Create your account</h1>
+          <h1 className="text-2xl font-bold text-center">Start your 5-day free trial</h1>
 
-          {/* Deutlich sichtbarer Hinweis: gleiche E-Mail wie bei der Zahlung */}
+          {/* Trial-Highlight */}
           <div className="mt-4 rounded-xl border-2 border-gold/50 bg-gold/10 p-4 text-center">
-            <div className="text-2xl">📧</div>
+            <div className="text-2xl">🎁</div>
             <p className="text-sm text-cream mt-1">
-              Already paid? Please sign up with the{" "}
-              <span className="text-gold-bright font-bold">exact same email you paid with</span>.
+              <span className="text-gold-bright font-bold">Full access, free for 5 days.</span> No credit card needed.
             </p>
-            <p className="text-xs text-cream-dim mt-1">That’s how your access is unlocked automatically.</p>
+            <p className="text-xs text-cream-dim mt-1">Videos, flashcard trainer, the vocab game & stories — everything.</p>
             <p className="text-xs text-cream-dim mt-2">
-              Paid but stuck? Email{" "}
-              <a href={`mailto:${SITE.contactEmail}`} className="text-gold-bright underline underline-offset-4">{SITE.contactEmail}</a>.
+              Already paid or have a code? Sign up with the{" "}
+              <span className="text-cream">same email</span> — your access unlocks automatically.
             </p>
           </div>
 
@@ -71,7 +70,7 @@ export default function RegisterPage() {
               <input value={fullName} onChange={(e) => setFullName(e.target.value)} type="text" required placeholder="Your name" className="w-full rounded-lg bg-bordeaux-deep/60 border border-gold/25 px-3 py-2 outline-none focus:border-gold" />
             </div>
             <div>
-              <label className="block text-sm mb-1 text-cream-dim">Email <span className="text-gold-bright">(the one you paid with)</span></label>
+              <label className="block text-sm mb-1 text-cream-dim">Email</label>
               <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required placeholder="you@example.com" className="w-full rounded-lg bg-bordeaux-deep/60 border border-gold/25 px-3 py-2 outline-none focus:border-gold" />
             </div>
             <div>
@@ -79,11 +78,16 @@ export default function RegisterPage() {
               <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" required minLength={6} placeholder="At least 6 characters" className="w-full rounded-lg bg-bordeaux-deep/60 border border-gold/25 px-3 py-2 outline-none focus:border-gold" />
             </div>
 
+            <label className="flex items-start gap-2 text-xs text-cream-dim cursor-pointer">
+              <input type="checkbox" checked={marketing} onChange={(e) => setMarketing(e.target.checked)} className="mt-0.5 accent-[color:var(--gold)]" />
+              <span>Send me German learning tips &amp; occasional offers by email. Optional — you can unsubscribe anytime.</span>
+            </label>
+
             {error && <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-3">{error}</p>}
             {info && <p className="text-sm text-cream bg-green-accent/20 rounded-lg p-3">{info}</p>}
 
             <button type="submit" disabled={loading} className="btn-gold w-full py-2.5 disabled:opacity-50">
-              {loading ? "Creating…" : "Create account"}
+              {loading ? "Starting…" : "Start my free trial"}
             </button>
           </form>
 

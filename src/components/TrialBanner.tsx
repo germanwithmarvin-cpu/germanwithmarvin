@@ -1,15 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getAccess } from "@/lib/access";
-import { discountCheckoutUrl, discountPriceLabel } from "@/lib/config";
+import { getAccess, isCodeRedeemer } from "@/lib/access";
+import { checkoutUrl, discountCheckoutUrl, priceLabel, discountPriceLabel, hasDiscountLink } from "@/lib/config";
+import { appendRef } from "@/lib/referral";
 import { createClient } from "@/lib/supabase/client";
 
-// Schmales, dezentes Banner oben, wenn der Zugang über einen laufenden Trial-Code
-// kommt. Zeigt verbleibende Tage + führt direkt zum (rabattierten) Checkout.
+// Schmales, dezentes Banner oben während eines laufenden Trials. Zeigt
+// verbleibende Tage + führt zum Checkout. Preis: $39 (Self-Service-Trial) bzw.
+// $19 nur für Code-Nutzer (Preply/Skool).
 export default function TrialBanner() {
   const [days, setDays] = useState<number | null>(null);
   const [href, setHref] = useState("#");
+  const [price, setPrice] = useState(priceLabel());
 
   useEffect(() => {
     (async () => {
@@ -19,7 +22,9 @@ export default function TrialBanner() {
       if (ms <= 0) return;
       setDays(Math.ceil(ms / 86400000));
       const { data: { user } } = await createClient().auth.getUser();
-      setHref(discountCheckoutUrl(user?.email ?? undefined));
+      const redeemer = hasDiscountLink() && (await isCodeRedeemer());
+      setPrice(redeemer ? discountPriceLabel() : priceLabel());
+      setHref(appendRef(redeemer ? discountCheckoutUrl(user?.email ?? undefined) : checkoutUrl(user?.email ?? undefined)));
     })();
   }, []);
 
@@ -37,7 +42,7 @@ export default function TrialBanner() {
       >
         🎁 Free trial — <b className="text-gold-bright">{days} day{days === 1 ? "" : "s"} left</b>.{" "}
         <a href={href} className="underline underline-offset-2 hover:opacity-90">
-          Keep your access for {discountPriceLabel()}/mo →
+          Keep your access for {price}/mo →
         </a>
       </p>
     </div>

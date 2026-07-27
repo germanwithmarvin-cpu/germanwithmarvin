@@ -38,6 +38,13 @@ export function hasAccess(tier: AccessTier): boolean {
   return tier === "full";
 }
 
+// Hat der Nutzer einen Freischaltcode eingelöst (Preply/Skool)? Nur diese sehen
+// nach dem Trial den $19-Sonderpreis; Self-Service-Trial-Nutzer sehen $39.
+export async function isCodeRedeemer(): Promise<boolean> {
+  const { data } = await createClient().rpc("is_code_redeemer");
+  return data === true;
+}
+
 // Kompatibilitäts-Helfer (Level spielt keine Rolle mehr – alles braucht Vollzugang).
 export function canAccessVocabLevel(tier: AccessTier, _level?: string): boolean {
   return tier === "full";
