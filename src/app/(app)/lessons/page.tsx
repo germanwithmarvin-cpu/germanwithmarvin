@@ -98,10 +98,17 @@ export default function LessonsPage() {
 function LessonTile({ lesson, done, isNext }: { lesson: Lesson; done: boolean; isNext: boolean }) {
   const hasQuiz = lesson.quizEnabled && (lesson.exercises.length > 0 || lesson.quiz.length > 0);
   const id = youTubeId(lesson.videoId);
-  // Quellen-Kette: hqdefault ist fast immer da; fehlt es, liefert YouTube ein
-  // graues 120px-Platzhalterbild (kein Fehler!) – dann auf mqdefault ausweichen.
+  // Quellen-Kette: maxresdefault ZUERST, denn dort liegt das hochgeladene
+  // Custom-Thumbnail. hqdefault/mqdefault sind nur das automatische Standbild.
+  // Fehlt eine Größe, liefert YouTube 404 (onError) bzw. bei hq ein graues
+  // 120px-Platzhalterbild (naturalWidth-Check) – dann auf die nächste ausweichen.
   const srcs = id
-    ? [`https://img.youtube.com/vi/${id}/hqdefault.jpg`, `https://img.youtube.com/vi/${id}/mqdefault.jpg`]
+    ? [
+        `https://img.youtube.com/vi/${id}/maxresdefault.jpg`,
+        `https://img.youtube.com/vi/${id}/sddefault.jpg`,
+        `https://img.youtube.com/vi/${id}/hqdefault.jpg`,
+        `https://img.youtube.com/vi/${id}/mqdefault.jpg`,
+      ]
     : [];
   const [srcIdx, setSrcIdx] = useState(0);
   const [loaded, setLoaded] = useState(false);
