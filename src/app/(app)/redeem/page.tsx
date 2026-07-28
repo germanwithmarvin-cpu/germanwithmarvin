@@ -34,7 +34,7 @@ export default function RedeemPage() {
     <div className="max-w-md mx-auto mt-6">
       <h1 className="text-2xl font-bold">Redeem your access code</h1>
       <p className="text-cream-dim mt-2 text-sm">
-        Got a code from Preply or Skool? Enter it here to unlock your access.
+        Have a code? Enter it here to unlock your access.
       </p>
 
       <form onSubmit={submit} className="card p-6 mt-6 space-y-4">

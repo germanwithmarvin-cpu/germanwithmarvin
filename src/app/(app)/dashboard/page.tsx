@@ -164,7 +164,7 @@ export default function Dashboard() {
           </div>
           <div className="flex flex-col items-stretch sm:items-end gap-1.5 shrink-0">
             <a href={checkoutUrl(email)} className="btn-gold px-5 py-2.5 text-sm text-center whitespace-nowrap">Get full access — {priceLabel()}/mo</a>
-            <Link href="/redeem" className="text-xs text-cream-dim hover:text-cream underline underline-offset-4 text-center">I have a code from Preply / Skool</Link>
+            <Link href="/redeem" className="text-xs text-cream-dim hover:text-cream underline underline-offset-4 text-center">I have a code</Link>
           </div>
         </div>
       )}

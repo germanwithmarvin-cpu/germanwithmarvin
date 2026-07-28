@@ -35,7 +35,7 @@ export default function Paywall({ title = "Unlock full access" }: { title?: stri
       <p className="text-cream-dim mt-2">
         {trialEnded
           ? (useDiscount
-              ? <>Keep everything going at your reduced <span className="text-cream">Preply / Skool price</span>.</>
+              ? <>Keep everything going at your reduced <span className="text-cream">member price</span>.</>
               : <>Keep everything going with <span className="text-cream">All-Access</span>. Have a discount code? Enter it at checkout for your reduced price.</>)
           : <>Get <span className="text-cream">German Simplified — All-Access</span>: every video lesson, interactive exercise, the full flashcard trainer and reading stories.</>}
       </p>
@@ -53,7 +53,7 @@ export default function Paywall({ title = "Unlock full access" }: { title?: stri
       </p>
 
       <div className="mt-5 pt-4 border-t border-gold/15">
-        <p className="text-sm text-cream-dim">Learning with me on Preply or Skool?</p>
+        <p className="text-sm text-cream-dim">Have a code?</p>
         <Link href="/redeem" className="btn-outline px-4 py-2 text-sm mt-2 inline-block">I have a code</Link>
       </div>
 

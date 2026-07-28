@@ -166,8 +166,7 @@ export default function Home() {
           </p>
           <div className="mt-6 pt-5 border-t border-black/10 text-sm text-[#3B2922]/70 space-y-1">
             <p>
-              Got a code from <a href={SITE.preplyUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Preply</a> or{" "}
-              <a href={SITE.skoolUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Skool</a>?{" "}
+              Have a code?{" "}
               <Link href="/register" className="text-[#8A3030] font-semibold underline underline-offset-4">Create your account</Link> and redeem it inside.
             </p>
             <p>Already a member? <Link href="/login" className="text-[#8A3030] font-semibold underline underline-offset-4">Sign in</Link></p>
