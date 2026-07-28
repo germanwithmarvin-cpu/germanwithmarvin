@@ -50,17 +50,20 @@ export default function Home() {
         <div>
           <span className="inline-block text-xs tracking-[0.3em] text-[#E3A12F] uppercase font-semibold mb-4">German Simplified</span>
           <h1 className="text-4xl sm:text-5xl font-bold leading-[1.1]">
-            Learn German with me —<br /><span className="text-[#8A3030]">the simple way.</span>
+            Learn German online —<br /><span className="text-[#8A3030]">the simple way.</span>
           </h1>
           <p className="mt-5 text-lg text-[#3B2922]/75 max-w-md">
-            Video lessons, a smart flashcard trainer, a fast vocab game and reading stories — plus
-            1-on-1 lessons with real teachers. Everything you need to actually speak German, in one place.
+            Clear video lessons, a smart flashcard trainer and reading stories — <span className="font-semibold text-[#3B2922]">plus 1-on-1 lessons with real teachers.</span> Everything you need to actually speak German, from A1 to B2.
           </p>
 
           <Link href="/register" className="mt-8 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
             Start your 5-day free trial
           </Link>
-          <p className="mt-2 text-sm text-[#3B2922]/60">No credit card · full access · then {priceLabel()}/month</p>
+          <p className="mt-3 text-sm text-[#3B2922]/70">
+            <span className="font-semibold text-[#3B2922]">Free for 5 days · no credit card.</span> Cancel anytime.
+          </p>
+          <p className="mt-1 text-xs text-[#3B2922]/50">Just {priceLabel()}/month after — only if you decide to stay.</p>
+          <a href="#teachers" className="mt-4 inline-block text-sm text-[#8A3030] font-semibold underline underline-offset-4">Prefer a real teacher? See our 1-on-1 lessons →</a>
 
           <p className="mt-5 text-sm flex items-center gap-2 flex-wrap">
             <Stars /> <span className="font-bold">{PREPLY_STATS.rating}</span>
@@ -80,6 +83,10 @@ export default function Home() {
           <div className="absolute -right-2 top-28 bg-[#FBF2DA] rounded-xl shadow-md border border-black/5 px-4 py-3 flex items-center gap-2">
             <span className="text-xl">🗂️</span>
             <div className="leading-tight"><div className="font-bold text-sm">2,600+</div><div className="text-xs text-[#3B2922]/60">cards</div></div>
+          </div>
+          <div className="absolute -left-2 bottom-6 bg-[#FBF2DA] rounded-xl shadow-md border border-black/5 px-4 py-3 flex items-center gap-2">
+            <span className="text-xl">👩‍🏫</span>
+            <div className="leading-tight"><div className="font-bold text-sm">1-on-1</div><div className="text-xs text-[#3B2922]/60">from $30/h</div></div>
           </div>
         </div>
       </section>
@@ -101,13 +108,14 @@ export default function Home() {
       </section>
 
       {/* 1:1-Lehrer */}
-      <section className="max-w-6xl mx-auto px-6 py-14">
+      <section id="teachers" className="max-w-6xl mx-auto px-6 py-14 scroll-mt-6">
         <div className="text-center max-w-2xl mx-auto mb-9">
           <span className="inline-block text-xs tracking-[0.3em] text-[#E3A12F] uppercase font-semibold mb-3">1-on-1 lessons</span>
-          <h2 className="text-2xl sm:text-3xl font-bold">Learn with real teachers</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold">Prefer a real teacher? Learn 1-on-1</h2>
           <p className="mt-3 text-[#3B2922]/75">
-            Self-study gets you far — but sometimes you just want a real person. Book private 1-on-1 lessons
-            with us, right inside the app.
+            Sometimes you just want a real person to practice with and answer your questions. Book private
+            1-on-1 lessons with Marvin or Thanh Ha — flexible times, at your level, with clear explanations
+            in your language, right inside the app.
           </p>
         </div>
         <div className="grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
