@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import { createClient } from "@/lib/supabase/client";
+import { getAttribution } from "@/lib/attribution";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -22,10 +23,23 @@ export default function RegisterPage() {
     setInfo(null);
     setLoading(true);
     const supabase = createClient();
+    const src = getAttribution();
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName, marketing_consent: marketing } },
+      options: {
+        data: {
+          full_name: fullName,
+          marketing_consent: marketing,
+          // Herkunft für die spätere Auswertung (siehe handle_new_user()).
+          utm_source: src.utm_source,
+          utm_medium: src.utm_medium,
+          utm_campaign: src.utm_campaign,
+          gclid: src.gclid,
+          referrer: src.referrer,
+          ref: src.ref,
+        },
+      },
     });
     if (error) {
       setError(error.message);
