@@ -31,7 +31,7 @@ export default function Paywall({ title = "Unlock full access" }: { title?: stri
   return (
     <div className="card p-8 max-w-lg mx-auto text-center mt-10">
       <div className="text-5xl">{trialEnded ? "⏳" : "🔓"}</div>
-      <h2 className="text-2xl font-bold mt-3">{trialEnded ? "Your 2-week trial has ended" : title}</h2>
+      <h2 className="text-2xl font-bold mt-3">{trialEnded ? "Your 5-day trial has ended" : title}</h2>
       <p className="text-cream-dim mt-2">
         {trialEnded
           ? (useDiscount

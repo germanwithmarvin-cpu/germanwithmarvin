@@ -91,10 +91,10 @@ function PrivacyEN() {
         </p>
       </Section>
 
-      <Section title="7. Preply &amp; Skool">
+      <Section title="7. Access codes">
         <p>
-          Students of my Preply or Skool courses can unlock the app with an access code. Any payments on those
-          platforms are handled by them under their own privacy policies.
+          Some students unlock the app with an access code obtained through external platforms. Any payments made
+          on those platforms are handled by the respective providers under their own privacy policies.
         </p>
       </Section>
 
@@ -213,10 +213,11 @@ function PrivacyDE() {
         </p>
       </Section>
 
-      <Section title="7. Preply &amp; Skool">
+      <Section title="7. Zugangscodes">
         <p>
-          Schüler meiner Preply- oder Skool-Kurse schalten die App per Zugangscode frei. Etwaige Zahlungen auf
-          diesen Plattformen wickeln die Plattformen selbst unter ihren eigenen Datenschutzbestimmungen ab.
+          Manche Schüler schalten die App per Zugangscode frei, den sie über externe Plattformen erhalten.
+          Etwaige Zahlungen auf diesen Plattformen wickeln die jeweiligen Anbieter unter ihren eigenen
+          Datenschutzbestimmungen ab.
         </p>
       </Section>
 

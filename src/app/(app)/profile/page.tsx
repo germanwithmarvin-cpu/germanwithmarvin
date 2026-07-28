@@ -15,7 +15,6 @@ import { getDeckProgress } from "@/lib/study";
 import { getAccess, type AccessTier } from "@/lib/access";
 import { LEVELS } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
-import { SITE } from "@/lib/config";
 
 // Rang anhand gelernter Karten – kleine spielerische Stufe im Profilkopf.
 const RANKS: [number, string, string][] = [
@@ -328,8 +327,6 @@ export default function ProfilePage() {
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
             <Link href="/redeem" className="btn-outline px-3 py-1.5 text-sm">Have a code?</Link>
-            <a href={SITE.skoolUrl} target="_blank" rel="noreferrer" className="btn-outline px-3 py-1.5 text-sm">⭐ Skool community</a>
-            <a href={SITE.preplyUrl} target="_blank" rel="noreferrer" className="btn-outline px-3 py-1.5 text-sm">1-on-1 on Preply</a>
           </div>
         </div>
 
