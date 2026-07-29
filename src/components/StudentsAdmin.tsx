@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getStudents, getStudentLessonIds, getStudentCardsByLevel, type StudentOverview, type CardsByLevel } from "@/lib/teacher";
 import { getLessons } from "@/lib/lessons";
 import type { Lesson } from "@/lib/data";
 import { getBannerForTarget, saveBanner, clearBanner, type BannerTone } from "@/lib/banners";
+import { getConversation, sendTeacherMessage, closeConversation, markConversationRead, getStudentsWithUnread, type Message } from "@/lib/conversations";
 
 function timeAgo(iso: string | null): string {
   if (!iso) return "never";
@@ -48,11 +49,15 @@ export default function StudentsAdmin() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [openId, setOpenId] = useState<string | null>(null);
   const [showGlobal, setShowGlobal] = useState(false);
+  const [unread, setUnread] = useState<Set<string>>(new Set());
+
+  const refreshUnread = useCallback(() => { getStudentsWithUnread().then(setUnread).catch(() => {}); }, []);
 
   useEffect(() => {
     getStudents().then(setStudents);
     getLessons().then(setLessons);
-  }, []);
+    refreshUnread();
+  }, [refreshUnread]);
 
   if (students === null) return <p className="text-sm text-cream-dim">Loading students…</p>;
   if (students.length === 0) {
@@ -108,6 +113,11 @@ export default function StudentsAdmin() {
                   <span className="text-[11px] px-1.5 py-0.5 rounded-full" style={{ background: "color-mix(in srgb, var(--gold) 12%, transparent)", color: a.color }}>
                     {a.text}
                   </span>
+                  {unread.has(s.studentId) && (
+                    <span className="text-[11px] px-1.5 py-0.5 rounded-full font-semibold" style={{ background: "color-mix(in srgb, var(--gold-bright) 25%, transparent)", color: "var(--gold-bright)" }}>
+                      💬 new reply
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-4 text-sm shrink-0">
@@ -127,7 +137,7 @@ export default function StudentsAdmin() {
               </div>
             </button>
 
-            {open && <StudentDetail student={s} lessons={lessons} />}
+            {open && <StudentDetail student={s} lessons={lessons} onConversationRead={refreshUnread} />}
           </div>
         );
       })}
@@ -135,7 +145,7 @@ export default function StudentsAdmin() {
   );
 }
 
-function StudentDetail({ student, lessons }: { student: StudentOverview; lessons: Lesson[] }) {
+function StudentDetail({ student, lessons, onConversationRead }: { student: StudentOverview; lessons: Lesson[]; onConversationRead: () => void }) {
   const [lessonIds, setLessonIds] = useState<string[] | null>(null);
   const [cards, setCards] = useState<CardsByLevel[] | null>(null);
 
@@ -162,9 +172,9 @@ function StudentDetail({ student, lessons }: { student: StudentOverview; lessons
         </div>
       </div>
 
-      {/* Banner für genau diesen Schüler */}
+      {/* Konversation mit genau diesem Schüler */}
       <div className="card p-4">
-        <BannerEditor targetUserId={student.studentId} title={`Banner for ${student.fullName || student.email} (shown after they log in)`} />
+        <ConversationPanel studentId={student.studentId} name={student.fullName || student.email} onRead={onConversationRead} />
       </div>
 
       {/* Fortschritt */}
@@ -224,6 +234,89 @@ function Fact({ label, value, color }: { label: string; value: string; color?: s
     <div>
       <div className="text-[11px] uppercase tracking-wide text-cream-dim">{label}</div>
       <div className="mt-0.5 font-medium" style={color ? { color } : undefined}>{value}</div>
+    </div>
+  );
+}
+
+function ConversationPanel({ studentId, name, onRead }: { studentId: string; name: string; onRead: () => void }) {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [convId, setConvId] = useState<string | null>(null);
+  const [status, setStatus] = useState<"open" | "closed" | null>(null);
+  const [text, setText] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+
+  const load = useCallback(async () => {
+    const { conversation, messages: msgs } = await getConversation(studentId);
+    setConvId(conversation?.id ?? null);
+    setStatus(conversation?.status ?? null);
+    setMessages(msgs);
+    setLoading(false);
+    if (conversation && msgs.some((m) => m.sender === "student" && !m.readByTeacher)) {
+      await markConversationRead(conversation.id);
+      onRead();
+    }
+  }, [studentId, onRead]);
+
+  useEffect(() => { load(); }, [load]);
+
+  async function send() {
+    const body = text.trim();
+    if (!body || busy) return;
+    setBusy(true);
+    const { error } = await sendTeacherMessage(studentId, body);
+    setBusy(false);
+    if (error) return;
+    setText("");
+    load();
+  }
+  async function close() {
+    if (!convId || busy) return;
+    setBusy(true);
+    await closeConversation(convId);
+    setBusy(false);
+    load();
+  }
+
+  const inputCls = "flex-1 rounded-lg bg-bordeaux-deep/60 border border-gold/25 px-3 py-2 text-sm outline-none focus:border-gold";
+
+  return (
+    <div className="space-y-2.5">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-sm font-semibold">💬 Conversation with {name}</span>
+        {status === "open" && convId && (
+          <button onClick={close} disabled={busy} className="btn-outline px-3 py-1 text-xs">Close conversation</button>
+        )}
+        {status === "closed" && <span className="text-[11px] text-cream-dim">closed</span>}
+      </div>
+      {loading ? (
+        <p className="text-xs text-cream-dim">Loading…</p>
+      ) : (
+        <>
+          {messages.length > 0 && (
+            <div className="max-h-56 overflow-y-auto space-y-2 rounded-lg bg-bordeaux-deep/40 p-2">
+              {messages.map((m) => (
+                <div key={m.id} className={`flex ${m.sender === "teacher" ? "justify-end" : "justify-start"}`}>
+                  <div className={`px-3 py-1.5 rounded-lg text-sm max-w-[80%] whitespace-pre-wrap ${m.sender === "teacher" ? "bg-gold-bright text-[#3b2116]" : "bg-bordeaux-deep/70 text-cream"}`}>
+                    {m.body}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="flex gap-2">
+            <input
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") send(); }}
+              placeholder={messages.length ? "Write a reply…" : "Start a conversation — the student sees it after login."}
+              className={inputCls}
+            />
+            <button onClick={send} disabled={busy} className="btn-gold px-4 py-2 text-sm disabled:opacity-50 shrink-0">Send</button>
+          </div>
+          {status === "closed" && <p className="text-[11px] text-cream-dim">Sending a new message reopens the conversation.</p>}
+        </>
+      )}
     </div>
   );
 }
