@@ -269,8 +269,8 @@ export async function diagnose(): Promise<Record<string, unknown>> {
   };
 }
 
-export async function deleteEvent(eventId: string): Promise<void> {
-  const token = await accessToken();
+export async function deleteEvent(eventId: string, teacherId = 1): Promise<void> {
+  const token = await accessToken(teacherId);
   if (!token) return;
   await fetch(`${CAL}/calendars/primary/events/${eventId}?sendUpdates=all`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
 }

@@ -19,14 +19,14 @@ export async function POST(req: Request) {
   const { id } = await req.json().catch(() => ({}));
   if (!id) return json({ error: "Missing id" }, 400);
 
-  // Event-ID vorab merken (für spätere Löschung).
-  const { data: booking } = await admin().from("lesson_bookings").select("google_event_id").eq("id", id).maybeSingle();
+  // Event-ID + Lehrer vorab merken (für spätere Löschung im richtigen Kalender).
+  const { data: booking } = await admin().from("lesson_bookings").select("google_event_id, teacher_id").eq("id", id).maybeSingle();
 
   const { data: result, error } = await supabase.rpc("cancel_lesson", { p_booking: id });
   if (error) return json({ error: error.message }, 400);
 
   if (booking?.google_event_id) {
-    try { await deleteEvent(booking.google_event_id); } catch { /* egal */ }
+    try { await deleteEvent(booking.google_event_id, booking.teacher_id ?? 1); } catch { /* egal */ }
   }
   return json({ result });
 }
