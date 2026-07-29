@@ -23,7 +23,8 @@ export type Card = {
   front: string;
   back: string;
   imageUrl: string | null;
-  audioUrl: string | null;
+  audioUrl: string | null; // Aussprache des Wortes
+  exampleAudioUrl: string | null; // Aussprache des Beispielsatzes
   tags: string[];
   notes: string;
   example: string; // Beispielsatz auf Deutsch

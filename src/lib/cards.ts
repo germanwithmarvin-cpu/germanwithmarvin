@@ -11,6 +11,7 @@ function fromRow(r: Record<string, unknown>): Card {
     back: (r.back as string) ?? "",
     imageUrl: (r.image_url as string) ?? null,
     audioUrl: (r.audio_url as string) ?? null,
+    exampleAudioUrl: (r.example_audio_url as string) ?? null,
     tags: (r.tags as string[]) ?? [],
     notes: (r.notes as string) ?? "",
     example: (r.example as string) ?? "",
@@ -28,6 +29,7 @@ function toRow(card: Partial<Card>) {
   if (card.back !== undefined) row.back = card.back;
   if (card.imageUrl !== undefined) row.image_url = card.imageUrl;
   if (card.audioUrl !== undefined) row.audio_url = card.audioUrl;
+  if (card.exampleAudioUrl !== undefined) row.example_audio_url = card.exampleAudioUrl;
   if (card.tags !== undefined) row.tags = card.tags;
   if (card.notes !== undefined) row.notes = card.notes;
   if (card.example !== undefined) row.example = card.example;
@@ -60,6 +62,19 @@ export async function insertCards(cards: Partial<Card>[]): Promise<{ error?: str
   const rows = cards.map(toRow);
   const { data, error } = await supabase.from("fc_cards").insert(rows).select("id");
   return { error: error?.message, count: data?.length ?? 0 };
+}
+
+// Setzt (oder entfernt) nur die Audio-URL einer Karte – Wort oder Beispielsatz.
+// Direktes UPDATE statt upsert, damit keine NOT-NULL-Felder (front/back) nötig sind.
+export async function setCardAudio(
+  id: string,
+  kind: "word" | "example",
+  url: string | null,
+): Promise<{ error?: string }> {
+  const supabase = createClient();
+  const col = kind === "word" ? "audio_url" : "example_audio_url";
+  const { error } = await supabase.from("fc_cards").update({ [col]: url }).eq("id", id);
+  return { error: error?.message };
 }
 
 export async function deleteCard(id: string): Promise<{ error?: string }> {
