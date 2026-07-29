@@ -6,6 +6,24 @@ import { caseFromTags } from "@/lib/grammar";
 
 export type Direction = "de-en" | "en-de";
 
+// Kleiner Play-Button: spielt die Aufnahme nur auf Klick ab (kein Autoplay,
+// keine Timeline/Sekunden). stopPropagation, damit der Klick die Karte nicht
+// umdreht. Rendert nichts, wenn keine Aufnahme vorhanden ist.
+function PlayButton({ url, label = "Play" }: { url: string | null; label?: string }) {
+  if (!url) return null;
+  return (
+    <button
+      type="button"
+      onClick={(e) => { e.stopPropagation(); const a = new Audio(url); void a.play().catch(() => {}); }}
+      className="inline-grid place-items-center w-7 h-7 rounded-full border border-gold/40 hover:border-gold hover:bg-gold/10 text-cream shrink-0 align-middle leading-none"
+      title={label}
+      aria-label={label}
+    >
+      <span className="text-[10px] translate-x-[1px]">▶</span>
+    </button>
+  );
+}
+
 // Kleines Kasus-Symbol (z. B. ⭐ Dativ), falls die Karte einen Kasus-Tag hat.
 function CaseBadge({ tags }: { tags: string[] }) {
   const marker = caseFromTags(tags);
@@ -58,13 +76,8 @@ export default function Flashcard({
           <div className="text-2xl font-semibold flex items-center justify-center gap-2 flex-wrap">
             <span>{promptText}</span>
             {promptIsGerman && <CaseBadge tags={card.tags} />}
+            {promptIsGerman && <PlayButton url={card.audioUrl} label="Play word" />}
           </div>
-
-          {card.audioUrl && (
-            <audio controls src={card.audioUrl} className="w-full max-w-xs">
-              Your browser does not support audio.
-            </audio>
-          )}
 
           {children}
 
@@ -81,12 +94,16 @@ export default function Flashcard({
           <div className="text-3xl text-gold-bright font-bold flex items-center justify-center gap-2 flex-wrap">
             <span>{answerText}</span>
             {!promptIsGerman && <CaseBadge tags={card.tags} />}
+            {!promptIsGerman && <PlayButton url={card.audioUrl} label="Play word" />}
           </div>
           {card.notes && <p className="text-sm text-cream-dim whitespace-pre-wrap">{card.notes}</p>}
           {card.example && (
             <div className="mt-1 w-full rounded-lg bg-bordeaux-deep/50 border border-gold/20 px-4 py-3 text-left">
               <div className="text-[11px] uppercase tracking-wide text-gold-bright/80 mb-1">Example</div>
-              <p className="text-base">{card.example}</p>
+              <div className="flex items-start gap-2">
+                <p className="text-base flex-1">{card.example}</p>
+                <PlayButton url={card.exampleAudioUrl} label="Play sentence" />
+              </div>
               {card.exampleEn && <p className="text-sm text-cream-dim mt-0.5">{card.exampleEn}</p>}
             </div>
           )}
