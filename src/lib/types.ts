@@ -16,12 +16,13 @@ export type Deck = {
   createdAt?: string;
 };
 
-// Eine Karteikarte. Vorderseite = z. B. Englisch, Rückseite = Deutsch.
+// Eine Karteikarte. In den Vokabel-Seeds gilt: front = Deutsch (mit Artikel),
+// back = Englisch (Übersetzung). example = deutscher Satz, exampleEn = englisch.
 export type Card = {
   id: string;
   deckId: string;
-  front: string;
-  back: string;
+  front: string; // Deutsch (wird vorgesprochen)
+  back: string; // Englische Übersetzung
   imageUrl: string | null;
   audioUrl: string | null; // Aussprache des Wortes
   exampleAudioUrl: string | null; // Aussprache des Beispielsatzes

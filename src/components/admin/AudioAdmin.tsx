@@ -223,12 +223,12 @@ export default function AudioAdmin() {
         {visible.map((c, i) => (
           <div key={c.id} className="card p-4">
             <div className="text-[11px] text-cream-dim mb-2">
-              #{i + 1} · <span className="text-cream-dim">{c.front}</span>
+              #{i + 1} · <span className="italic">means: {c.back}</span>
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
               <AudioCell
-                label="Word"
-                text={c.back}
+                label="Word (German)"
+                text={c.front}
                 url={c.audioUrl}
                 recording={rec?.cardId === c.id && rec?.kind === "word"}
                 busy={busy.has(`${c.id}:word`)}
@@ -239,7 +239,7 @@ export default function AudioAdmin() {
                 onClear={() => clearAudio(c.id, "word")}
               />
               <AudioCell
-                label="Example sentence"
+                label="Example sentence (German)"
                 text={c.example || "— no example —"}
                 url={c.exampleAudioUrl}
                 recording={rec?.cardId === c.id && rec?.kind === "example"}
