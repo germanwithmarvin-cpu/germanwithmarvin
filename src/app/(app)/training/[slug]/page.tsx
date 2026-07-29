@@ -3,9 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { getUnitBySlug, getUnits, getMyProgress, getExercises, checkAnswer, saveAttempt, saveUnitResult, type Exercise, type Unit } from "@/lib/training";
+import { getUnitBySlug, getExercises, checkAnswer, saveAttempt, saveUnitResult, type Exercise, type Unit } from "@/lib/training";
 import { getAccess } from "@/lib/access";
-import { createClient } from "@/lib/supabase/client";
 import { addXp } from "@/lib/progress";
 import Paywall from "@/components/Paywall";
 import ExerciseView from "@/components/training/ExerciseView";
@@ -17,7 +16,7 @@ import { getDrillForUnit } from "@/lib/drills";
 const PRAISE = ["Nailed it!", "Exactly.", "Nice — keep going!", "That was clean."];
 const CONSOLE_LINES = ["So close — look:", "Almost! Here is why:", "No worries, this is the bit:"];
 
-type Phase = "loading" | "blocked" | "locked" | "missing" | "theory" | "practice" | "done";
+type Phase = "loading" | "blocked" | "missing" | "theory" | "practice" | "done";
 
 export default function TrainingUnitPage() {
   const params = useParams<{ slug: string }>();
@@ -26,7 +25,6 @@ export default function TrainingUnitPage() {
   const [phase, setPhase] = useState<Phase>("loading");
   const [unit, setUnit] = useState<Unit | null>(null);
   const [all, setAll] = useState<Exercise[]>([]);
-  const [blockedBy, setBlockedBy] = useState<Unit | null>(null);
 
   // Warteschlange statt festem Index: falsch beantwortete Aufgaben kommen am
   // Ende der Runde erneut dran, bis sie sitzen.
@@ -59,23 +57,7 @@ export default function TrainingUnitPage() {
       if (cancelled) return;
       if (!u) { setPhase("missing"); return; }
 
-      // Schritt für Schritt: alle Einheiten davor IM SELBEN LEVEL müssen sitzen.
-      const [list, prog] = await Promise.all([getUnits(), getMyProgress()]);
-      if (cancelled) return;
-      const level = list.filter((x) => x.level === u.level);
-      const idx = level.findIndex((x) => x.id === u.id);
-      const gap = prog[u.id] ? undefined // schon angefangen -> bleibt offen
-        : level.slice(0, Math.max(idx, 0)).find((x) => (prog[x.id]?.mastery ?? 0) < 80);
-      if (gap) {
-        const supabase = createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-        const { data: profile } = user
-          ? await supabase.from("profiles").select("is_teacher").eq("id", user.id).single()
-          : { data: null };
-        if (cancelled) return;
-        if (!profile?.is_teacher) { setUnit(u); setBlockedBy(gap); setPhase("locked"); return; }
-      }
-
+      // Einheiten sind frei wählbar – kein sequentielles Freischalten mehr.
       const ex = await getExercises(u.id);
       if (cancelled) return;
       setUnit(u); setAll(ex); setQueue(ex); setPhase("theory");
@@ -149,20 +131,6 @@ export default function TrainingUnitPage() {
 
   if (phase === "loading") return <p className="text-sm text-cream-dim">Loading…</p>;
   if (phase === "blocked") return <Paywall title="Unlock the training course" />;
-  if (phase === "locked" && blockedBy) return (
-    <div className="card p-8 text-center space-y-4 max-w-lg mx-auto">
-      <div className="flex justify-center"><Lena mood="explain" size={170} /></div>
-      <p className="text-xl font-bold">One step at a time 🔒</p>
-      <p className="text-sm text-cream-dim">
-        {unit?.title} builds on things you have not practised yet. Finish{" "}
-        <b className="text-cream">{blockedBy.title}</b> first — then this one opens up.
-      </p>
-      <div className="flex items-center justify-center gap-3 flex-wrap pt-1">
-        <Link href={`/training/${blockedBy.slug}`} className="btn-gold px-6 py-3 font-bold">Go to {blockedBy.title} →</Link>
-        <Link href="/training" className="btn-outline px-6 py-3">Back to course</Link>
-      </div>
-    </div>
-  );
   if (phase === "missing") return (
     <div className="card p-6 text-center space-y-3">
       <p className="font-semibold">This unit is not available yet.</p>
