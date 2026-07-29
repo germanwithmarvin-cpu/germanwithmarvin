@@ -86,7 +86,7 @@ export default function Home() {
           </div>
           <div className="absolute -left-2 bottom-6 bg-[#FBF2DA] rounded-xl shadow-md border border-black/5 px-4 py-3 flex items-center gap-2">
             <span className="text-xl">👩‍🏫</span>
-            <div className="leading-tight"><div className="font-bold text-sm">1-on-1</div><div className="text-xs text-[#3B2922]/60">from $30/h</div></div>
+            <div className="leading-tight"><div className="font-bold text-sm">1-on-1</div><div className="text-xs text-[#3B2922]/60">from $30/lesson</div></div>
           </div>
         </div>
       </section>
@@ -132,7 +132,7 @@ export default function Home() {
           <Link href="/register" className="inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
             Start your 5-day free trial
           </Link>
-          <p className="mt-2 text-sm text-[#3B2922]/60">Private 1-on-1 lessons from $30/hour · booked inside the app.</p>
+          <p className="mt-2 text-sm text-[#3B2922]/60">Private 1-on-1 lessons from $30/lesson (50 min) · booked inside the app.</p>
         </div>
       </section>
 

@@ -28,6 +28,8 @@ export default function RegisterPage() {
       email,
       password,
       options: {
+        // Ziel des Bestätigungslinks in der E-Mail (verifiziert die Adresse).
+        emailRedirectTo: `${window.location.origin}/auth/confirm?next=/dashboard`,
         data: {
           full_name: fullName,
           marketing_consent: marketing,
@@ -52,7 +54,7 @@ export default function RegisterPage() {
       router.refresh();
       return;
     }
-    setInfo("Check your email to confirm your account, then sign in.");
+    setInfo(`We sent a confirmation link to ${email}. Click it to activate your account and start your free trial.`);
     setLoading(false);
   }
 

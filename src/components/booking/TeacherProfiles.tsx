@@ -63,7 +63,7 @@ function TeacherCard({ t, selected, onSelect }: { t: TeacherProfile; selected: b
       <div className="flex items-center justify-center gap-2 flex-wrap text-sm text-cream-dim">
         {t.languages && <span>🗣 {t.languages}</span>}
         {t.hourlyRate != null && (
-          <span>· <span className="text-cream font-semibold">${t.hourlyRate % 1 === 0 ? t.hourlyRate : t.hourlyRate.toFixed(2)}</span>/hour</span>
+          <span>· <span className="text-cream font-semibold">${t.hourlyRate % 1 === 0 ? t.hourlyRate : t.hourlyRate.toFixed(2)}</span>/lesson</span>
         )}
       </div>
 
