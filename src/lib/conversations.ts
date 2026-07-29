@@ -27,7 +27,7 @@ function msgFrom(r: Record<string, unknown>): Message {
 
 async function messagesOf(conversationId: string): Promise<Message[]> {
   const supabase = createClient();
-  const { data } = await supabase.from("messages").select("*").eq("conversation_id", conversationId).order("created_at", { ascending: true });
+  const { data } = await supabase.from("conversation_messages").select("*").eq("conversation_id", conversationId).order("created_at", { ascending: true });
   return (data ?? []).map(msgFrom);
 }
 
@@ -81,7 +81,7 @@ export async function sendTeacherMessage(studentId: string, body: string): Promi
     if (cErr || !created) return { error: cErr?.message || "Could not open conversation." };
     conversationId = created.id as string;
   }
-  const { error } = await supabase.from("messages").insert({ conversation_id: conversationId, sender: "teacher", body: body.trim(), read_by_teacher: true });
+  const { error } = await supabase.from("conversation_messages").insert({ conversation_id: conversationId, sender: "teacher", body: body.trim(), read_by_teacher: true });
   if (error) return { error: error.message };
   await supabase.from("conversations").update({ last_message_at: new Date().toISOString() }).eq("id", conversationId);
   return { conversationId };
@@ -97,13 +97,13 @@ export async function closeConversation(conversationId: string): Promise<{ error
 // Schüler-Antworten als gelesen markieren.
 export async function markConversationRead(conversationId: string): Promise<void> {
   const supabase = createClient();
-  await supabase.from("messages").update({ read_by_teacher: true }).eq("conversation_id", conversationId).eq("sender", "student").eq("read_by_teacher", false);
+  await supabase.from("conversation_messages").update({ read_by_teacher: true }).eq("conversation_id", conversationId).eq("sender", "student").eq("read_by_teacher", false);
 }
 
 // Schüler-IDs mit ungelesenen Antworten (für das 💬-Badge in der Liste).
 export async function getStudentsWithUnread(): Promise<Set<string>> {
   const supabase = createClient();
-  const { data } = await supabase.from("messages").select("conversations(student_id)").eq("sender", "student").eq("read_by_teacher", false);
+  const { data } = await supabase.from("conversation_messages").select("conversations(student_id)").eq("sender", "student").eq("read_by_teacher", false);
   const set = new Set<string>();
   for (const r of (data ?? []) as Record<string, unknown>[]) {
     const c = r.conversations as { student_id?: string } | { student_id?: string }[] | null;

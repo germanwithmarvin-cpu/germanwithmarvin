@@ -23,7 +23,7 @@ export async function POST(req: Request) {
   if (!conversationId || !text) return json({ error: "Missing message" }, 400);
   if (text.length > 4000) return json({ error: "Message too long" }, 400);
 
-  const { error } = await supabase.from("messages").insert({ conversation_id: conversationId, sender: "student", body: text });
+  const { error } = await supabase.from("conversation_messages").insert({ conversation_id: conversationId, sender: "student", body: text });
   if (error) return json({ error: error.message }, 400);
 
   // last_message_at aktualisieren (Schüler darf conversations nicht updaten -> Admin).
