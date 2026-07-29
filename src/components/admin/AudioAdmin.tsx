@@ -42,7 +42,8 @@ export default function AudioAdmin() {
   const [rec, setRec] = useState<Target | null>(null); // gerade aufgenommen
   const [busy, setBusy] = useState<Set<string>>(new Set()); // gerade am Hochladen
   const [error, setError] = useState<string | null>(null);
-  const [focusIdx, setFocusIdx] = useState(0); // per Tastatur ausgewählte Karte
+  const [focusIdx, setFocusIdx] = useState(0); // aktuelle Karte im Fokus-Modus
+  const [focusMode, setFocusMode] = useState(false); // Eine-Karte-Ansicht ohne Scrollen
 
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -171,19 +172,18 @@ export default function AudioAdmin() {
   // Auswahl zuruecksetzen, wenn sich die Liste ändert.
   useEffect(() => { setFocusIdx(0); }, [deckId, onlyMissing]);
 
-  // Fokussierte Karte automatisch in den Sichtbereich scrollen (kein manuelles Scrollen).
-  useEffect(() => {
-    document.getElementById(`audio-card-${focusIdx}`)?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  }, [focusIdx]);
+  // Falls die aktuelle Karte aus der Liste fällt (z. B. „nur ohne Audio"): einklammern.
+  useEffect(() => { setFocusIdx((i) => Math.min(i, Math.max(0, visible.length - 1))); }, [visible.length]);
 
-  // Tastatur-Modus: ↓/↑ (oder j/k) bewegen; Taste 1 halten = Wort, Taste 2 halten = Satz.
+  // Fokus-Modus: Tastatur aktiv. ←/→ (bzw. Enter) blättern, 1 halten = Wort, 2 halten = Satz.
   useEffect(() => {
+    if (!focusMode) return;
     function onKeyDown(e: KeyboardEvent) {
       const tag = (e.target as HTMLElement | null)?.tagName;
       if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
       if (visible.length === 0) return;
-      if (e.key === "ArrowDown" || e.key === "j") { e.preventDefault(); setFocusIdx((i) => Math.min(i + 1, visible.length - 1)); }
-      else if (e.key === "ArrowUp" || e.key === "k") { e.preventDefault(); setFocusIdx((i) => Math.max(i - 1, 0)); }
+      if (e.key === "ArrowRight" || e.key === "Enter") { e.preventDefault(); setFocusIdx((i) => Math.min(i + 1, visible.length - 1)); }
+      else if (e.key === "ArrowLeft") { e.preventDefault(); setFocusIdx((i) => Math.max(i - 1, 0)); }
       else if (!e.repeat && (e.key === "1" || e.key === "2")) {
         if (!micReady) return;
         const card = visible[focusIdx];
@@ -205,7 +205,7 @@ export default function AudioAdmin() {
     };
     // startRec/stopRec sind über Refs stabil genug – nur die Lesewerte in den Deps.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible, focusIdx, micReady]);
+  }, [focusMode, visible, focusIdx, micReady]);
 
   return (
     <div className="space-y-5">
@@ -216,7 +216,7 @@ export default function AudioAdmin() {
           Word and example sentence are separate. Nothing plays automatically; use ▶ to check.
         </p>
         <p className="text-xs text-cream-dim mt-1.5">
-          ⌨️ Hands-free: <b className="text-cream">↓ / ↑</b> move through the list (auto-scrolls) · hold <b className="text-cream">1</b> = record word · hold <b className="text-cream">2</b> = record sentence
+          Tip: <b className="text-cream">Focus mode</b> shows one card at a time (no scrolling). Then hands-free: hold <b className="text-cream">1</b> = word · hold <b className="text-cream">2</b> = sentence · <b className="text-cream">→</b> next.
         </p>
       </div>
 
@@ -249,6 +249,18 @@ export default function AudioAdmin() {
             Only cards missing audio
           </label>
         )}
+        {deckId && visible.length > 0 && (
+          <button
+            onClick={() => {
+              const idx = visible.findIndex((c) => !c.audioUrl || (c.example.trim() !== "" && !c.exampleAudioUrl));
+              setFocusIdx(idx >= 0 ? idx : 0);
+              setFocusMode(true);
+            }}
+            className="btn-gold px-3 py-1.5 text-sm"
+          >
+            🎯 Focus mode
+          </button>
+        )}
       </div>
 
       {error && <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-3">{error}</p>}
@@ -265,9 +277,62 @@ export default function AudioAdmin() {
         <p className="text-sm text-cream-dim">Nothing to show here.</p>
       )}
 
+      {focusMode && (() => {
+        const c = visible[focusIdx];
+        if (!c) return (
+          <div className="card p-6 text-center space-y-3">
+            <p className="text-sm text-cream-dim">Nothing to record here.</p>
+            <button onClick={() => setFocusMode(false)} className="btn-outline px-4 py-2 text-sm">Back to list</button>
+          </div>
+        );
+        const pct = Math.round(((focusIdx + 1) / visible.length) * 100);
+        return (
+          <div className="card p-6 space-y-4 max-w-xl mx-auto">
+            <div className="flex items-center justify-between text-xs text-cream-dim">
+              <span>Card <b className="text-cream">{focusIdx + 1}</b> / {visible.length}</span>
+              <button onClick={() => setFocusMode(false)} className="underline hover:text-cream">Exit focus</button>
+            </div>
+            <div className="h-1.5 rounded-full bg-bordeaux-deep/60">
+              <div className="h-1.5 rounded-full bg-gold-bright transition-all" style={{ width: `${pct}%` }} />
+            </div>
+            <div className="text-center text-sm text-cream-dim italic">means: {c.back}</div>
+            <AudioCell
+              label="Word (German) · hold key 1"
+              text={c.front}
+              url={c.audioUrl}
+              recording={rec?.cardId === c.id && rec?.kind === "word"}
+              busy={busy.has(`${c.id}:word`)}
+              disabled={!micReady}
+              onDown={() => startRec(c.id, "word")}
+              onUp={stopRec}
+              onPlay={() => play(c.audioUrl)}
+              onClear={() => clearAudio(c.id, "word")}
+            />
+            <AudioCell
+              label="Example sentence (German) · hold key 2"
+              text={c.example || "— no example —"}
+              url={c.exampleAudioUrl}
+              recording={rec?.cardId === c.id && rec?.kind === "example"}
+              busy={busy.has(`${c.id}:example`)}
+              disabled={!micReady || c.example.trim() === ""}
+              onDown={() => startRec(c.id, "example")}
+              onUp={stopRec}
+              onPlay={() => play(c.exampleAudioUrl)}
+              onClear={() => clearAudio(c.id, "example")}
+            />
+            <div className="flex items-center justify-between pt-1">
+              <button onClick={() => setFocusIdx((i) => Math.max(i - 1, 0))} disabled={focusIdx === 0} className="btn-outline px-4 py-2 text-sm disabled:opacity-40">← Prev</button>
+              <span className="text-[11px] text-cream-dim text-center">hold 1 / 2 to record</span>
+              <button onClick={() => setFocusIdx((i) => Math.min(i + 1, visible.length - 1))} disabled={focusIdx >= visible.length - 1} className="btn-gold px-4 py-2 text-sm disabled:opacity-40">Next →</button>
+            </div>
+          </div>
+        );
+      })()}
+
+      {!focusMode && (
       <div className="space-y-3">
         {visible.map((c, i) => (
-          <div key={c.id} id={`audio-card-${i}`} className={`card p-4 transition ${i === focusIdx ? "ring-2 ring-gold-bright" : ""}`}>
+          <div key={c.id} className="card p-4">
             <div className="text-[11px] text-cream-dim mb-2">
               #{i + 1} · <span className="italic">means: {c.back}</span>
             </div>
@@ -300,6 +365,7 @@ export default function AudioAdmin() {
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 }
