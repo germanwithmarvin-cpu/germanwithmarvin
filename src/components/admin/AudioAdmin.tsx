@@ -42,12 +42,14 @@ export default function AudioAdmin() {
   const [rec, setRec] = useState<Target | null>(null); // gerade aufgenommen
   const [busy, setBusy] = useState<Set<string>>(new Set()); // gerade am Hochladen
   const [error, setError] = useState<string | null>(null);
+  const [focusIdx, setFocusIdx] = useState(0); // per Tastatur ausgewählte Karte
 
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
   const startedAtRef = useRef<number>(0);
   const targetRef = useRef<Target | null>(null);
+  const recRef = useRef<Target | null>(null); // synchron zum rec-State (für Tastatur-Guard)
 
   useEffect(() => {
     getDecks().then(setDecks);
@@ -79,7 +81,7 @@ export default function AudioAdmin() {
   }
 
   function startRec(cardId: string, kind: Kind) {
-    if (rec || !streamRef.current) return;
+    if (recRef.current || !streamRef.current) return;
     const mime = pickMime();
     let recorder: MediaRecorder;
     try {
@@ -96,12 +98,14 @@ export default function AudioAdmin() {
     startedAtRef.current = Date.now();
     setError(null);
     recorder.start();
+    recRef.current = { cardId, kind };
     setRec({ cardId, kind });
   }
 
   function stopRec() {
     const r = recorderRef.current;
     if (r && r.state !== "inactive") r.stop();
+    recRef.current = null;
     setRec(null);
   }
 
@@ -164,6 +168,45 @@ export default function AudioAdmin() {
   const withExample = cards.filter((c) => c.example.trim() !== "");
   const exampleDone = withExample.filter((c) => c.exampleAudioUrl).length;
 
+  // Auswahl zuruecksetzen, wenn sich die Liste ändert.
+  useEffect(() => { setFocusIdx(0); }, [deckId, onlyMissing]);
+
+  // Fokussierte Karte automatisch in den Sichtbereich scrollen (kein manuelles Scrollen).
+  useEffect(() => {
+    document.getElementById(`audio-card-${focusIdx}`)?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [focusIdx]);
+
+  // Tastatur-Modus: ↓/↑ (oder j/k) bewegen; Taste 1 halten = Wort, Taste 2 halten = Satz.
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
+      if (visible.length === 0) return;
+      if (e.key === "ArrowDown" || e.key === "j") { e.preventDefault(); setFocusIdx((i) => Math.min(i + 1, visible.length - 1)); }
+      else if (e.key === "ArrowUp" || e.key === "k") { e.preventDefault(); setFocusIdx((i) => Math.max(i - 1, 0)); }
+      else if (!e.repeat && (e.key === "1" || e.key === "2")) {
+        if (!micReady) return;
+        const card = visible[focusIdx];
+        if (!card) return;
+        const kind: Kind = e.key === "1" ? "word" : "example";
+        if (kind === "example" && card.example.trim() === "") return;
+        e.preventDefault();
+        startRec(card.id, kind);
+      }
+    }
+    function onKeyUp(e: KeyboardEvent) {
+      if (e.key === "1" || e.key === "2") stopRec();
+    }
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+    };
+    // startRec/stopRec sind über Refs stabil genug – nur die Lesewerte in den Deps.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, focusIdx, micReady]);
+
   return (
     <div className="space-y-5">
       <div>
@@ -171,6 +214,9 @@ export default function AudioAdmin() {
         <p className="text-sm text-cream-dim mt-0.5">
           Pick a deck, then <b className="text-cream">press and hold</b> a mic button to record — release to save.
           Word and example sentence are separate. Nothing plays automatically; use ▶ to check.
+        </p>
+        <p className="text-xs text-cream-dim mt-1.5">
+          ⌨️ Hands-free: <b className="text-cream">↓ / ↑</b> move through the list (auto-scrolls) · hold <b className="text-cream">1</b> = record word · hold <b className="text-cream">2</b> = record sentence
         </p>
       </div>
 
@@ -221,7 +267,7 @@ export default function AudioAdmin() {
 
       <div className="space-y-3">
         {visible.map((c, i) => (
-          <div key={c.id} className="card p-4">
+          <div key={c.id} id={`audio-card-${i}`} className={`card p-4 transition ${i === focusIdx ? "ring-2 ring-gold-bright" : ""}`}>
             <div className="text-[11px] text-cream-dim mb-2">
               #{i + 1} · <span className="italic">means: {c.back}</span>
             </div>
