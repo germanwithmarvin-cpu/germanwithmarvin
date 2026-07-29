@@ -14,6 +14,15 @@ export type StudentOverview = {
   cardsLearned: number;
   cardsSeen: number;
   lastActive: string | null;
+  marketingConsent: boolean;
+  accessScope: string | null;
+  accessExpiresAt: string | null;
+  signupSource: string | null;
+  signupCampaign: string | null;
+  signupGclid: string | null;
+  signupRef: string | null;
+  signupReferrer: string | null;
+  totalReviews: number;
 };
 
 export async function getStudents(): Promise<StudentOverview[]> {
@@ -29,6 +38,15 @@ export async function getStudents(): Promise<StudentOverview[]> {
     cardsLearned: Number(r.cards_learned ?? 0),
     cardsSeen: Number(r.cards_seen ?? 0),
     lastActive: (r.last_active as string) ?? null,
+    marketingConsent: Boolean(r.marketing_consent),
+    accessScope: (r.access_scope as string) ?? null,
+    accessExpiresAt: (r.access_expires_at as string) ?? null,
+    signupSource: (r.signup_source as string) ?? null,
+    signupCampaign: (r.signup_campaign as string) ?? null,
+    signupGclid: (r.signup_gclid as string) ?? null,
+    signupRef: (r.signup_ref as string) ?? null,
+    signupReferrer: (r.signup_referrer as string) ?? null,
+    totalReviews: Number(r.total_reviews ?? 0),
   }));
 }
 

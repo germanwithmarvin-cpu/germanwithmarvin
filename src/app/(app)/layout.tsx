@@ -6,6 +6,7 @@ import LegalFooter from "@/components/LegalFooter";
 import SupportWidget from "@/components/SupportWidget";
 import IntroTour from "@/components/IntroTour";
 import TrialBanner from "@/components/TrialBanner";
+import AppBanner from "@/components/AppBanner";
 import NewsWidget from "@/components/NewsWidget";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -17,6 +18,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex-1 flex flex-col">
       <TrialBanner />
+      <AppBanner />
       <div className="flex-1 flex flex-col md:flex-row">
         <AppNav />
         <div className="flex-1 flex flex-col min-w-0">
