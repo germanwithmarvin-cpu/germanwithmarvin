@@ -13,6 +13,7 @@ const links = [
   { href: "/training", label: "Training", icon: "🎓" },
   { href: "/booking", label: "1-on-1 lessons", icon: "🗓️" },
   { href: "/decks", label: "Flashcards", icon: "🗂️" },
+  { href: "/words", label: "Vocabulary", icon: "🔊" },
   { href: "/game", label: "Word Rocket", icon: "🚀" },
   { href: "/stories", label: "Stories", icon: "📖" },
   { href: "/check", label: "Where you stand", icon: "🧭" },

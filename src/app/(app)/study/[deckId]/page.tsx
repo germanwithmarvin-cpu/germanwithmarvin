@@ -7,8 +7,9 @@ import Flashcard, { type Direction } from "@/components/Flashcard";
 import { getAllItems, getFlaggedItems, getDueToday, getLearnedItems, reviewCard, toggleFlag, type StudyItem } from "@/lib/study";
 import { getAccess } from "@/lib/access";
 import { intervalPreview } from "@/lib/srs";
-import type { Rating } from "@/lib/types";
+import type { Rating, Card } from "@/lib/types";
 import Paywall from "@/components/Paywall";
+import WordList from "@/components/WordList";
 
 const RATINGS: { key: Rating; label: string; cls: string; hot: string }[] = [
   { key: "again", label: "Again", cls: "btn-again", hot: "1" },
@@ -26,6 +27,7 @@ export default function StudyPage() {
   const learnedLevel = deckId.startsWith("learned-") ? deckId.slice("learned-".length) : undefined;
 
   const [queue, setQueue] = useState<StudyItem[]>([]);
+  const [sessionCards, setSessionCards] = useState<Card[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [revealed, setRevealed] = useState(false);
@@ -63,6 +65,7 @@ export default function StudyPage() {
             : await getAllItems(deckId);
       if (cancelled) return;
       setQueue(items);
+      setSessionCards(items.map((i) => i.card));
       setTotal(items.length);
       setLoading(false);
     })();
@@ -200,6 +203,16 @@ export default function StudyPage() {
           <Link href="/decks" className="btn-outline px-4 py-2 text-sm">Back to decks</Link>
           <Link href="/dashboard" className="btn-gold px-4 py-2 text-sm">Dashboard</Link>
         </div>
+
+        {sessionCards.length > 0 && (
+          <div className="mt-8 card p-4 text-left">
+            <div className="text-sm font-semibold text-cream mb-1">🔊 Words from this set</div>
+            <p className="text-xs text-cream-dim mb-2">Tap a word or its example to hear the pronunciation.</p>
+            <div className="max-h-80 overflow-y-auto pr-1">
+              <WordList cards={sessionCards} />
+            </div>
+          </div>
+        )}
       </div>
     );
   }

@@ -3,26 +3,9 @@
 /* eslint-disable @next/next/no-img-element */
 import type { Card } from "@/lib/types";
 import { caseFromTags } from "@/lib/grammar";
+import PlayButton from "@/components/PlayButton";
 
 export type Direction = "de-en" | "en-de";
-
-// Kleiner Play-Button: spielt die Aufnahme nur auf Klick ab (kein Autoplay,
-// keine Timeline/Sekunden). stopPropagation, damit der Klick die Karte nicht
-// umdreht. Rendert nichts, wenn keine Aufnahme vorhanden ist.
-function PlayButton({ url, label = "Play" }: { url: string | null; label?: string }) {
-  if (!url) return null;
-  return (
-    <button
-      type="button"
-      onClick={(e) => { e.stopPropagation(); const a = new Audio(url); void a.play().catch(() => {}); }}
-      className="inline-grid place-items-center w-7 h-7 rounded-full border border-gold/40 hover:border-gold hover:bg-gold/10 text-cream shrink-0 align-middle leading-none"
-      title={label}
-      aria-label={label}
-    >
-      <span className="text-[10px] translate-x-[1px]">▶</span>
-    </button>
-  );
-}
 
 // Kleines Kasus-Symbol (z. B. ⭐ Dativ), falls die Karte einen Kasus-Tag hat.
 function CaseBadge({ tags }: { tags: string[] }) {
