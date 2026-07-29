@@ -34,9 +34,14 @@ async function messagesOf(conversationId: string): Promise<Message[]> {
 // ---- Schüler ---------------------------------------------------------------
 
 // Offene Konversation des eingeloggten Schülers (oder null) samt Nachrichten.
+// Filtert bewusst auf die EIGENE (student_id = ich) – sonst würde der Lehrer,
+// der per RLS alle Konversationen lesen darf, hier fremde Threads sehen.
 export async function getMyOpenConversation(): Promise<{ conversation: Conversation; messages: Message[] } | null> {
   const supabase = createClient();
-  const { data } = await supabase.from("conversations").select("*").eq("status", "open")
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data } = await supabase.from("conversations").select("*")
+    .eq("student_id", user.id).eq("status", "open")
     .order("last_message_at", { ascending: false }).limit(1);
   if (!data || !data[0]) return null;
   const conversation = convFrom(data[0]);

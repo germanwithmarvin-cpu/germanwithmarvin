@@ -5,24 +5,46 @@ import { getMyOpenConversation, sendStudentReply, type Message } from "@/lib/con
 
 // Schüler-Ansicht: Wenn der Lehrer geschrieben hat, erscheint nach dem Login
 // oben ein Banner „Message from Marvin". Aufklappen -> Verlauf + Antwortfeld.
+// Wegklickbar (✕); taucht bei einer NEUEN Nachricht wieder auf.
+const DISMISS_KEY = "gs_conv_dismissed_v1";
 function truncate(s: string, n: number) { return s.length > n ? s.slice(0, n) + "…" : s; }
+function readDismissed(): Record<string, string> {
+  try { return JSON.parse(localStorage.getItem(DISMISS_KEY) || "{}"); } catch { return {}; }
+}
 
 export default function ConversationWidget() {
   const [convId, setConvId] = useState<string | null>(null);
+  const [lastMsgAt, setLastMsgAt] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [open, setOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     getMyOpenConversation()
-      .then((c) => { if (c) { setConvId(c.conversation.id); setMessages(c.messages); } })
+      .then((c) => {
+        if (!c) return;
+        const last = c.messages.length ? c.messages[c.messages.length - 1].createdAt : c.conversation.lastMessageAt;
+        setConvId(c.conversation.id);
+        setLastMsgAt(last);
+        setMessages(c.messages);
+        const dismissedAt = readDismissed()[c.conversation.id];
+        if (dismissedAt && dismissedAt >= last) setHidden(true); // seit dem Wegklicken nichts Neues
+      })
       .catch(() => {})
       .finally(() => setLoaded(true));
   }, []);
 
-  if (!loaded || !convId) return null;
+  if (!loaded || !convId || hidden) return null;
+
+  function dismiss() {
+    const d = readDismissed();
+    d[convId!] = lastMsgAt || new Date().toISOString();
+    try { localStorage.setItem(DISMISS_KEY, JSON.stringify(d)); } catch { /* egal */ }
+    setHidden(true);
+  }
 
   async function send() {
     const body = text.trim();
@@ -31,7 +53,9 @@ export default function ConversationWidget() {
     const { error } = await sendStudentReply(convId, body);
     setSending(false);
     if (error) return;
-    setMessages((m) => [...m, { id: `local-${Date.now()}`, conversationId: convId, sender: "student", body, createdAt: new Date().toISOString(), readByTeacher: false }]);
+    const now = new Date().toISOString();
+    setMessages((m) => [...m, { id: `local-${Date.now()}`, conversationId: convId, sender: "student", body, createdAt: now, readByTeacher: false }]);
+    setLastMsgAt(now);
     setText("");
   }
 
@@ -39,10 +63,13 @@ export default function ConversationWidget() {
 
   return (
     <div style={{ background: "var(--bordeaux-soft)", color: "var(--cream)" }}>
-      <button onClick={() => setOpen((o) => !o)} className="w-full px-4 py-2.5 text-sm flex items-center justify-center gap-3">
-        <span>💬 <b>Message from Marvin</b>{lastTeacher && !open ? ` — ${truncate(lastTeacher.body, 60)}` : ""}</span>
-        <span className="opacity-70 shrink-0">{open ? "▲ close" : "▼ reply"}</span>
-      </button>
+      <div className="w-full px-4 py-2.5 text-sm flex items-center justify-center gap-3">
+        <button onClick={() => setOpen((o) => !o)} className="flex items-center gap-2 min-w-0">
+          <span className="truncate">💬 <b>Message from Marvin</b>{lastTeacher && !open ? ` — ${truncate(lastTeacher.body, 50)}` : ""}</span>
+          <span className="opacity-70 shrink-0">{open ? "▲" : "▼ reply"}</span>
+        </button>
+        <button onClick={dismiss} aria-label="Dismiss" title="Dismiss" className="opacity-70 hover:opacity-100 shrink-0">✕</button>
+      </div>
       {open && (
         <div className="px-4 pb-3 max-w-2xl mx-auto w-full">
           <div className="max-h-64 overflow-y-auto space-y-2 py-2">
