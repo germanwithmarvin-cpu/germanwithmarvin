@@ -98,10 +98,18 @@ function PrivacyEN() {
         </p>
       </Section>
 
-      <Section title="8. Cookies">
+      <Section title="8. Cookies &amp; advertising measurement">
         <p>
           We use technically necessary cookies to keep you signed in (login session). Without them, logging in
           is not possible. Legal basis: Art. 6(1)(f) GDPR / § 25(2) TDDDG (strictly necessary cookies).
+        </p>
+        <p className="mt-2">
+          With your consent we use <strong>Google Ads</strong> (Google Ireland Ltd.) to measure the success of our
+          advertising — for example whether a sign-up followed an ad click. This may set cookies and, for
+          &quot;enhanced conversions&quot;, transmit a <strong>hashed (irreversible) form of your email address</strong> to
+          Google to match a conversion. We use Google Consent Mode: in the EU/EEA, UK and Switzerland these
+          technologies stay disabled until you agree in the cookie banner, and you can decline. Legal basis:
+          Art. 6(1)(a) GDPR / § 25(1) TDDDG (consent).
         </p>
       </Section>
 
@@ -111,7 +119,7 @@ function PrivacyEN() {
           <li>Vercel Inc. (hosting, USA)</li>
           <li>Supabase Inc. (account &amp; database, USA/Singapore)</li>
           <li>Stripe (payment processing / merchant of record, USA &amp; Ireland)</li>
-          <li>Google Ireland Ltd. / YouTube (video hosting, EU/USA)</li>
+          <li>Google Ireland Ltd. (YouTube video hosting; Google Ads conversion measurement, EU/USA)</li>
         </ul>
         <p className="mt-2">
           This may involve transferring personal data to the USA. Where required, we base such transfers on
@@ -221,10 +229,19 @@ function PrivacyDE() {
         </p>
       </Section>
 
-      <Section title="8. Cookies">
+      <Section title="8. Cookies &amp; Werbe-Erfolgsmessung">
         <p>
           Wir verwenden technisch notwendige Cookies, um deine Anmeldung (Login-Sitzung) aufrechtzuerhalten.
           Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO / § 25 Abs. 2 TDDDG.
+        </p>
+        <p className="mt-2">
+          Mit deiner Einwilligung nutzen wir <strong>Google Ads</strong> (Google Ireland Ltd.) zur Erfolgsmessung
+          unserer Werbung — z. B. ob nach einem Anzeigenklick eine Registrierung erfolgte. Dabei können Cookies
+          gesetzt und für &quot;Enhanced Conversions&quot; eine <strong>gehashte (nicht umkehrbare) Fassung deiner
+          E-Mail-Adresse</strong> an Google übermittelt werden, um eine Conversion zuzuordnen. Wir setzen den
+          Google Consent Mode ein: In der EU/im EWR, in UK und der Schweiz bleiben diese Technologien deaktiviert,
+          bis du im Cookie-Banner zustimmst; du kannst ablehnen. Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO /
+          § 25 Abs. 1 TDDDG (Einwilligung).
         </p>
       </Section>
 
@@ -234,7 +251,7 @@ function PrivacyDE() {
           <li>Vercel Inc. (Hosting, USA)</li>
           <li>Supabase Inc. (Konto &amp; Datenbank, USA/Singapur)</li>
           <li>Stripe (Zahlungsabwicklung / Merchant of Record, USA &amp; Irland)</li>
-          <li>Google Ireland Ltd. / YouTube (Videohosting, EU/USA)</li>
+          <li>Google Ireland Ltd. (YouTube-Videohosting; Google-Ads-Conversion-Messung, EU/USA)</li>
         </ul>
         <p className="mt-2">
           Dabei kann es zu einer Übermittlung in die USA kommen; soweit erforderlich, gestützt auf geeignete
