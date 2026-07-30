@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 const steps = [
-  { n: "1", title: "Create your free account", text: "Sign up in a minute — 5 days free, no credit card." },
+  { n: "1", title: "Create your free account", text: "No subscription required — just sign up in a minute." },
   { n: "2", title: "Choose your teacher & time", text: "Pick Marvin or Thanh Ha and a slot that fits your week." },
   { n: "3", title: "Meet on video", text: "A focused 50-minute 1-on-1 lesson, tailored to you." },
 ];
@@ -32,7 +32,7 @@ export default function OnlineLessonsPage() {
         </Link>
         <nav className="flex items-center gap-3">
           <Link href="/login" className="px-4 py-2 text-sm rounded-lg border border-[#8A3030] text-[#8A3030] hover:bg-[#8A3030]/5 transition">Sign in</Link>
-          <Link href="/register" className="px-4 py-2 text-sm rounded-lg bg-[#8A3030] text-white hover:brightness-110 transition">Get started</Link>
+          <Link href="/register?intent=lesson" className="px-4 py-2 text-sm rounded-lg bg-[#8A3030] text-white hover:brightness-110 transition">Get started</Link>
         </nav>
       </header>
 
@@ -48,7 +48,7 @@ export default function OnlineLessonsPage() {
             50-minute sessions from <span className="font-semibold text-[#3B2922]">$30</span> — with Marvin or Thanh Ha, clear explanations in your language.
           </p>
 
-          <Link href="/register" className="mt-8 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
+          <Link href="/register?intent=lesson" className="mt-8 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
             Get started — book a lesson
           </Link>
           <p className="mt-3 text-sm text-[#3B2922]/70">Create a free account, then book your first lesson inside the app.</p>
@@ -84,6 +84,11 @@ export default function OnlineLessonsPage() {
               <div className="mt-4 font-bold text-lg">{t.name}</div>
               <div className="text-sm text-[#3B2922]/60">{t.role}</div>
               <p className="mt-3 text-sm text-[#3B2922]/75">{t.blurb}</p>
+              <div className="mt-3 text-sm text-[#3B2922]/70">🗣 {t.langs}</div>
+              <div className="mt-1 font-semibold">${t.price} <span className="font-normal text-[#3B2922]/60">/ 50-min lesson</span></div>
+              <Link href="/register?intent=lesson" className="mt-4 inline-block rounded-lg bg-[#8A3030] text-white px-5 py-2.5 text-sm font-semibold hover:brightness-110 transition">
+                Book with {t.name.split(" ")[0]}
+              </Link>
             </div>
           ))}
         </div>
@@ -115,7 +120,7 @@ export default function OnlineLessonsPage() {
           <p className="mt-2 text-sm"><Stars /> <span className="font-bold">{PREPLY_STATS.rating}</span> <span className="text-[#3B2922]/60">· {PREPLY_STATS.reviews} reviews</span></p>
         </div>
         <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 [column-fill:_balance]">
-          {REVIEWS.map((r, i) => (
+          {REVIEWS.slice(0, 6).map((r, i) => (
             <div key={i} className="bg-[#FBF2DA] rounded-2xl p-5 mb-4 break-inside-avoid shadow-sm border border-black/5">
               <Stars />
               <p className="mt-2 text-sm text-[#3B2922]/90 italic">“{r.text}”</p>
@@ -130,7 +135,7 @@ export default function OnlineLessonsPage() {
         <div className="bg-[#FBF2DA] rounded-2xl p-8 sm:p-10 text-center shadow-md border border-[#E3A12F]/40">
           <h2 className="text-2xl font-bold">Ready for your first lesson?</h2>
           <p className="mt-2 text-sm text-[#3B2922]/70">Create a free account, pick your teacher and book — from $30 per 50-minute lesson.</p>
-          <Link href="/register" className="mt-6 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition">
+          <Link href="/register?intent=lesson" className="mt-6 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition">
             Get started — book a lesson
           </Link>
           <p className="text-xs text-[#3B2922]/55 mt-4">

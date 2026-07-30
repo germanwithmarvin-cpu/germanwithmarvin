@@ -11,6 +11,6 @@ export const SHOTS = [
 ];
 
 export const TEACHERS = [
-  { name: "Marvin Graf", role: "Founder & your main teacher", photo: "/teachers/marvin.jpg", blurb: "Teaching German full-time for 4+ years, with thousands of 1-on-1 hours. Levels A1–C1." },
-  { name: "Thanh Ha Nguyen", role: "German teacher · trilingual", photo: "/teachers/thanh-ha.jpg?v=2", blurb: "Trilingual linguist with a Master’s in Linguistics, specializing in teaching German to Vietnamese and English native speakers — clear explanations in your own language for smooth learning." },
+  { name: "Marvin Graf", role: "Founder & your main teacher", photo: "/teachers/marvin.jpg", price: 59, langs: "German · English", blurb: "Teaching German full-time for 4+ years, with thousands of 1-on-1 hours. Levels A1–C1." },
+  { name: "Thanh Ha Nguyen", role: "German teacher · trilingual", photo: "/teachers/thanh-ha.jpg?v=2", price: 30, langs: "German · English · Vietnamese", blurb: "Trilingual linguist with a Master’s in Linguistics, specializing in teaching German to Vietnamese and English native speakers — clear explanations in your own language for smooth learning." },
 ];

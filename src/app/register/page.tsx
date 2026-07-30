@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
@@ -17,6 +17,14 @@ export default function RegisterPage() {
   const [info, setInfo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [marketing, setMarketing] = useState(false);
+  // ?intent=lesson: eigener Funnel für Privatunterricht (statt Kurs-Trial).
+  const [isLesson, setIsLesson] = useState(false);
+
+  useEffect(() => {
+    try { setIsLesson(new URLSearchParams(window.location.search).get("intent") === "lesson"); } catch { /* egal */ }
+  }, []);
+
+  const nextPath = isLesson ? "/booking" : "/dashboard";
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
@@ -30,7 +38,7 @@ export default function RegisterPage() {
       password,
       options: {
         // Ziel des Bestätigungslinks in der E-Mail (verifiziert die Adresse).
-        emailRedirectTo: `${window.location.origin}/auth/confirm?next=/dashboard`,
+        emailRedirectTo: `${window.location.origin}/auth/confirm?next=${nextPath}`,
         data: {
           full_name: fullName,
           marketing_consent: marketing,
@@ -53,11 +61,13 @@ export default function RegisterPage() {
     trackSignupConversion(email);
     // Zugang wird über die bezahlte E-Mail bzw. einen Code abgeleitet (my_access()).
     if (data.session) {
-      router.push("/dashboard");
+      router.push(nextPath);
       router.refresh();
       return;
     }
-    setInfo(`We sent a confirmation link to ${email}. Click it to activate your account and start your free trial.`);
+    setInfo(isLesson
+      ? `We sent a confirmation link to ${email}. Click it to activate your account, then book your lesson.`
+      : `We sent a confirmation link to ${email}. Click it to activate your account and start your free trial.`);
     setLoading(false);
   }
 
@@ -68,16 +78,28 @@ export default function RegisterPage() {
       </header>
       <main className="flex-1 grid place-items-center px-6 py-10">
         <div className="card p-8 w-full max-w-sm">
-          <h1 className="text-2xl font-bold text-center">Start your 5-day free trial</h1>
+          <h1 className="text-2xl font-bold text-center">
+            {isLesson ? "Create your free account & book your lesson" : "Start your 5-day free trial"}
+          </h1>
 
-          {/* Trial-Highlight */}
-          <div className="mt-4 rounded-xl border-2 border-gold/50 bg-gold/10 p-4 text-center">
-            <div className="text-2xl">🎁</div>
-            <p className="text-sm text-cream mt-1">
-              <span className="text-gold-bright font-bold">Full access, free for 5 days.</span> No credit card needed.
-            </p>
-            <p className="text-xs text-cream-dim mt-1">Videos, flashcard trainer, the vocab game & stories — everything.</p>
-          </div>
+          {/* Highlight — je nach Absicht */}
+          {isLesson ? (
+            <div className="mt-4 rounded-xl border-2 border-gold/50 bg-gold/10 p-4 text-center">
+              <div className="text-2xl">🗓️</div>
+              <p className="text-sm text-cream mt-1">
+                <span className="text-gold-bright font-bold">Create a free account — no subscription required.</span>
+              </p>
+              <p className="text-xs text-cream-dim mt-1">Then pick your teacher and a time, and book your 1-on-1 lesson.</p>
+            </div>
+          ) : (
+            <div className="mt-4 rounded-xl border-2 border-gold/50 bg-gold/10 p-4 text-center">
+              <div className="text-2xl">🎁</div>
+              <p className="text-sm text-cream mt-1">
+                <span className="text-gold-bright font-bold">Full access, free for 5 days.</span> No credit card needed.
+              </p>
+              <p className="text-xs text-cream-dim mt-1">Videos, flashcard trainer, the vocab game & stories — everything.</p>
+            </div>
+          )}
 
           <form className="mt-5 space-y-4" onSubmit={handleRegister}>
             <div>
@@ -102,7 +124,7 @@ export default function RegisterPage() {
             {info && <p className="text-sm text-cream bg-green-accent/20 rounded-lg p-3">{info}</p>}
 
             <button type="submit" disabled={loading} className="btn-gold w-full py-2.5 disabled:opacity-50">
-              {loading ? "Starting…" : "Start my free trial"}
+              {loading ? "Creating…" : isLesson ? "Create my free account" : "Start my free trial"}
             </button>
           </form>
 

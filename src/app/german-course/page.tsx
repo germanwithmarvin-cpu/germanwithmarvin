@@ -20,6 +20,16 @@ const included = [
   "Statistics & progress tracking, learn at your own pace",
 ];
 
+const faqs = [
+  { q: "What language is the course taught in?", a: "In English, with clear German examples throughout — no prior German needed." },
+  { q: "Do I need a credit card for the free trial?", a: "No. The 5 days are completely free and need no credit card." },
+  { q: "What happens after the 5 free days?", a: "Nothing is charged automatically. Your access simply pauses, and you choose whether to continue for $39/month — or not." },
+  { q: "Which levels are included?", a: "Everything from A1 (complete beginner) to B2 (upper-intermediate): lessons, flashcards, exercises and stories for every level." },
+  { q: "Which level should I start at?", a: "Start at A1 if you're new, or jump straight to your level. The in-app check (“Where you stand”) points you to the right starting point." },
+  { q: "Do you add new content?", a: "Yes — I add new lessons, exercises and vocabulary regularly, and you get all updates while subscribed." },
+  { q: "Can I cancel anytime?", a: "Yes, cancel anytime in a couple of clicks — no lock-in." },
+];
+
 function Stars() {
   return <span className="text-[#E3A12F] tracking-tight">★★★★★</span>;
 }
@@ -54,7 +64,7 @@ export default function GermanCoursePage() {
             Start your 5-day free trial
           </Link>
           <p className="mt-3 text-sm text-[#3B2922]/70">
-            <span className="font-semibold text-[#3B2922]">Free for 5 days · no credit card.</span> Then {priceLabel()}/month · cancel anytime.
+            <span className="font-semibold text-[#3B2922]">5 days free · no credit card.</span> After that, choose whether to continue for {priceLabel()}/month.
           </p>
 
           <p className="mt-5 text-sm flex items-center gap-2 flex-wrap">
@@ -71,6 +81,16 @@ export default function GermanCoursePage() {
             <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#5FA45F" }} />
           </div>
           <img src="/screens/learning-path.jpg" alt="Structured A1 to B2 learning path" className="w-full h-auto block" />
+        </div>
+      </section>
+
+      {/* Zahlen-Band */}
+      <section className="bg-[#F7DEAD]/70 border-y border-black/5">
+        <div className="max-w-4xl mx-auto px-6 py-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-center text-sm text-[#3B2922]/75">
+          <span><b className="text-[#8A3030] text-base">40+</b> video lessons</span>
+          <span><b className="text-[#8A3030] text-base">2,600+</b> flashcards</span>
+          <span><b className="text-[#8A3030] text-base">60+</b> topics</span>
+          <span><b className="text-[#8A3030] text-base">A1–B2</b> all levels</span>
         </div>
       </section>
 
@@ -97,6 +117,12 @@ export default function GermanCoursePage() {
             </figure>
           ))}
         </div>
+        <div className="text-center mt-9">
+          <Link href="/register" className="inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
+            Start your 5-day free trial
+          </Link>
+          <p className="mt-2 text-sm text-[#3B2922]/60">No credit card · full access.</p>
+        </div>
       </section>
 
       {/* Reviews */}
@@ -118,13 +144,29 @@ export default function GermanCoursePage() {
         </div>
       </section>
 
+      {/* FAQ */}
+      <section className="max-w-3xl mx-auto px-6 py-14">
+        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8">Frequently asked questions</h2>
+        <div className="space-y-3">
+          {faqs.map((f) => (
+            <details key={f.q} className="bg-[#FBF2DA] rounded-xl border border-black/5 p-5 group">
+              <summary className="font-semibold cursor-pointer list-none [&::-webkit-details-marker]:hidden flex items-center justify-between gap-4">
+                {f.q}
+                <span className="text-[#8A3030] text-xl leading-none group-open:rotate-45 transition shrink-0">+</span>
+              </summary>
+              <p className="mt-2 text-sm text-[#3B2922]/75">{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
       {/* Preis / Abschluss-CTA */}
       <section className="max-w-2xl mx-auto px-6 py-16">
         <div className="bg-[#FBF2DA] rounded-2xl p-8 sm:p-10 text-center shadow-md border border-[#E3A12F]/40">
           <h2 className="text-2xl font-bold">Try the whole course — free for 5 days</h2>
           <div className="mt-3">
             <span className="text-5xl font-bold text-[#8A3030]">5 days free</span>
-            <div className="text-sm text-[#3B2922]/70 mt-1">then {priceLabel()}/month · {TAX_NOTE}</div>
+            <div className="text-sm text-[#3B2922]/70 mt-1">After that, choose whether to continue for {priceLabel()}/month · {TAX_NOTE}</div>
           </div>
           <ul className="text-sm text-[#3B2922]/75 space-y-2 my-7 inline-block text-left">
             {included.map((f) => <li key={f}>✓ {f}</li>)}
