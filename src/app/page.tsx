@@ -29,10 +29,10 @@ const teachers = [
 
 // Echte Produkt-Screenshots. Dateien liegen in public/screens/ (Marvin legt sie ab).
 const shots = [
-  { src: "/screens/learning-path.jpg", alt: "Structured A1 to B2 learning path", title: "A clear path, not random lessons.", text: "Work through German step by step, from A1 to B2 — one topic at a time." },
+  { src: "/screens/learning-path.jpg", alt: "Structured A1 to B2 vocabulary path", title: "A clear path, not random flashcards.", text: "Build your vocabulary in a structured order — one topic at a time, from A1 to B2." },
   { src: "/screens/video-lesson.jpg", alt: "Video lesson with written notes", title: "Short, clear video lessons.", text: "Watch and follow along with written notes and real examples." },
   { src: "/screens/practice.jpg", alt: "Interactive sentence-building exercise", title: "Interactive practice.", text: "Build real sentences and get instant, friendly feedback." },
-  { src: "/screens/flashcards.jpg", alt: "Smart flashcard trainer", title: "A smart flashcard trainer.", text: "Spaced repetition with example sentences and native audio." },
+  { src: "/screens/flashcards.jpg", alt: "Smart flashcard trainer", title: "A smart flashcard trainer.", text: "Spaced repetition with example sentences and pronunciation — spoken and recorded by me, not a robot." },
   { src: "/screens/word-rocket.jpg", alt: "Word Rocket vocab game", title: "A fast vocab game.", text: "Race the clock — practice that actually feels like play." },
   { src: "/screens/video-library.jpg", alt: "Video lesson library", title: "A growing lesson library.", text: "Dozens of lessons across every level — watch in any order." },
 ];
@@ -63,7 +63,7 @@ export default function Home() {
             Learn German online —<br /><span className="text-[#8A3030]">the simple way.</span>
           </h1>
           <p className="mt-5 text-lg text-[#3B2922]/75 max-w-md">
-            Clear video lessons, a smart flashcard trainer and reading stories — <span className="font-semibold text-[#3B2922]">plus 1-on-1 lessons with real teachers.</span> Everything you need to actually speak German, from A1 to B2.
+            Clear video lessons, a smart flashcard trainer and reading stories — <span className="font-semibold text-[#3B2922]">plus optional 1-on-1 lessons with real teachers.</span> Everything you need to actually speak German, from A1 to B2.
           </p>
 
           <Link href="/register" className="mt-8 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">

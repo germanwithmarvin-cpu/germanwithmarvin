@@ -77,10 +77,6 @@ export default function RegisterPage() {
               <span className="text-gold-bright font-bold">Full access, free for 5 days.</span> No credit card needed.
             </p>
             <p className="text-xs text-cream-dim mt-1">Videos, flashcard trainer, the vocab game & stories — everything.</p>
-            <p className="text-xs text-cream-dim mt-2">
-              Already paid or have a code? Sign up with the{" "}
-              <span className="text-cream">same email</span> — your access unlocks automatically.
-            </p>
           </div>
 
           <form className="mt-5 space-y-4" onSubmit={handleRegister}>
@@ -110,15 +106,7 @@ export default function RegisterPage() {
             </button>
           </form>
 
-          <p className="text-xs text-cream-dim text-center mt-4">
-            🎟️ Have a code? Create your account first — then unlock access with{" "}
-            <span className="text-gold-bright">“Redeem code”</span> inside the app.
-          </p>
-          <p className="text-xs text-cream-dim text-center mt-3">
-            Haven’t joined yet?{" "}
-            <Link href="/" className="text-gold-bright underline underline-offset-4">See the plan</Link>.
-          </p>
-          <p className="text-sm text-cream-dim text-center mt-4">
+          <p className="text-sm text-cream-dim text-center mt-5">
             Already have an account?{" "}
             <Link href="/login" className="text-gold-bright underline underline-offset-4">Sign in</Link>
           </p>

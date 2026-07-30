@@ -33,13 +33,12 @@ export default function ConsentBanner() {
     <div
       role="dialog"
       aria-label="Cookie consent"
-      className="fixed bottom-0 inset-x-0 z-[60] p-4"
+      className="fixed bottom-0 inset-x-0 z-[60] p-3 sm:p-4"
       style={{ background: "#241310", borderTop: "1px solid rgba(227,161,47,.35)", boxShadow: "0 -8px 30px rgba(0,0,0,.35)" }}
     >
-      <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
-        <p className="text-sm leading-relaxed" style={{ color: "#F5E6C8" }}>
-          We use cookies for advertising and analytics to improve German Simplified. You can accept or decline —
-          essential features work either way. See our{" "}
+      <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-5">
+        <p className="text-xs sm:text-sm leading-snug" style={{ color: "#F5E6C8" }}>
+          We use cookies for advertising &amp; analytics. Essential features work either way — see our{" "}
           <a href="/datenschutz" className="underline underline-offset-2" style={{ color: "#E3A12F" }}>Privacy Policy</a>.
         </p>
         <div className="flex gap-2 shrink-0">
