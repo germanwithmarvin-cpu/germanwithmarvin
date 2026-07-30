@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import type { Metadata } from "next";
+import VideoPlayer from "@/components/VideoPlayer";
 import { SITE, priceLabel, TAX_NOTE } from "@/lib/config";
 import { REVIEWS, PREPLY_STATS } from "@/lib/reviews";
 import { SHOTS } from "@/lib/landing";
@@ -73,14 +74,14 @@ export default function GermanCoursePage() {
           </p>
         </div>
 
-        {/* Hero-Screenshot: der Lernpfad */}
+        {/* Hero-Screenshot: Videovorschau einer Lektion */}
         <div className="bg-[#FBF2DA] rounded-2xl border border-black/5 shadow-lg overflow-hidden">
           <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-black/5" style={{ background: "rgba(0,0,0,0.03)" }}>
             <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#E36B6B" }} />
             <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#E3A12F" }} />
             <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#5FA45F" }} />
           </div>
-          <img src="/screens/learning-path.jpg" alt="Structured A1 to B2 learning path" className="w-full h-auto block" />
+          <img src="/screens/video-lesson.jpg" alt="A German video lesson" className="w-full h-auto block" />
         </div>
       </section>
 
@@ -101,8 +102,12 @@ export default function GermanCoursePage() {
           <h2 className="text-2xl sm:text-3xl font-bold">See exactly what you get</h2>
           <p className="mt-3 text-[#3B2922]/75">Real screens from the course — not stock photos.</p>
         </div>
+        {/* Intro-Video (wie auf der Startseite) */}
+        <div className="max-w-2xl mx-auto mb-10 rounded-2xl bg-[#FBF2DA] p-3 shadow-lg border border-black/5">
+          <VideoPlayer videoId={SITE.introVideoId} title="German Simplified — Marvin Graf" />
+        </div>
         <div className="grid md:grid-cols-2 gap-6">
-          {SHOTS.map((s) => (
+          {SHOTS.filter((s) => s.src !== "/screens/video-lesson.jpg").map((s) => (
             <figure key={s.src} className="bg-[#FBF2DA] rounded-2xl border border-black/5 shadow-sm overflow-hidden">
               <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-black/5" style={{ background: "rgba(0,0,0,0.03)" }}>
                 <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#E36B6B" }} />
