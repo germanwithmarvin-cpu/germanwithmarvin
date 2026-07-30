@@ -27,6 +27,16 @@ const teachers = [
   { name: "Thanh Ha Nguyen", role: "German teacher · trilingual", photo: "/teachers/thanh-ha.jpg?v=2", blurb: "Trilingual linguist with a Master’s in Linguistics, specializing in teaching German to Vietnamese and English native speakers — clear explanations in your own language for smooth learning." },
 ];
 
+// Echte Produkt-Screenshots. Dateien liegen in public/screens/ (Marvin legt sie ab).
+const shots = [
+  { src: "/screens/learning-path.jpg", alt: "Structured A1 to B2 learning path", title: "A clear path, not random lessons.", text: "Work through German step by step, from A1 to B2 — one topic at a time." },
+  { src: "/screens/video-lesson.jpg", alt: "Video lesson with written notes", title: "Short, clear video lessons.", text: "Watch and follow along with written notes and real examples." },
+  { src: "/screens/practice.jpg", alt: "Interactive sentence-building exercise", title: "Interactive practice.", text: "Build real sentences and get instant, friendly feedback." },
+  { src: "/screens/flashcards.jpg", alt: "Smart flashcard trainer", title: "A smart flashcard trainer.", text: "Spaced repetition with example sentences and native audio." },
+  { src: "/screens/word-rocket.jpg", alt: "Word Rocket vocab game", title: "A fast vocab game.", text: "Race the clock — practice that actually feels like play." },
+  { src: "/screens/video-library.jpg", alt: "Video lesson library", title: "A growing lesson library.", text: "Dozens of lessons across every level — watch in any order." },
+];
+
 function Stars() {
   return <span className="text-[#E3A12F] tracking-tight">★★★★★</span>;
 }
@@ -88,6 +98,39 @@ export default function Home() {
             <span className="text-xl">👩‍🏫</span>
             <div className="leading-tight"><div className="font-bold text-sm">1-on-1</div><div className="text-xs text-[#3B2922]/60">from $30/lesson</div></div>
           </div>
+        </div>
+      </section>
+
+      {/* Produkt-Screenshots — „so sieht es wirklich aus" */}
+      <section className="max-w-6xl mx-auto px-6 py-14">
+        <div className="text-center max-w-2xl mx-auto mb-9">
+          <span className="inline-block text-xs tracking-[0.3em] text-[#E3A12F] uppercase font-semibold mb-3">A look inside</span>
+          <h2 className="text-2xl sm:text-3xl font-bold">See exactly how it works</h2>
+          <p className="mt-3 text-[#3B2922]/75">
+            Real screens from the app — a clear plan, video lessons, interactive practice, flashcards and a vocab game.
+          </p>
+        </div>
+        <div className="grid md:grid-cols-2 gap-6">
+          {shots.map((s) => (
+            <figure key={s.src} className="bg-[#FBF2DA] rounded-2xl border border-black/5 shadow-sm overflow-hidden">
+              <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-black/5" style={{ background: "rgba(0,0,0,0.03)" }}>
+                <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#E36B6B" }} />
+                <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#E3A12F" }} />
+                <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#5FA45F" }} />
+              </div>
+              <img src={s.src} alt={s.alt} loading="lazy" className="w-full h-auto block" />
+              <figcaption className="px-5 py-4 text-sm">
+                <span className="font-bold">{s.title}</span>{" "}
+                <span className="text-[#3B2922]/70">{s.text}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+        <div className="text-center mt-9">
+          <Link href="/register" className="inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
+            Try it free for 5 days
+          </Link>
+          <p className="mt-2 text-sm text-[#3B2922]/60">No credit card · full access.</p>
         </div>
       </section>
 
