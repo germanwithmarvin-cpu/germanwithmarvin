@@ -96,7 +96,7 @@ export default function GermanCoursePage() {
       </section>
 
       {/* Screenshots */}
-      <section className="max-w-6xl mx-auto px-6 py-14">
+      <section id="how" className="max-w-6xl mx-auto px-6 py-14 scroll-mt-8">
         <div className="text-center max-w-2xl mx-auto mb-9">
           <span className="inline-block text-xs tracking-[0.3em] text-[#E3A12F] uppercase font-semibold mb-3">A look inside</span>
           <h2 className="text-2xl sm:text-3xl font-bold">See exactly what you get</h2>
@@ -131,7 +131,7 @@ export default function GermanCoursePage() {
       </section>
 
       {/* Reviews */}
-      <section className="bg-[#F7DEAD]">
+      <section id="reviews" className="bg-[#F7DEAD] scroll-mt-8">
         <div className="max-w-6xl mx-auto px-6 py-14">
           <div className="text-center mb-8">
             <h2 className="text-2xl sm:text-3xl font-bold">Students love learning with me</h2>
@@ -150,7 +150,7 @@ export default function GermanCoursePage() {
       </section>
 
       {/* FAQ */}
-      <section className="max-w-3xl mx-auto px-6 py-14">
+      <section id="faq" className="max-w-3xl mx-auto px-6 py-14 scroll-mt-8">
         <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8">Frequently asked questions</h2>
         <div className="space-y-3">
           {faqs.map((f) => (
@@ -166,7 +166,7 @@ export default function GermanCoursePage() {
       </section>
 
       {/* Preis / Abschluss-CTA */}
-      <section className="max-w-2xl mx-auto px-6 py-16">
+      <section id="pricing" className="max-w-2xl mx-auto px-6 py-16 scroll-mt-8">
         <div className="bg-[#FBF2DA] rounded-2xl p-8 sm:p-10 text-center shadow-md border border-[#E3A12F]/40">
           <h2 className="text-2xl font-bold">Try the whole course — free for 5 days</h2>
           <div className="mt-3">
