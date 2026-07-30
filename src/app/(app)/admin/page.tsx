@@ -8,6 +8,7 @@ import StudentsAdmin from "@/components/StudentsAdmin";
 import DecksAdmin from "@/components/admin/DecksAdmin";
 import AudioAdmin from "@/components/admin/AudioAdmin";
 import CodesAdmin from "@/components/admin/CodesAdmin";
+import DiscountCodesAdmin from "@/components/admin/DiscountCodesAdmin";
 import ReferralAdmin from "@/components/admin/ReferralAdmin";
 import CheckResultsAdmin from "@/components/admin/CheckResultsAdmin";
 import { createClient } from "@/lib/supabase/client";
@@ -68,7 +69,13 @@ export default function AdminPage() {
 
       {tab === "Audio" && <AudioAdmin />}
 
-      {tab === "Codes" && <CodesAdmin />}
+      {tab === "Codes" && (
+        <div className="space-y-8">
+          <CodesAdmin />
+          <div className="border-t border-gold/15" />
+          <DiscountCodesAdmin />
+        </div>
+      )}
 
       {tab === "Referral" && <ReferralAdmin />}
     </div>
