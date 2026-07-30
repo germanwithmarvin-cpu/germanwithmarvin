@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
 import { createClient } from "@/lib/supabase/client";
 import { getAttribution } from "@/lib/attribution";
+import { trackSignupConversion } from "@/lib/track";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -48,6 +49,8 @@ export default function RegisterPage() {
       setLoading(false);
       return;
     }
+    // Registrierung erfolgreich = Google-Ads-Conversion (respektiert Consent Mode).
+    trackSignupConversion(email);
     // Zugang wird über die bezahlte E-Mail bzw. einen Code abgeleitet (my_access()).
     if (data.session) {
       router.push("/dashboard");
