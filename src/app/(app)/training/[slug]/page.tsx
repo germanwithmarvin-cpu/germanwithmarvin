@@ -7,6 +7,8 @@ import { getUnitBySlug, getExercises, checkAnswer, saveAttempt, saveUnitResult, 
 import { getAccess } from "@/lib/access";
 import { addXp } from "@/lib/progress";
 import Paywall from "@/components/Paywall";
+import TrialLimitWall from "@/components/TrialLimitWall";
+import { useDailyLimit, isTrialAccess } from "@/lib/trialLimits";
 import ExerciseView from "@/components/training/ExerciseView";
 import Lena from "@/components/training/Lena";
 import Theory from "@/components/training/Theory";
@@ -16,7 +18,7 @@ import { getDrillForUnit } from "@/lib/drills";
 const PRAISE = ["Nailed it!", "Exactly.", "Nice — keep going!", "That was clean."];
 const CONSOLE_LINES = ["So close — look:", "Almost! Here is why:", "No worries, this is the bit:"];
 
-type Phase = "loading" | "blocked" | "missing" | "theory" | "practice" | "done";
+type Phase = "loading" | "blocked" | "limit" | "missing" | "theory" | "practice" | "done";
 
 export default function TrainingUnitPage() {
   const params = useParams<{ slug: string }>();
@@ -48,11 +50,21 @@ export default function TrainingUnitPage() {
   const [bestCombo, setBestCombo] = useState(0);
   const [saved, setSaved] = useState(false);
 
+  // Trial-Tageslimit (5 Einheiten). Nur fuer zeitlich begrenzten Zugang aktiv.
+  const [trialExpiresAt, setTrialExpiresAt] = useState<string | null>(null);
+  const { claim } = useDailyLimit();
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
       const access = await getAccess();
       if (access.tier !== "full") { if (!cancelled) setPhase("blocked"); return; }
+      // Trial: diese Einheit als eine der 5 taeglichen buchen (Wiederholung derselben
+      // Einheit ist gratis). Kontingent voll -> warme Upgrade-Wand statt der Einheit.
+      if (isTrialAccess(access) && !claim("units", slug)) {
+        if (!cancelled) { setTrialExpiresAt(access.trialExpiresAt ?? null); setPhase("limit"); }
+        return;
+      }
       const u = await getUnitBySlug(slug);
       if (cancelled) return;
       if (!u) { setPhase("missing"); return; }
@@ -63,7 +75,7 @@ export default function TrainingUnitPage() {
       setUnit(u); setAll(ex); setQueue(ex); setPhase("theory");
     })();
     return () => { cancelled = true; };
-  }, [slug]);
+  }, [slug, claim]);
 
   const ex = queue[pos];
   const isFirstRound = round === 1;
@@ -131,6 +143,7 @@ export default function TrainingUnitPage() {
 
   if (phase === "loading") return <p className="text-sm text-cream-dim">Loading…</p>;
   if (phase === "blocked") return <Paywall title="Unlock the training course" />;
+  if (phase === "limit") return <TrialLimitWall kind="units" trialExpiresAt={trialExpiresAt} />;
   if (phase === "missing") return (
     <div className="card p-6 text-center space-y-3">
       <p className="font-semibold">This unit is not available yet.</p>

@@ -6,8 +6,12 @@ import Link from "next/link";
 import type { Lesson, Exercise } from "@/lib/data";
 import { getLessons } from "@/lib/lessons";
 import { completeLesson } from "@/lib/progress";
+import { getAccess } from "@/lib/access";
 import VideoPlayer from "@/components/VideoPlayer";
 import Exercises from "@/components/Exercises";
+import Paywall from "@/components/Paywall";
+import TrialLimitWall from "@/components/TrialLimitWall";
+import { useDailyLimit, isTrialAccess } from "@/lib/trialLimits";
 import { getUnitForLesson, type Unit as TrainingUnit } from "@/lib/training";
 
 // Alte Multiple-Choice-Quizze weiter unterstützen: in Aufgaben umwandeln.
@@ -37,6 +41,28 @@ export default function LessonPage() {
   // nicht entscheiden, ob sie die alten Aufgaben zeigt.
   const [trainingUnit, setTrainingUnit] = useState<TrainingUnit | null | undefined>(undefined);
 
+  // Zugang + Trial-Tageslimit (5 Videos). "checking" bis der Zugang geklaert ist.
+  const [gate, setGate] = useState<"checking" | "ok" | "blocked" | "limit">("checking");
+  const [trialExpiresAt, setTrialExpiresAt] = useState<string | null>(null);
+  const { claim } = useDailyLimit();
+
+  useEffect(() => {
+    if (!params.id) return;
+    let cancelled = false;
+    (async () => {
+      const access = await getAccess();
+      if (cancelled) return;
+      if (access.tier !== "full") { setGate("blocked"); return; }
+      // Trial: dieses Video als eines der 5 taeglichen buchen (erneutes Ansehen
+      // desselben Videos ist gratis). Kontingent voll -> warme Upgrade-Wand.
+      if (isTrialAccess(access) && !claim("videos", params.id)) {
+        setTrialExpiresAt(access.trialExpiresAt ?? null); setGate("limit"); return;
+      }
+      setGate("ok");
+    })();
+    return () => { cancelled = true; };
+  }, [params.id, claim]);
+
   useEffect(() => {
     getLessons().then((all) => {
       const i = all.findIndex((l) => l.id === params.id);
@@ -57,7 +83,9 @@ export default function LessonPage() {
     return lesson.exercises.length > 0 ? lesson.exercises : quizToExercises(lesson.quiz);
   }, [lesson]);
 
-  if (loading) return <p className="text-sm text-cream-dim">Loading lesson…</p>;
+  if (loading || gate === "checking") return <p className="text-sm text-cream-dim">Loading lesson…</p>;
+  if (gate === "blocked") return <Paywall title="Unlock all video lessons" />;
+  if (gate === "limit") return <TrialLimitWall kind="videos" trialExpiresAt={trialExpiresAt} />;
 
   if (!lesson) {
     return (

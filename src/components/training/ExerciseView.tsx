@@ -59,8 +59,16 @@ function Typed({ ex, value, onChange, locked, correct }: { ex: Exercise; value: 
   // React verwendet dasselbe Eingabefeld für die naechste Aufgabe weiter, also
   // greift autoFocus nur beim allerersten Mal. Ohne diesen Griff steht der
   // Cursor ab Aufgabe zwei nicht mehr im Feld und das Getippte geht ins Leere.
+  //
+  // ABER: nur auf Geraeten mit echtem Zeiger (Maus/Desktop) fokussieren. Auf dem
+  // Handy oeffnet ein programmatisches focus() unter iOS die Tastatur NICHT, macht
+  // das Feld aber "aktiv" -- ein spaeterer Tipp loest dann kein Fokus-Ereignis mehr
+  // aus und die Tastatur bleibt zu. Der Schueler kann dann gar nichts eintippen.
   const box = useRef<HTMLInputElement>(null);
-  useEffect(() => { if (!locked) box.current?.focus(); }, [ex.id, locked]);
+  useEffect(() => {
+    if (locked) return;
+    if (window.matchMedia?.("(pointer: fine)").matches) box.current?.focus();
+  }, [ex.id, locked]);
 
   return (
     <div className="space-y-4">

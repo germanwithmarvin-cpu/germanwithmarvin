@@ -13,7 +13,7 @@ join auth.users u on u.id = p.id
 order by p.created_at desc;
 
 
--- A) TRIAL (frisches Konto): 7 Tage Vollzugang → alles offen
+-- A) TRIAL (frisches Konto): 5 Tage Vollzugang → alles offen
 update public.profiles set is_subscribed = false, created_at = now()
 where id = (select id from auth.users where email = 'TEST-EMAIL@example.com');
 

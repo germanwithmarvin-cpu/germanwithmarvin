@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import Flashcard, { type Direction } from "@/components/Flashcard";
@@ -9,6 +9,8 @@ import { getAccess } from "@/lib/access";
 import { intervalPreview } from "@/lib/srs";
 import type { Rating, Card } from "@/lib/types";
 import Paywall from "@/components/Paywall";
+import TrialLimitWall from "@/components/TrialLimitWall";
+import { useDailyLimit, isTrialAccess, DAILY_LIMITS } from "@/lib/trialLimits";
 import WordList from "@/components/WordList";
 
 const RATINGS: { key: Rating; label: string; cls: string; hot: string }[] = [
@@ -36,6 +38,11 @@ export default function StudyPage() {
   const [direction, setDirection] = useState<Direction>("en-de");
   const [blocked, setBlocked] = useState(false);
 
+  // Trial-Tageslimit (50 Karten). Nur fuer zeitlich begrenzten Zugang aktiv.
+  const [isTrial, setIsTrial] = useState(false);
+  const [trialExpiresAt, setTrialExpiresAt] = useState<string | null>(null);
+  const { usage, addCard } = useDailyLimit();
+
   // Abfrage-Modus: umdrehen / tippen / auswählen.
   const [mode, setMode] = useState<"flip" | "type" | "choose">("flip");
   const [typed, setTyped] = useState("");
@@ -56,6 +63,7 @@ export default function StudyPage() {
         if (!cancelled) { setBlocked(true); setLoading(false); }
         return;
       }
+      if (!cancelled) { setIsTrial(isTrialAccess(access)); setTrialExpiresAt(access.trialExpiresAt ?? null); }
       const items = isMarked
         ? await getFlaggedItems()
         : isToday
@@ -100,6 +108,7 @@ export default function StudyPage() {
     const wasNew = current.state.repetitions === 0; // brand-new Karte → Lernschritt
     const next = await reviewCard(current.state, rating);
     setReviewedCount((n) => n + 1);
+    if (isTrial) addCard(); // Trial-Tageskontingent hochzaehlen
 
     const correct = rating === "good" || rating === "easy";
     setFeedback(correct ? "correct" : rating === "again" ? "wrong" : null);
@@ -132,7 +141,7 @@ export default function StudyPage() {
     setChosen(null);
     setSaving(false);
     setTimeout(() => setFeedback(null), 460);
-  }, [current, saving, revealed, bestCombo]);
+  }, [current, saving, revealed, bestCombo, isTrial, addCard]);
 
   // Aktive Modi: Antwort einreichen → aufdecken + sofortiges Feedback.
   const submitAnswer = useCallback((value: string) => {
@@ -175,8 +184,22 @@ export default function StudyPage() {
     return () => window.removeEventListener("keydown", onKey);
   }, [current, revealed, saving, rate, toggleFlagCurrent, mode, options, submitAnswer]);
 
+  // Auto-Fokus fuer den Tippmodus nur auf Geraeten mit echtem Zeiger (Maus).
+  // Auf dem Handy oeffnet ein programmatisches focus() unter iOS die Tastatur
+  // NICHT, blockiert aber ein spaeteres Antippen -- dann kann man nichts tippen.
+  const typeBox = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (mode !== "type" || revealed) return;
+    if (window.matchMedia?.("(pointer: fine)").matches) typeBox.current?.focus();
+  }, [current, mode, revealed]);
+
   if (blocked) return <Paywall title="This level needs a membership" />;
   if (loading) return <p className="text-cream-dim">Loading…</p>;
+
+  // Trial-Tageslimit erreicht -> warme Upgrade-Wand statt der naechsten Karte.
+  if (isTrial && usage.cards >= DAILY_LIMITS.cards) {
+    return <TrialLimitWall kind="cards" trialExpiresAt={trialExpiresAt} />;
+  }
 
   if (!current) {
     return (
@@ -228,6 +251,13 @@ export default function StudyPage() {
         <div className="h-2 rounded-full bg-gold-bright transition-all" style={{ width: `${total ? (mastered / total) * 100 : 0}%` }} />
       </div>
 
+      {/* Trial: Tageskontingent sichtbar machen (baut sanfte Vorfreude/Dringlichkeit auf) */}
+      {isTrial && (
+        <div className="max-w-xl mx-auto mb-3 text-center text-xs text-cream-dim">
+          Free trial · <span className="text-cream font-medium">{Math.max(0, DAILY_LIMITS.cards - usage.cards)}</span> of {DAILY_LIMITS.cards} daily cards left
+        </div>
+      )}
+
       {/* Richtung + markieren */}
       <div className="max-w-xl mx-auto flex gap-3 mb-3">
         <button onClick={() => setDirection((d) => (d === "de-en" ? "en-de" : "de-en"))} className="btn-outline flex-1 py-3 font-medium flex items-center justify-center gap-2" title="Switch question direction">
@@ -277,7 +307,7 @@ export default function StudyPage() {
             <button onClick={() => setRevealed(true)} className="btn-gold w-full py-3">Show answer <span className="opacity-70 text-sm">(Space)</span></button>
           ) : mode === "type" ? (
             <form onSubmit={(e) => { e.preventDefault(); if (typed.trim()) submitAnswer(typed); }} className="flex gap-2">
-              <input autoFocus value={typed} onChange={(e) => setTyped(e.target.value)} placeholder={`Type the ${direction === "en-de" ? "German" : "English"} answer…`} className="flex-1 rounded-xl bg-bordeaux-deep/60 border border-gold/25 px-4 py-3 outline-none focus:border-gold" />
+              <input ref={typeBox} value={typed} onChange={(e) => setTyped(e.target.value)} placeholder={`Type the ${direction === "en-de" ? "German" : "English"} answer…`} className="flex-1 rounded-xl bg-bordeaux-deep/60 border border-gold/25 px-4 py-3 outline-none focus:border-gold" />
               <button type="submit" disabled={!typed.trim()} className="btn-gold px-6 disabled:opacity-50">Check</button>
             </form>
           ) : (
