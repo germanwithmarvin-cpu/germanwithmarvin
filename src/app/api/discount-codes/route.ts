@@ -10,13 +10,28 @@ function json(d: unknown, s = 200) {
 
 // Nur Lehrer dürfen Rabattcodes verwalten. Liefert den Stripe-Client zurück.
 async function guard(): Promise<{ stripe?: Stripe; error?: Response }> {
-  const secretKey = process.env.STRIPE_SECRET_KEY;
-  if (!secretKey) return { error: json({ error: "Stripe not configured" }, 500) };
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: json({ error: "Not signed in" }, 401) };
-  const { data: profile } = await supabase.from("profiles").select("is_teacher").eq("id", user.id).single();
-  if (!profile?.is_teacher) return { error: json({ error: "Forbidden" }, 403) };
+  if (!user) return { error: json({ error: "Not signed in - please log in again." }, 401) };
+
+  // Teacher-Pruefung robust: zuerst die SECURITY-DEFINER-RPC is_teacher() (umgeht
+  // RLS zuverlaessig), sonst der direkte Profil-Read als Fallback. maybeSingle()
+  // wirft nicht, falls die Zeile ausbleibt.
+  let isTeacher = false;
+  const rpc = await supabase.rpc("is_teacher");
+  if (rpc.data === true) isTeacher = true;
+  else {
+    const { data: profile } = await supabase.from("profiles").select("is_teacher").eq("id", user.id).maybeSingle();
+    isTeacher = Boolean(profile?.is_teacher);
+  }
+  if (!isTeacher) {
+    // Selbst-erklaerende Meldung: zeigt, ALS WER man eingeloggt ist -> sofort klar,
+    // ob es am falschen Konto liegt.
+    return { error: json({ error: `Forbidden - you are signed in as ${user.email ?? "unknown"}, which is not a teacher account. Log out and sign in with your teacher email.` }, 403) };
+  }
+
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+  if (!secretKey) return { error: json({ error: "Stripe not configured: STRIPE_SECRET_KEY is missing in the deployment." }, 500) };
   return { stripe: new Stripe(secretKey) };
 }
 
