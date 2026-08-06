@@ -4055,12 +4055,12 @@ export const TRAINING_UNITS: SeedUnit[] = [
   // ═══════════════════════════════════════════════════════════════════════════
   {
     slug: "past-haben-sein-a2",
-    title: "Past tense: haben or sein?",
-    subtitle: "Choosing the right helper — and war / hatte",
+    title: "Past trainer: build & decide — basics",
+    subtitle: "Build the sentence, choose haben or sein, use war / hatte",
     level: "A2",
     lessonId: null,
     lessonMatch: "past",
-    sortOrder: 36,
+    sortOrder: 28,
     theory: [
       "## The Perfekt needs a helper",
       "> To talk about the past when **speaking**, Germans use the **Perfekt**: a helper verb in second place, and the **Partizip II** at the very end.",
@@ -4127,12 +4127,12 @@ export const TRAINING_UNITS: SeedUnit[] = [
 
   {
     slug: "past-haben-sein-b1",
-    title: "Past tense in action",
-    subtitle: "Perfekt, war and hatte — with the tricky helpers",
+    title: "Past trainer: build & decide — step up",
+    subtitle: "Trickier sein-verbs, modals in the past, war / hatte(n)",
     level: "B1",
     lessonId: null,
     lessonMatch: "past",
-    sortOrder: 50,
+    sortOrder: 47,
     theory: [
       "## Beyond the basics",
       "> You know the rule: **sein** for movement and change of state, **haben** for the rest. At B1 the challenge is the verbs where the change of state is **less obvious**.",
@@ -4198,12 +4198,12 @@ export const TRAINING_UNITS: SeedUnit[] = [
 
   {
     slug: "past-haben-sein-b2",
-    title: "The past, mastered",
-    subtitle: "When haben and sein compete — and complex sentences",
+    title: "Past trainer: build & decide — advanced",
+    subtitle: "haben vs sein on one verb, Plusquamperfekt, complex sentences",
     level: "B2",
     lessonId: null,
     lessonMatch: "past",
-    sortOrder: 69,
+    sortOrder: 68,
     theory: [
       "## Same verb, two helpers",
       "> Some movement verbs take **sein** when they are **intransitive** (just moving) but **haben** when they take a **direct object** (you move something): fahren, fliegen, reiten.",
