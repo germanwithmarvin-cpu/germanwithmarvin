@@ -9,6 +9,7 @@ import DecksAdmin from "@/components/admin/DecksAdmin";
 import AudioAdmin from "@/components/admin/AudioAdmin";
 import CodesAdmin from "@/components/admin/CodesAdmin";
 import DiscountCodesAdmin from "@/components/admin/DiscountCodesAdmin";
+import SeedTrainingButton from "@/components/admin/SeedTrainingButton";
 import ReferralAdmin from "@/components/admin/ReferralAdmin";
 import CheckResultsAdmin from "@/components/admin/CheckResultsAdmin";
 import { createClient } from "@/lib/supabase/client";
@@ -38,9 +39,12 @@ export default function AdminPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Teacher area</h1>
-        <p className="text-cream-dim text-sm">See student progress, manage your content and access codes.</p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold">Teacher area</h1>
+          <p className="text-cream-dim text-sm">See student progress, manage your content and access codes.</p>
+        </div>
+        <SeedTrainingButton />
       </div>
 
       <div className="flex gap-2 border-b border-gold/15">

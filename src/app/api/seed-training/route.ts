@@ -14,9 +14,17 @@ function json(d: unknown, s = 200) {
 async function requireTeacher() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: json({ error: "Not signed in" }, 401) };
-  const { data: profile } = await supabase.from("profiles").select("is_teacher").eq("id", user.id).single();
-  if (!profile?.is_teacher) return { error: json({ error: "Teacher only" }, 403) };
+  if (!user) return { error: json({ error: "Not signed in - please log in again." }, 401) };
+  // Robust: zuerst die SECURITY-DEFINER-RPC is_teacher() (umgeht RLS), sonst der
+  // direkte Profil-Read. Fehlermeldung nennt das Konto -> falsches Login sofort klar.
+  let isTeacher = false;
+  const rpc = await supabase.rpc("is_teacher");
+  if (rpc.data === true) isTeacher = true;
+  else {
+    const { data: profile } = await supabase.from("profiles").select("is_teacher").eq("id", user.id).maybeSingle();
+    isTeacher = Boolean(profile?.is_teacher);
+  }
+  if (!isTeacher) return { error: json({ error: `Teacher only - you are signed in as ${user.email ?? "unknown"}, which is not a teacher account. Log in with your teacher email.` }, 403) };
   return { ok: true as const };
 }
 
