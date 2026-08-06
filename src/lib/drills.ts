@@ -1134,7 +1134,79 @@ const PROVERBS_DRILL: DrillSet = {
   ],
 };
 
+// ─── Vergangenheits-Trainer: haben/sein im Perfekt (+ war/hatte) ─────────────
+// Gesucht ist immer der Hilfsverb-Blank; jeder Satz hat genau EINE richtige Form
+// (Subjekt macht sie eindeutig, das Partizip zeigt Bewegung vs. keine Bewegung).
+const PAST_A2: DrillSet = {
+  key: "past-haben-sein-a2",
+  unitSlug: "past-haben-sein-a2",
+  title: "Helper: haben or sein?",
+  items: [
+    { answer: "bin", explain: "Movement → **sein**, ich: *bin*.",
+      sentences: ["Ich ___ nach Hause gegangen.", "Ich ___ zu spät gekommen.", "Ich ___ schnell nach Hause gelaufen."] },
+    { answer: "ist", explain: "Movement / change of state → **sein**, er/sie/es: *ist*.",
+      sentences: ["Er ___ nach Berlin gefahren.", "Meine Mutter ___ um sieben aufgestanden.", "Der Zug ___ pünktlich abgefahren."] },
+    { answer: "sind", explain: "Movement (or bleiben) → **sein**, plural: *sind*.",
+      sentences: ["Wir ___ nach Italien gefahren.", "Die Kinder ___ ins Kino gegangen.", "Wir ___ zu Hause geblieben."] },
+    { answer: "habe", explain: "No movement → **haben**, ich: *habe*.",
+      sentences: ["Ich ___ Fußball gespielt.", "Ich ___ ein Buch gelesen.", "Ich ___ einen Kaffee getrunken."] },
+    { answer: "hat", explain: "No movement → **haben**, er/sie/es: *hat*.",
+      sentences: ["Er ___ das Essen gekocht.", "Mein Bruder ___ viel gearbeitet.", "Das Kind ___ laut gelacht."] },
+    { answer: "haben", explain: "No movement → **haben**, plural: *haben*.",
+      sentences: ["Wir ___ Pizza gegessen.", "Die Gäste ___ Musik gehört.", "Wir ___ Deutsch gelernt."] },
+  ],
+};
+
+const PAST_B1: DrillSet = {
+  key: "past-haben-sein-b1",
+  unitSlug: "past-haben-sein-b1",
+  title: "Perfekt, war & hatte",
+  items: [
+    { answer: "bin", explain: "Change of state / movement → **sein**, ich: *bin*.",
+      sentences: ["Ich ___ heute früh aufgewacht.", "Ich ___ spät eingeschlafen.", "Ich ___ letzten Monat umgezogen."] },
+    { answer: "ist", explain: "Change of state → **sein**, er/sie/es: *ist*.",
+      sentences: ["Was ___ passiert?", "Der Baum ___ schnell gewachsen.", "Er ___ alt geworden."] },
+    { answer: "sind", explain: "Movement / change of state → **sein**, plural: *sind*.",
+      sentences: ["Wir ___ letztes Jahr umgezogen.", "Die Kinder ___ früh eingeschlafen.", "Wir ___ nach Italien gereist."] },
+    { answer: "hat", explain: "No movement → **haben**, er/sie/es: *hat*.",
+      sentences: ["Mein Vater ___ das Essen gekocht.", "Der Lehrer ___ viel erklärt.", "Das Kind ___ lange geschlafen."] },
+    { answer: "war", explain: "sein → short past **war**.",
+      sentences: ["Der Film ___ langweilig.", "Ich ___ gestern krank.", "Das Wetter ___ schön."] },
+    { answer: "hatte", explain: "haben → **hatte**, ich/er.",
+      sentences: ["Ich ___ keine Zeit.", "Er ___ großen Hunger.", "Meine Kollegin ___ eine gute Idee."] },
+    { answer: "hatten", explain: "haben, plural → **hatten**.",
+      sentences: ["Wir ___ viel Spaß.", "Die Kinder ___ Angst.", "Wir ___ keine Wahl."] },
+    { answer: "musste", explain: "Modal müssen → short past **musste** (also in speech).",
+      sentences: ["Ich ___ gestern lange arbeiten.", "Er ___ zum Arzt gehen.", "Meine Mutter ___ früh aufstehen."] },
+    { answer: "konnte", explain: "Modal können → **konnte**.",
+      sentences: ["Als Kind ___ ich nicht schwimmen.", "Er ___ gestern nicht kommen.", "Ich ___ dich nicht erreichen."] },
+  ],
+};
+
+const PAST_B2: DrillSet = {
+  key: "past-haben-sein-b2",
+  unitSlug: "past-haben-sein-b2",
+  title: "The hard helpers",
+  items: [
+    { answer: "bin", explain: "Intransitive movement / rare sein-verb → **sein**, ich: *bin*.",
+      sentences: ["Ich ___ mit dem Zug gefahren.", "Ich ___ ihm auf der Straße begegnet.", "Ich ___ nach Hamburg geflogen."] },
+    { answer: "habe", explain: "Verb with a direct object → **haben**, ich: *habe*.",
+      sentences: ["Ich ___ das Auto in die Garage gefahren.", "Ich ___ das Boot selbst gesteuert.", "Ich ___ den ganzen Tag gearbeitet."] },
+    { answer: "ist", explain: "gelingen / geschehen / folgen → **sein**, er/sie/es: *ist*.",
+      sentences: ["Es ___ mir gelungen.", "Etwas Seltsames ___ geschehen.", "Der Hund ___ mir gefolgt."] },
+    { answer: "sind", explain: "Movement → **sein**, plural: *sind*.",
+      sentences: ["Die Kinder ___ auf den Baum geklettert.", "Wir ___ den ganzen Tag gewandert.", "Wir ___ ans andere Ufer geschwommen."] },
+    { answer: "hatte", explain: "Plusquamperfekt with haben → **hatte** + Partizip II.",
+      sentences: ["Nachdem ich gegessen ___, ging ich nach Hause.", "Er erzählte, dass er den Film schon gesehen ___."] },
+    { answer: "war", explain: "Plusquamperfekt with sein → **war** + Partizip II.",
+      sentences: ["Als ich ankam, ___ er schon gegangen.", "Der Zug ___ schon abgefahren, als wir kamen."] },
+  ],
+};
+
 const SETS: Record<string, DrillSet> = {
+  [PAST_A2.unitSlug]: PAST_A2,
+  [PAST_B1.unitSlug]: PAST_B1,
+  [PAST_B2.unitSlug]: PAST_B2,
   [FIXED_PREPOSITIONS.unitSlug]: FIXED_PREPOSITIONS,
   [ARTICLES.unitSlug]: ARTICLES,
   [RELATIVE_PRONOUNS.unitSlug]: RELATIVE_PRONOUNS,
