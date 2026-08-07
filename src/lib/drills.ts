@@ -1203,10 +1203,89 @@ const PAST_B2: DrillSet = {
   ],
 };
 
+// ─── Satzbau-Trainer: Verbstellung (Verb zuerst / an zweiter / am Ende) ──────
+// Jede Luecke hat genau EINE richtige Form; die Satzstruktur zeigt, WO das Verb
+// steht (Frage = zuerst, Nebensatz = am Ende, deshalb = Inversion).
+const STRUCT_A1: DrillSet = {
+  key: "sentence-builder-a1",
+  unitSlug: "sentence-builder-a1",
+  title: "Verb first in a yes/no question",
+  items: [
+    { answer: "spielst", explain: "Yes/no question → verb first, du: *spielst*.",
+      sentences: ["___ du Fußball? (spielen)", "___ du gern Tennis? (spielen)"] },
+    { answer: "trinkst", explain: "Yes/no question → verb first, du: *trinkst*.",
+      sentences: ["___ du Kaffee? (trinken)", "___ du Tee? (trinken)"] },
+    { answer: "kommst", explain: "Yes/no question → verb first, du: *kommst*.",
+      sentences: ["___ du morgen? (kommen)", "___ du mit? (kommen)"] },
+    { answer: "spielt", explain: "Yes/no question → verb first, er/ihr: *spielt*.",
+      sentences: ["___ er Fußball? (spielen)", "___ ihr heute? (spielen)"] },
+    { answer: "kommt", explain: "Yes/no question → verb first, er/ihr: *kommt*.",
+      sentences: ["___ er mit? (kommen)", "___ ihr morgen? (kommen)"] },
+  ],
+};
+
+const STRUCT_A2: DrillSet = {
+  key: "sentence-builder-a2",
+  unitSlug: "sentence-builder-a2",
+  title: "Verb to the end (sub-clause)",
+  items: [
+    { answer: "hat", explain: "After dass/weil the verb goes last: *hat*.",
+      sentences: ["Ich glaube, dass er recht ___. (haben)", "Ich weiß, dass er Zeit ___. (haben)"] },
+    { answer: "ist", explain: "Verb last in the sub-clause: *ist*.",
+      sentences: ["Ich weiß, dass er müde ___. (sein)", "Er sagt, dass es kalt ___. (sein)"] },
+    { answer: "bin", explain: "After weil the verb goes last, ich: *bin*.",
+      sentences: ["Ich bleibe, weil ich krank ___. (sein)", "Ich gehe, weil ich müde ___. (sein)"] },
+    { answer: "kommt", explain: "Verb last in the sub-clause: *kommt*.",
+      sentences: ["Ich hoffe, dass er morgen ___. (kommen)", "Sie fragt, ob er heute ___. (kommen)"] },
+    { answer: "arbeitet", explain: "Verb last after dass: *arbeitet*.",
+      sentences: ["Ich weiß, dass er viel ___. (arbeiten)"] },
+  ],
+};
+
+const STRUCT_B1: DrillSet = {
+  key: "sentence-builder-b1",
+  unitSlug: "sentence-builder-b1",
+  title: "Verb cluster at the end",
+  items: [
+    { answer: "kann", explain: "The modal closes the sub-clause, after the infinitive: *kann*.",
+      sentences: ["Er sagt, dass er nicht kommen ___. (können)", "Ich weiß, dass er gut schwimmen ___. (können)"] },
+    { answer: "will", explain: "The modal goes to the very end: *will*.",
+      sentences: ["Ich glaube, dass er das Auto verkaufen ___. (wollen)", "Sie fragt, ob er mitkommen ___. (wollen)"] },
+    { answer: "muss", explain: "The modal ends the sub-clause: *muss*.",
+      sentences: ["Ich weiß, dass er heute arbeiten ___. (müssen)"] },
+    { answer: "kommt", explain: "Indirect question → verb last: *kommt*.",
+      sentences: ["Ich weiß nicht, wann der Zug ___. (kommen)", "Er fragt, wann der Bus ___. (kommen)"] },
+    { answer: "wohnt", explain: "Indirect question → verb last: *wohnt*.",
+      sentences: ["Ich weiß nicht, wo er ___. (wohnen)"] },
+  ],
+};
+
+const STRUCT_B2: DrillSet = {
+  key: "sentence-builder-b2",
+  unitSlug: "sentence-builder-b2",
+  title: "Where does the verb go after the connector?",
+  items: [
+    { answer: "gehe", explain: "**deshalb** inverts: the verb comes right after it, ich: *gehe*.",
+      sentences: ["Es ist spät, deshalb ___ ich jetzt. (gehen)", "Ich bin müde, deshalb ___ ich ins Bett. (gehen)"] },
+    { answer: "bleibe", explain: "**deshalb** inverts → verb right after, ich: *bleibe*.",
+      sentences: ["Es regnet, deshalb ___ ich zu Hause. (bleiben)"] },
+    { answer: "bin", explain: "**weil** sends the verb to the end, ich: *bin*.",
+      sentences: ["Ich bleibe zu Hause, weil ich müde ___. (sein)"] },
+    { answer: "habe", explain: "**obwohl** and **dass** both send the verb to the end: *habe*.",
+      sentences: ["Ich gehe joggen, obwohl ich keine Zeit ___. (haben)", "Ich weiß, dass ich recht ___. (haben)"] },
+    { answer: "regnet", explain: "**obwohl** sends the verb to the end: *regnet*.",
+      sentences: ["Ich gehe joggen, obwohl es ___. (regnen)"] },
+  ],
+};
+
 const SETS: Record<string, DrillSet> = {
   [PAST_A2.unitSlug]: PAST_A2,
   [PAST_B1.unitSlug]: PAST_B1,
   [PAST_B2.unitSlug]: PAST_B2,
+  [STRUCT_A1.unitSlug]: STRUCT_A1,
+  [STRUCT_A2.unitSlug]: STRUCT_A2,
+  [STRUCT_B1.unitSlug]: STRUCT_B1,
+  [STRUCT_B2.unitSlug]: STRUCT_B2,
   [FIXED_PREPOSITIONS.unitSlug]: FIXED_PREPOSITIONS,
   [ARTICLES.unitSlug]: ARTICLES,
   [RELATIVE_PRONOUNS.unitSlug]: RELATIVE_PRONOUNS,
