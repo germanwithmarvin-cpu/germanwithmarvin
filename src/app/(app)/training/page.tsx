@@ -82,6 +82,29 @@ export default function TrainingPage() {
         </div>
       )}
 
+      {/* Reife-Tests: bin ich bereit fuers naechste Level? (Filter des Checks) */}
+      {!loading && units.length > 0 && (
+        <div>
+          <div className="text-xs font-extrabold uppercase tracking-[0.16em] mb-2" style={{ color: "var(--bordeaux)" }}>
+            Am I ready to level up?
+          </div>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {([["a2", "A2"], ["b1", "B1"], ["b2", "B2"]] as const).map(([slug, lvl]) => (
+              <Link key={slug} href={`/check?for=${slug}`}
+                className="card p-4 flex items-center gap-3 transition hover:border-gold/50">
+                <span className="grid place-items-center rounded-lg px-2.5 py-1 text-sm font-extrabold"
+                  style={{ background: "linear-gradient(160deg, var(--gold-bright), var(--gold))", color: "#3b2116" }}>{lvl}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="font-semibold text-sm">Am I ready for {lvl}?</div>
+                  <p className="text-[11px] text-cream-dim">A quick check of the topics you need first.</p>
+                </div>
+                <span className="text-gold-bright shrink-0">→</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       {loading && <p className="text-sm text-cream-dim">Loading…</p>}
       {!loading && units.length === 0 && (
         <div className="card p-6 text-cream-dim">No units yet — they are on the way.</div>

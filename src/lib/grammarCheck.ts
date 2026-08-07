@@ -222,14 +222,145 @@ export const CHECK_QUESTIONS: CheckQuestion[] = [
   { unit: "connectors", level: "B2", topic: "Connectors",
     prompt: "Which connector means the same as weil but leaves the word order alone?",
     options: ["obwohl", "denn", "deshalb", "damit"], correct: 1 },
+
+  // ═══ Zusatzfragen fuer die Reife-Tests (mehr Themenabdeckung je Level) ═══
+
+  // ── A1 · Verb endings (present tense) ────────────────────────────────────
+  { unit: "present-tense", level: "A1", topic: "Verb endings (present tense)",
+    prompt: "Du ___ Deutsch. (lernen)",
+    options: ["lerne", "lernst", "lernt", "lernen"], correct: 1 },
+  { unit: "present-tense", level: "A1", topic: "Verb endings (present tense)",
+    prompt: "Wir ___ Fußball. (spielen)",
+    options: ["spielt", "spielst", "spielen", "spiele"], correct: 2 },
+  { unit: "present-tense", level: "A1", topic: "Verb endings (present tense)",
+    prompt: "Er ___ in Berlin. (wohnen)",
+    options: ["wohne", "wohnst", "wohnt", "wohnen"], correct: 2 },
+
+  // ── A1 · haben and sein ──────────────────────────────────────────────────
+  { unit: "haben-sein", level: "A1", topic: "haben and sein",
+    prompt: "Ich ___ Hunger. (haben)",
+    options: ["habe", "hast", "hat", "haben"], correct: 0 },
+  { unit: "haben-sein", level: "A1", topic: "haben and sein",
+    prompt: "Du ___ müde. (sein)",
+    options: ["bin", "bist", "ist", "sind"], correct: 1 },
+  { unit: "haben-sein", level: "A1", topic: "haben and sein",
+    prompt: "Wir ___ Studenten. (sein)",
+    options: ["seid", "sind", "ist", "bin"], correct: 1 },
+
+  // ── A1 · Plurals ─────────────────────────────────────────────────────────
+  { unit: "plurals", level: "A1", topic: "Making nouns plural",
+    prompt: "One Kind, two ___ ?",
+    options: ["Kinds", "Kinder", "Kinden", "Kindes"], correct: 1 },
+  { unit: "plurals", level: "A1", topic: "Making nouns plural",
+    prompt: "The plural of das Auto is…",
+    options: ["Autos", "Auten", "Autoe", "Autör"], correct: 0 },
+  { unit: "plurals", level: "A1", topic: "Making nouns plural",
+    prompt: "The plural of die Frau is…",
+    options: ["Frauen", "Fraus", "Fräue", "Frauer"], correct: 0 },
+
+  // ── A1 · Asking questions ────────────────────────────────────────────────
+  { unit: "small-talk", level: "A1", topic: "Asking questions",
+    prompt: "___ heißt du?",
+    options: ["Wie", "Wo", "Was", "Wann"], correct: 0 },
+  { unit: "small-talk", level: "A1", topic: "Asking questions",
+    prompt: "___ kommst du? (from where)",
+    options: ["Wie", "Woher", "Wohin", "Wann"], correct: 1 },
+  { unit: "small-talk", level: "A1", topic: "Asking questions",
+    prompt: "Which is a correct question?",
+    options: ["Du wohnst wo?", "Wo wohnst du?", "Wo du wohnst?", "Wohnst wo du?"], correct: 1 },
+
+  // ── A2 · Modal verbs ─────────────────────────────────────────────────────
+  { unit: "modal-verbs", level: "A2", topic: "Modal verbs",
+    prompt: "Ich ___ heute arbeiten. (müssen)",
+    options: ["muss", "musst", "müssen", "müsst"], correct: 0 },
+  { unit: "modal-verbs", level: "A2", topic: "Modal verbs",
+    prompt: "Which sentence is correct?",
+    options: ["Ich kann Deutsch sprechen.", "Ich kann sprechen Deutsch.", "Ich kann Deutsch spreche.", "Ich Deutsch kann sprechen."], correct: 0 },
+  { unit: "modal-verbs", level: "A2", topic: "Modal verbs",
+    prompt: "Du ___ hier nicht rauchen. (dürfen)",
+    options: ["darf", "darfst", "dürfen", "darft"], correct: 1 },
+
+  // ── A2 · Comparisons ─────────────────────────────────────────────────────
+  { unit: "comparisons", level: "A2", topic: "Comparing things",
+    prompt: "Anna ist ___ als Tom. (groß)",
+    options: ["großer", "größer", "mehr groß", "am größten"], correct: 1 },
+  { unit: "comparisons", level: "A2", topic: "Comparing things",
+    prompt: "Which is correct for 'as tall as'?",
+    options: ["so groß wie", "so groß als", "größer wie", "so groß so"], correct: 0 },
+  { unit: "comparisons", level: "A2", topic: "Comparing things",
+    prompt: "Das ist der ___ Tag. (gut — superlative)",
+    options: ["guteste", "beste", "gutste", "meist gute"], correct: 1 },
+
+  // ── B1 · TEKAMOLO ────────────────────────────────────────────────────────
+  { unit: "tekamolo", level: "B1", topic: "TEKAMOLO",
+    prompt: "Which order is standard?",
+    options: ["Ich fahre nach Berlin morgen.", "Ich fahre morgen nach Berlin.", "Ich morgen fahre nach Berlin.", "Morgen ich fahre nach Berlin."], correct: 1 },
+  { unit: "tekamolo", level: "B1", topic: "TEKAMOLO",
+    prompt: "In TEKAMOLO, the MO stands for…",
+    options: ["temporal", "modal", "lokal", "kausal"], correct: 1 },
+  { unit: "tekamolo", level: "B1", topic: "TEKAMOLO",
+    prompt: "Where do pronoun objects go in the middle field?",
+    options: ["at the very end", "right after the verb", "in first place", "after the time expression"], correct: 1 },
+
+  // ── B1 · Two-way prepositions ────────────────────────────────────────────
+  { unit: "two-way-prepositions", level: "B1", topic: "Two-way prepositions",
+    prompt: "Ich hänge das Bild an ___ Wand. (movement)",
+    options: ["der", "die", "dem", "den"], correct: 1 },
+  { unit: "two-way-prepositions", level: "B1", topic: "Two-way prepositions",
+    prompt: "Das Bild hängt an ___ Wand. (position)",
+    options: ["die", "der", "den", "dem"], correct: 1 },
+  { unit: "two-way-prepositions", level: "B1", topic: "Two-way prepositions",
+    prompt: "Which question does the accusative answer with a two-way preposition?",
+    options: ["wo?", "wohin?", "wann?", "warum?"], correct: 1 },
+
+  // ── B1 · The passive ─────────────────────────────────────────────────────
+  { unit: "passive", level: "B1", topic: "The passive",
+    prompt: "Das Haus ___ gebaut. (is being built)",
+    options: ["ist", "wird", "hat", "war"], correct: 1 },
+  { unit: "passive", level: "B1", topic: "The passive",
+    prompt: "Which sentence is in the passive?",
+    options: ["Man baut das Haus.", "Das Haus wird gebaut.", "Das Haus baut.", "Das Haus hat gebaut."], correct: 1 },
+  { unit: "passive", level: "B1", topic: "The passive",
+    prompt: "Der Brief ___ gestern geschrieben. (was written)",
+    options: ["wurde", "wird", "hat", "ist"], correct: 0 },
+
+  // ── B1 · Konjunktiv II ───────────────────────────────────────────────────
+  { unit: "konjunktiv-2", level: "B1", topic: "Konjunktiv II",
+    prompt: "___ ich reich, würde ich reisen. (if I were)",
+    options: ["Wäre", "Wenn wäre", "Würde", "War"], correct: 0 },
+  { unit: "konjunktiv-2", level: "B1", topic: "Konjunktiv II",
+    prompt: "Polite request: '___ Sie mir bitte helfen?' (could you)",
+    options: ["Können", "Könnten", "Konnten", "Kann"], correct: 1 },
+  { unit: "konjunktiv-2", level: "B1", topic: "Konjunktiv II",
+    prompt: "Ich ___ gern ein Eis. (I would like)",
+    options: ["habe", "hätte", "hatte", "würde"], correct: 1 },
 ];
 
 export type TopicResult = { unit: string; level: string; topic: string; correct: number; total: number };
 
-// Fasst die Antworten je Thema zusammen, schwaechstes Thema zuerst.
-export function summarise(answers: (number | null)[]): TopicResult[] {
+// Reife-Tests ("Am I ready for X?"): jeder testet das VORHERIGE Level. Als
+// Filter des vorhandenen Checks gebaut - jede Frage traegt schon ihr `level`.
+export const LEVEL_ORDER = ["A1", "A2", "B1", "B2", "C1"];
+export const READINESS: Record<string, { title: string; tests: string }> = {
+  a2: { title: "Am I ready for A2?", tests: "A1" },
+  b1: { title: "Am I ready for B1?", tests: "A2" },
+  b2: { title: "Am I ready for B2?", tests: "B1" },
+};
+
+// Fragenset fuer den Ziel-Test. Ohne (gueltiges) Ziel: der komplette Check.
+// Immer nach Level sortiert, damit die Reihenfolge sauber bleibt.
+export function questionsFor(target: string | null | undefined): CheckQuestion[] {
+  const r = target ? READINESS[target] : undefined;
+  const base = r ? CHECK_QUESTIONS.filter((q) => q.level === r.tests) : CHECK_QUESTIONS;
+  return [...base].sort((a, b) => LEVEL_ORDER.indexOf(a.level) - LEVEL_ORDER.indexOf(b.level));
+}
+
+// Fasst die Antworten je Thema zusammen, schwaechstes Thema zuerst. `questions`
+// muss dasselbe (evtl. gefilterte) Set sein wie im Test - die Indizes richten
+// sich danach.
+export function summarise(answers: (number | null)[], questions: CheckQuestion[] = CHECK_QUESTIONS): TopicResult[] {
   const byUnit = new Map<string, TopicResult>();
-  CHECK_QUESTIONS.forEach((q, i) => {
+  questions.forEach((q, i) => {
     const r = byUnit.get(q.unit) ?? { unit: q.unit, level: q.level, topic: q.topic, correct: 0, total: 0 };
     r.total += 1;
     if (answers[i] === q.correct) r.correct += 1;

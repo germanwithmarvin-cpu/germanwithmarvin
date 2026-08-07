@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { CHECK_QUESTIONS, summarise, saveCheckResults, getMyLastCheck, type TopicResult } from "@/lib/grammarCheck";
+import { summarise, saveCheckResults, getMyLastCheck, questionsFor, READINESS, type TopicResult } from "@/lib/grammarCheck";
 import { getAccess } from "@/lib/access";
 import Paywall from "@/components/Paywall";
 import Lena from "@/components/training/Lena";
@@ -16,11 +16,19 @@ type Phase = "loading" | "blocked" | "intro" | "running" | "done";
 export default function CheckPage() {
   const [phase, setPhase] = useState<Phase>("loading");
   const [pos, setPos] = useState(0);
-  const [answers, setAnswers] = useState<(number | null)[]>(() => CHECK_QUESTIONS.map(() => null));
+  const [answers, setAnswers] = useState<(number | null)[]>([]);
   const [results, setResults] = useState<TopicResult[]>([]);
   const [previous, setPrevious] = useState<TopicResult[]>([]);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+
+  // Ziel-Level aus ?for=a2|b1|b2 (window.location statt useSearchParams, um die
+  // Suspense-Grenze im Build zu vermeiden). Ohne Ziel: der komplette Check.
+  const [target] = useState<string | null>(() =>
+    typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("for") : null,
+  );
+  const ready = target ? READINESS[target] : undefined;
+  const activeQuestions = useMemo(() => questionsFor(target), [target]);
 
   useEffect(() => {
     let cancelled = false;
@@ -36,8 +44,8 @@ export default function CheckPage() {
     return () => { cancelled = true; };
   }, []);
 
-  const q = CHECK_QUESTIONS[pos];
-  const total = CHECK_QUESTIONS.length;
+  const q = activeQuestions[pos];
+  const total = activeQuestions.length;
   const answered = answers.filter((a) => a !== null).length;
 
   const pick = (i: number) => {
@@ -54,7 +62,7 @@ export default function CheckPage() {
 
   async function finish() {
     setAnswers((current) => {
-      const summary = summarise(current);
+      const summary = summarise(current, activeQuestions);
       setResults(summary);
       setPhase("done");
       setSaving(true);
@@ -90,17 +98,18 @@ export default function CheckPage() {
         <div className="flex items-start gap-4">
           <div className="shrink-0 hidden sm:block -mt-2"><Lena mood="explain" size={140} /></div>
           <div className="pt-1">
-            <h1 className="text-2xl font-bold">Where do you stand?</h1>
+            <h1 className="text-2xl font-bold">{ready ? ready.title : "Where do you stand?"}</h1>
             <p className="text-cream-dim text-sm mt-1">
-              {total} questions, about {Math.round(total / 4.5)} minutes. No preparation needed.
+              {ready ? `Checks the ${ready.tests} grammar you need first. ` : ""}{total} questions, about {Math.round(total / 4.5)} minutes. No preparation needed.
             </p>
           </div>
         </div>
 
         <div className="card p-6 space-y-4">
           <p className="text-[17px] leading-8">
-            This check does not give you a grade. It finds the <b>topics</b> that are not sitting yet — and
-            sends you straight to the training unit for each one.
+            {ready
+              ? <>This does not give you a grade. It checks the <b>{ready.tests} topics</b> you need before {target?.toUpperCase()} — and sends you straight to the training unit for anything that is not sitting yet.</>
+              : <>This check does not give you a grade. It finds the <b>topics</b> that are not sitting yet — and sends you straight to the training unit for each one.</>}
           </p>
           <ul className="text-sm text-cream-dim space-y-2">
             <li>· Three questions per topic, so one slip does not count as a weakness.</li>
@@ -108,7 +117,7 @@ export default function CheckPage() {
             <li>· Do not look anything up. A wrong answer here is worth more than a right one.</li>
           </ul>
           <div className="flex items-center gap-3 flex-wrap pt-1">
-            <button onClick={() => { setPos(0); setAnswers(CHECK_QUESTIONS.map(() => null)); setPhase("running"); }}
+            <button onClick={() => { setPos(0); setAnswers(activeQuestions.map(() => null)); setPhase("running"); }}
               className="btn-gold px-6 py-3 font-bold">
               Start the check →
             </button>
@@ -187,12 +196,18 @@ export default function CheckPage() {
           <Lena mood={weak.length === 0 ? "cheer" : "explain"} size={190} />
         </div>
         <h1 className="text-2xl font-bold">
-          {weak.length === 0 ? "Everything sits 🎯" : `${weak.length} ${weak.length === 1 ? "topic needs" : "topics need"} work`}
+          {weak.length === 0
+            ? (ready ? `You're ready for ${target?.toUpperCase()} 🎯` : "Everything sits 🎯")
+            : `${weak.length} ${weak.length === 1 ? "topic needs" : "topics need"} work`}
         </h1>
         <p className="text-sm text-cream-dim max-w-md mx-auto">
           {weak.length === 0
-            ? "Every topic in the check came back clean. Pick any unit you like — or push into the next level."
-            : "Start at the top. That is where the most is missing, and the units below build on it."}
+            ? (ready
+                ? `Every ${ready.tests} topic came back clean — you have the basis for ${target?.toUpperCase()}. Go for it.`
+                : "Every topic in the check came back clean. Pick any unit you like — or push into the next level.")
+            : (ready
+                ? `Firm up these ${ready.tests} topics first — then ${target?.toUpperCase()} will be much easier.`
+                : "Start at the top. That is where the most is missing, and the units below build on it.")}
         </p>
         {saving && <p className="text-xs text-cream-dim">Saving your result…</p>}
         {saveError && (
@@ -247,7 +262,7 @@ export default function CheckPage() {
 
       <div className="flex items-center gap-3 flex-wrap">
         <Link href="/training" className="btn-gold px-6 py-3 font-bold">Go to training</Link>
-        <button onClick={() => { setPos(0); setAnswers(CHECK_QUESTIONS.map(() => null)); setPhase("intro"); }}
+        <button onClick={() => { setPos(0); setAnswers(activeQuestions.map(() => null)); setPhase("intro"); }}
           className="btn-outline px-6 py-3">Run the check again</button>
       </div>
     </div>
