@@ -16,6 +16,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   // (Panorama bis zum Rand); alle anderen Seiten bleiben in der zentrierten,
   // lesefreundlichen Spalte – inkl. der einzelnen Lektion /lessons/[id].
   const fullBleed = pathname === "/decks" || pathname === "/stories";
+  // Die Buchhaltung zeigt Tabellen mit zwölf Monatsspalten – sie braucht mehr
+  // Breite als die Lesespalte, bleibt aber zentriert und mit Innenabstand.
+  const wide = pathname === "/buchhaltung";
   return (
     <div className="flex-1 flex flex-col">
       <TrialBanner />
@@ -24,7 +27,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="flex-1 flex flex-col md:flex-row">
         <AppNav />
         <div className="flex-1 flex flex-col min-w-0">
-          <main className={fullBleed ? "flex-1 w-full" : "flex-1 p-6 max-w-4xl mx-auto w-full"}>{children}</main>
+          <main
+            className={
+              fullBleed
+                ? "flex-1 w-full"
+                : `flex-1 p-6 mx-auto w-full ${wide ? "max-w-6xl" : "max-w-4xl"}`
+            }
+          >
+            {children}
+          </main>
           <LegalFooter />
         </div>
       </div>

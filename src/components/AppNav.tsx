@@ -21,7 +21,10 @@ const links = [
 ];
 
 // Nur für Lehrer sichtbar:
-const teacherLink = { href: "/admin", label: "Teacher area", icon: "🛠️" };
+const teacherLinks = [
+  { href: "/admin", label: "Teacher area", icon: "🛠️" },
+  { href: "/buchhaltung", label: "Buchhaltung", icon: "📒" },
+];
 
 export default function AppNav() {
   const path = usePathname();
@@ -39,7 +42,7 @@ export default function AppNav() {
     });
   }, []);
 
-  const visibleLinks = isTeacher ? [...links, teacherLink] : links;
+  const visibleLinks = isTeacher ? [...links, ...teacherLinks] : links;
 
   async function signOut() {
     await createClient().auth.signOut();
