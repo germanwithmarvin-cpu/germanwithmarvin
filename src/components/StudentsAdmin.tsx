@@ -50,6 +50,15 @@ export default function StudentsAdmin() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [showGlobal, setShowGlobal] = useState(false);
   const [unread, setUnread] = useState<Set<string>>(new Set());
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  // E-Mail in die Zwischenablage; kurz "copied" anzeigen.
+  function copyEmail(email: string, id: string) {
+    navigator.clipboard?.writeText(email).then(() => {
+      setCopiedId(id);
+      setTimeout(() => setCopiedId((c) => (c === id ? null : c)), 1200);
+    }).catch(() => { /* Clipboard nicht verfuegbar */ });
+  }
 
   const refreshUnread = useCallback(() => { getStudentsWithUnread().then(setUnread).catch(() => {}); }, []);
 
@@ -100,7 +109,22 @@ export default function StudentsAdmin() {
             >
               <div className="min-w-0">
                 <div className="font-medium truncate">{s.fullName || s.email || "Student"}</div>
-                <div className="text-xs text-cream-dim truncate">{s.email}</div>
+                {s.email && (
+                  <div className="text-xs text-cream-dim flex items-center gap-1.5 min-w-0">
+                    <span className="truncate">{s.email}</span>
+                    <span
+                      role="button"
+                      tabIndex={0}
+                      title="Copy email address"
+                      onClick={(e) => { e.stopPropagation(); copyEmail(s.email!, s.studentId); }}
+                      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.stopPropagation(); e.preventDefault(); copyEmail(s.email!, s.studentId); } }}
+                      className="shrink-0 cursor-pointer rounded px-1 hover:text-cream"
+                      style={{ color: copiedId === s.studentId ? "var(--green-accent)" : undefined }}
+                    >
+                      {copiedId === s.studentId ? "✓ copied" : "⧉ copy"}
+                    </span>
+                  </div>
+                )}
                 <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                   <span
                     className="text-[11px] px-1.5 py-0.5 rounded-full font-semibold"
