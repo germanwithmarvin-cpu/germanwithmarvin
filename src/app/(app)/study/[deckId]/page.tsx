@@ -345,7 +345,11 @@ export default function StudyPage() {
 // Groß/Klein, Leerzeichen, Artikel & End-Satzzeichen egal; Umlaute tolerant
 // (ä=ae …); ein kleiner Tippfehler wird bei längeren Wörtern verziehen.
 function norm(s: string): string {
-  return s.toLowerCase().trim().replace(/\s+/g, " ").replace(/[.!?,;:]+$/, "").replace(/^(der|die|das|the|to|a|an)\s+/, "");
+  // Sonderzeichen angleichen, die eine Tastatur nicht 1:1 liefert (Striche,
+  // Ellipse, geschweifte Apostrophe) - sonst waere so eine Loesung untippbar.
+  return s.toLowerCase().trim()
+    .replace(/[‐-―]/g, "-").replace(/[…‘’‚‛]/g, "")
+    .replace(/\s+/g, " ").replace(/[.!?,;:]+$/, "").replace(/^(der|die|das|the|to|a|an)\s+/, "");
 }
 function deFold(s: string): string {
   return s.replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss");

@@ -173,11 +173,15 @@ export async function saveUnitResult(unitId: string, mastery: number): Promise<v
 // ---------- Antwortprüfung ----------
 
 // Vergleichsform: Kleinschreibung, Umlaute aufgelöst, Satzzeichen egal.
+// WICHTIG: auch Sonderzeichen abfangen, die eine normale Tastatur NICHT liefert
+// (Ellipse …, geschweifte Apostrophe ' ', Gedankenstriche – —). Sonst ist eine
+// Loesung, die so ein Zeichen enthaelt, gar nicht tippbar -> immer "falsch".
 function norm(s: string): string {
   return (s || "")
     .toLowerCase()
     .replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss")
-    .replace(/[.,!?;:"„“”'()]/g, "")
+    .replace(/[‐-―]/g, "-")            // en/em/andere Striche -> Bindestrich
+    .replace(/[.,!?;:"„“”'‘’‚‛…()]/g, "")        // Satzzeichen inkl. Ellipse + geschweifte Apostrophe
     .replace(/\s+/g, " ")
     .trim();
 }
