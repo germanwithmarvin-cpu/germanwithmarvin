@@ -9,6 +9,7 @@ import TrialBanner from "@/components/TrialBanner";
 import AppBanner from "@/components/AppBanner";
 import ConversationWidget from "@/components/ConversationWidget";
 import NewsWidget from "@/components/NewsWidget";
+import IpTracker from "@/components/IpTracker";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -42,6 +43,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <SupportWidget />
       <NewsWidget />
       <IntroTour />
+      <IpTracker />
     </div>
   );
 }

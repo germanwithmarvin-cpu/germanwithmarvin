@@ -69,3 +69,20 @@ export async function getStudentCardsByLevel(studentId: string): Promise<CardsBy
     seen: Number(r.seen ?? 0),
   }));
 }
+
+// IP-Mehrfachkonto-Pruefung: Konten, die sich eine IP teilen (Audit-Log +
+// gespeicherte IPs). Nur Lehrer (RPC ist is_teacher-gated). IP = nur ein Hinweis.
+export type IpMatch = { ip: string; accountCount: number; emails: string[]; userIds: string[]; lastSeen: string | null };
+
+export async function getIpMatches(): Promise<IpMatch[]> {
+  const supabase = createClient();
+  const { data, error } = await supabase.rpc("teacher_ip_matches");
+  if (error || !data) return [];
+  return (data as Record<string, unknown>[]).map((r) => ({
+    ip: (r.ip as string) ?? "",
+    accountCount: Number(r.account_count ?? 0),
+    emails: (r.emails as string[]) ?? [],
+    userIds: (r.user_ids as string[]) ?? [],
+    lastSeen: (r.last_seen as string) ?? null,
+  }));
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { getStudents, getStudentLessonIds, getStudentCardsByLevel, type StudentOverview, type CardsByLevel } from "@/lib/teacher";
+import { getStudents, getStudentLessonIds, getStudentCardsByLevel, getIpMatches, type StudentOverview, type CardsByLevel, type IpMatch } from "@/lib/teacher";
 import { getLessons } from "@/lib/lessons";
 import type { Lesson } from "@/lib/data";
 import { getBannerForTarget, saveBanner, clearBanner, type BannerTone } from "@/lib/banners";
@@ -51,6 +51,17 @@ export default function StudentsAdmin() {
   const [showGlobal, setShowGlobal] = useState(false);
   const [unread, setUnread] = useState<Set<string>>(new Set());
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [showIp, setShowIp] = useState(false);
+  const [ipMatches, setIpMatches] = useState<IpMatch[] | null>(null);
+
+  // Duplikat-Pruefung (geteilte IPs) beim ersten Aufklappen laden.
+  function toggleIp() {
+    setShowIp((v) => {
+      const nv = !v;
+      if (nv && ipMatches === null) getIpMatches().then(setIpMatches).catch(() => setIpMatches([]));
+      return nv;
+    });
+  }
 
   // E-Mail in die Zwischenablage; kurz "copied" anzeigen.
   function copyEmail(email: string, id: string) {
@@ -87,14 +98,51 @@ export default function StudentsAdmin() {
         <p className="text-sm text-cream-dim">
           {students.length} student{students.length === 1 ? "" : "s"} · <span className="text-cream">{consented}</span> allow marketing 📣
         </p>
-        <button onClick={() => setShowGlobal((v) => !v)} className="btn-outline px-3 py-1.5 text-sm">
-          📣 Banner for everyone
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={toggleIp} className="btn-outline px-3 py-1.5 text-sm">🕵️ Duplicate check</button>
+          <button onClick={() => setShowGlobal((v) => !v)} className="btn-outline px-3 py-1.5 text-sm">
+            📣 Banner for everyone
+          </button>
+        </div>
       </div>
 
       {showGlobal && (
         <div className="card p-4">
           <BannerEditor targetUserId={null} title="Website banner shown to ALL students after login" />
+        </div>
+      )}
+
+      {showIp && (
+        <div className="card p-4 space-y-3">
+          <div>
+            <h3 className="font-bold text-sm">Possible duplicate accounts (shared IP)</h3>
+            <p className="text-xs text-cream-dim mt-0.5">
+              Accounts seen from the same IP (sign-up or login). ⚠️ Only a hint — households, Wi-Fi and mobile
+              networks share one IP, and a single person often has several. Your own test logins appear here too.
+            </p>
+          </div>
+          {ipMatches === null ? (
+            <p className="text-sm text-cream-dim">Checking…</p>
+          ) : ipMatches.length === 0 ? (
+            <p className="text-sm text-cream-dim">
+              No shared IPs found. (If this stays empty, run <code>supabase/ip-abuse-check.sql</code> once.)
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {ipMatches.map((m) => (
+                <div key={m.ip} className="rounded-lg p-3" style={{ background: "var(--bordeaux-deep)" }}>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-mono text-xs text-cream">{m.ip}</span>
+                    <span className="text-[11px] px-1.5 py-0.5 rounded-full font-semibold"
+                      style={{ background: "color-mix(in srgb, var(--gold-bright) 25%, transparent)", color: "var(--gold-bright)" }}>
+                      {m.accountCount} accounts
+                    </span>
+                  </div>
+                  <div className="text-xs text-cream-dim mt-1 break-words">{m.emails.join("  ·  ")}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
