@@ -57,6 +57,14 @@ export default function RegisterPage() {
       setLoading(false);
       return;
     }
+    // Supabase-Anti-Enumeration: existiert die E-Mail schon, kommt KEIN Fehler,
+    // aber data.user.identities ist leer und es wird KEINE Bestaetigungsmail
+    // verschickt. Sonst zeigt die Seite faelschlich "confirmation sent".
+    if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+      setError("This email is already registered. Try signing in, or reset your password.");
+      setLoading(false);
+      return;
+    }
     // Registrierung erfolgreich = Google-Ads-Conversion (respektiert Consent Mode).
     trackSignupConversion(email);
     // Zugang wird über die bezahlte E-Mail bzw. einen Code abgeleitet (my_access()).
