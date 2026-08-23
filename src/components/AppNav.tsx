@@ -30,6 +30,7 @@ export default function AppNav() {
   const path = usePathname();
   const router = useRouter();
   const [isTeacher, setIsTeacher] = useState(false);
+  const [isDemo, setIsDemo] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("");
 
   useEffect(() => {
@@ -38,11 +39,14 @@ export default function AppNav() {
       if (!user) return;
       const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
       setIsTeacher(Boolean(data?.is_teacher));
+      setIsDemo(Boolean(data?.is_demo));
       setAvatarUrl((data?.avatar_url as string) ?? "");
     });
   }, []);
 
-  const visibleLinks = isTeacher ? [...links, ...teacherLinks] : links;
+  // Demo-Konto (kein-Login-Link): Buchung ausblenden.
+  const base = isDemo ? links.filter((l) => l.href !== "/booking") : links;
+  const visibleLinks = isTeacher ? [...base, ...teacherLinks] : base;
 
   async function signOut() {
     await createClient().auth.signOut();

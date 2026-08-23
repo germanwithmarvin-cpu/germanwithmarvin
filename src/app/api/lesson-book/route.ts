@@ -24,6 +24,8 @@ export async function POST(req: Request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return json({ error: "Not signed in" }, 401);
+  const { data: dp } = await supabase.from("profiles").select("is_demo").eq("id", user.id).maybeSingle();
+  if (dp?.is_demo) return json({ error: "Booking is disabled on the demo account." }, 403);
 
   const { start, teacher_id } = await req.json().catch(() => ({}));
   if (!start) return json({ error: "Missing start" }, 400);

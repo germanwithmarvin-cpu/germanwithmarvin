@@ -14,6 +14,8 @@ export async function POST(req: Request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return json({ error: "Not signed in" }, 401);
+  const { data: dp } = await supabase.from("profiles").select("is_demo").eq("id", user.id).maybeSingle();
+  if (dp?.is_demo) return json({ error: "Booking is disabled on the demo account. Create your own account to book lessons." }, 403);
 
   const body = await req.json().catch(() => ({}));
   const quantity = Math.round(Number(body.quantity));

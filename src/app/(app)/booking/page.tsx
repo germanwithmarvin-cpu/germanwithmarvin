@@ -10,8 +10,11 @@ import LessonsList from "@/components/booking/LessonsList";
 import LessonCalendar from "@/components/booking/LessonCalendar";
 import WeekSchedule from "@/components/booking/WeekSchedule";
 import TeacherProfiles from "@/components/booking/TeacherProfiles";
+import Link from "next/link";
+import { getAccess } from "@/lib/access";
 
 export default function BookingPage() {
+  const [isDemo, setIsDemo] = useState(false);
   const [checkoutState, setCheckoutState] = useState<string | null>(null);
   const [sub, setSub] = useState<LessonSubscription | null>(null);
   const [credits, setCredits] = useState<CreditInfo>({ balance: 0, nextExpiry: null });
@@ -53,6 +56,7 @@ export default function BookingPage() {
   const [googleState, setGoogleState] = useState<string | null>(null);
   useEffect(() => {
     getTeachers().then(setTeachers);
+    getAccess().then((a) => setIsDemo(Boolean(a.isDemo)));
     const q = new URLSearchParams(window.location.search);
     setCheckoutState(q.get("checkout"));
     setGoogleState(q.get("google"));
@@ -120,6 +124,21 @@ export default function BookingPage() {
   const money = (n: number) => `$${n % 1 === 0 ? n : n.toFixed(2)}`;
   const planLabel = (h: number) => (isMarvin ? lessonPriceLabel(h) : money(h * teacherRate));
   const perHourNow = isMarvin ? perHour : teacherRate;
+
+  // Demo-Konto (kein-Login-Link): Buchung ist bewusst gesperrt.
+  if (isDemo) {
+    return (
+      <div className="max-w-lg mx-auto card p-8 text-center mt-10 space-y-4">
+        <div className="text-4xl">🗓️</div>
+        <h1 className="text-2xl font-bold">1-on-1 lessons need your own account</h1>
+        <p className="text-cream-dim">
+          You&apos;re exploring with the free demo access. Booking private lessons (and paying for them) needs a
+          personal account — it only takes a minute.
+        </p>
+        <Link href="/register" className="btn-gold inline-block px-6 py-3">Create your free account →</Link>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl space-y-6">

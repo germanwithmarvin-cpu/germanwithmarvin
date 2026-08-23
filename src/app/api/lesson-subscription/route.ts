@@ -22,6 +22,8 @@ export async function POST(req: Request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return json({ error: "Not signed in" }, 401);
+  const { data: dp } = await supabase.from("profiles").select("is_demo").eq("id", user.id).maybeSingle();
+  if (dp?.is_demo) return json({ error: "Not available on the demo account." }, 403);
 
   const { action, quantity, teacher_id } = await req.json().catch(() => ({}));
   const teacherId = Number.isFinite(Number(teacher_id)) ? Math.round(Number(teacher_id)) : 1;

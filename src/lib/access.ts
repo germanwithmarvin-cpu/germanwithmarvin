@@ -8,7 +8,8 @@ import { createClient } from "@/lib/supabase/client";
 export type AccessTier = "full" | "none";
 // trialExpiresAt: gesetzt, wenn der Zugang über einen Trial-Code läuft
 // (Zukunft = aktiver Trial, Vergangenheit = abgelaufen → Paywall mit Rabatt).
-export type Access = { tier: AccessTier; trialExpiresAt?: string | null };
+// isDemo: geteiltes Demo-Konto (kein-Login-Link) -> Vollzugang, aber Buchung gesperrt.
+export type Access = { tier: AccessTier; trialExpiresAt?: string | null; isDemo?: boolean };
 
 export async function getAccess(): Promise<Access> {
   const supabase = createClient();
@@ -19,19 +20,20 @@ export async function getAccess(): Promise<Access> {
   const { data, error } = await supabase.rpc("my_access");
   const { data: profile } = await supabase
     .from("profiles")
-    .select("is_teacher, access_scope, access_expires_at")
+    .select("*")   // "*" statt fester Spalten, damit ein noch fehlendes is_demo nichts bricht
     .eq("id", user.id)
     .maybeSingle();
   const trialExpiresAt =
     profile?.access_scope === "full" && profile?.access_expires_at ? (profile.access_expires_at as string) : null;
+  const isDemo = Boolean(profile?.is_demo);
 
-  if (!error) return { tier: data === "full" ? "full" : "none", trialExpiresAt };
+  if (!error) return { tier: data === "full" ? "full" : "none", trialExpiresAt, isDemo };
 
   // Fallback, falls my_access() noch nicht installiert ist: Lehrer + (nicht abgelaufener) Code.
   const full =
     Boolean(profile?.is_teacher) ||
     (profile?.access_scope === "full" && (!profile?.access_expires_at || new Date(profile.access_expires_at as string) > new Date()));
-  return { tier: full ? "full" : "none", trialExpiresAt };
+  return { tier: full ? "full" : "none", trialExpiresAt, isDemo };
 }
 
 export function hasAccess(tier: AccessTier): boolean {
