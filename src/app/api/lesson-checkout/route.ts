@@ -53,6 +53,13 @@ export async function POST(req: Request) {
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     line_items: [{ price: priceId, quantity }],
+    // Managed Payments: Stripe ist Merchant of Record und berechnet, weist aus
+    // und führt die USt ab (wie beim App-Abo-Payment-Link). Voraussetzung im
+    // Dashboard: Managed Payments aktiviert + ToS akzeptiert, und das Stunden-
+    // Produkt hat einen zulässigen Steuercode ("Eligible for Managed Payments").
+    // Steuer kommt on top (Price tax_behavior = exclusive), passend zu unseren
+    // Netto-Preisen + "+ tax"-Hinweis.
+    managed_payments: { enabled: true },
     customer_email: user.email ?? undefined,
     client_reference_id: user.id,
     metadata: meta,
