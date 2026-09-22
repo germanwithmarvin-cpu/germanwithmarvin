@@ -150,8 +150,19 @@ export async function POST(req: Request) {
           const subId = typeof s.subscription === "string" ? s.subscription : s.subscription?.id;
           const customerId = typeof s.customer === "string" ? s.customer : s.customer?.id ?? null;
           if (userId && subId) {
+            const teacherId = teacherIdOf(s.metadata);
             const sub = await stripe.subscriptions.retrieve(subId);
-            await upsertLessonSub(userId, teacherIdOf(s.metadata), customerId, sub);
+            await upsertLessonSub(userId, teacherId, customerId, sub);
+            // Initiale Stunden-Gutschrift schon HIER vergeben (nicht erst bei invoice.paid):
+            //  - Bei Managed Payments/MoR ist invoice.paid als Fulfillment-Event nicht garantiert;
+            //    checkout.session.completed ist der von Stripe dokumentierte MoR-Fulfillment-Event.
+            //  - Die aktuelle Stripe-API (2026-06-24.dahlia) hat KEIN top-level invoice.subscription
+            //    mehr, weshalb die invoice.paid-Branche zuvor stumm abbrach und nie gutschrieb.
+            // Idempotenz: Schlüssel = erste Rechnung (latest_invoice). Eine evtl. doch noch kommende
+            // invoice.paid-Gutschrift trägt für die 1. Periode dieselbe inv.id → dedupliziert über
+            // stripe_invoice_id (onConflict, ignoreDuplicates) auf eine einzige Zeile.
+            const firstInvoice = typeof sub.latest_invoice === "string" ? sub.latest_invoice : sub.latest_invoice?.id;
+            await grantLessonCredits(userId, teacherId, subQuantity(sub), firstInvoice ?? `${sub.id}_initial`);
           }
         } else {
           const email = s.customer_details?.email ?? s.customer_email ?? null;
@@ -164,7 +175,14 @@ export async function POST(req: Request) {
 
       case "invoice.paid": {
         const inv = event.data.object as Stripe.Invoice;
-        const subField = (inv as unknown as { subscription?: string | { id: string } }).subscription;
+        // Stripe-API 2025-03-31.basil+ (wir: 2026-06-24.dahlia) hat kein top-level
+        // invoice.subscription mehr → jetzt unter invoice.parent.subscription_details.subscription.
+        // Beide Pfade lesen, damit Verlängerungen (subscription_cycle) wieder gutgeschrieben werden.
+        const invAny = inv as unknown as {
+          subscription?: string | { id: string };
+          parent?: { subscription_details?: { subscription?: string | { id: string } } };
+        };
+        const subField = invAny.subscription ?? invAny.parent?.subscription_details?.subscription;
         const subId = typeof subField === "string" ? subField : subField?.id;
         if (!subId) break;
         const sub = await stripe.subscriptions.retrieve(subId);
