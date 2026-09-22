@@ -42,7 +42,7 @@ values (
   $$Hi, I'm Marvin. I've been teaching German full-time for over 4 years, with thousands of one-on-one hours behind me. I built German Simplified to make the language actually click — clear explanations, real conversation, and a system that makes vocabulary and grammar stick. Whether you're starting from zero or pushing toward an advanced level, I'll meet you exactly where you are.$$,
   $$["4+ years teaching · thousands of 1-on-1 lessons","Levels A1–C1 · structured, patient, no pressure","Creator of the German Simplified method"]$$::jsonb,
   $$German, English$$,
-  5900, $$price_1TurQzEsa6rPVhI2C2QoyaeH$$, true, 1
+  5900, $$price_1UGCpOEsa6rPVhI2woGYgISc$$, true, 1
 )
 on conflict (id) do update set
   slug = excluded.slug, name = excluded.name, user_id = excluded.user_id,

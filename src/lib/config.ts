@@ -58,7 +58,7 @@ export const TAX_NOTE_LONG =
 
 // ---- 1-zu-1 Stunden: Monats-Abo mit Stunden-Guthaben ------------------------
 export const LESSON = {
-  stripePriceId: "price_1TurQzEsa6rPVhI2C2QoyaeH", // Volume-Staffel: bis 7 = $59, ab 8 = $56,05
+  stripePriceId: "price_1UGCpOEsa6rPVhI2woGYgISc", // Volume-Staffel: bis 7 = $59, ab 8 = $56,05
   pricePerHour: 59, // USD, 50-Min-Stunde
   discountedPerHour: 56.05, // ab discountThreshold Stunden (−5 %)
   discountThreshold: 8, // ab 8 Stunden/Monat gilt der Rabatt
