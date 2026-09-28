@@ -66,6 +66,22 @@ export async function getStudents(): Promise<StudentOverview[]> {
   }));
 }
 
+export type UpcomingLesson = { bookingId: string; startsAt: string; studentId: string; studentName: string; meetLink: string | null };
+
+// Privater Stundenplan: alle kuenftigen gebuchten 1-zu-1-Stunden mit Namen +
+// Meet-Link. Sichere Lehrer-RPC (umgeht die RLS-Unschaerfe des Tabellen-Reads).
+export async function getTeacherUpcomingLessons(): Promise<UpcomingLesson[]> {
+  const { data, error } = await createClient().rpc("teacher_upcoming_lessons");
+  if (error || !data) return [];
+  return (data as Record<string, unknown>[]).map((r) => ({
+    bookingId: r.booking_id as string,
+    startsAt: r.starts_at as string,
+    studentId: r.student_id as string,
+    studentName: (r.student_name as string) || "Student",
+    meetLink: (r.meet_link as string) ?? null,
+  }));
+}
+
 export async function getStudentLessonIds(studentId: string): Promise<string[]> {
   const supabase = createClient();
   const { data, error } = await supabase.rpc("teacher_student_lessons", { p_student: studentId });
