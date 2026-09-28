@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { getStudents, getStudentLessonIds, getStudentCardsByLevel, getIpMatches, type StudentOverview, type CardsByLevel, type IpMatch } from "@/lib/teacher";
 import { getLessons } from "@/lib/lessons";
+import { taktCode } from "@/lib/taktCode";
 import type { Lesson } from "@/lib/data";
 import { getBannerForTarget, saveBanner, clearBanner, type BannerTone } from "@/lib/banners";
 import { getConversation, sendTeacherMessage, closeConversation, markConversationRead, getStudentsWithUnread, type Message } from "@/lib/conversations";
@@ -294,6 +295,7 @@ export default function StudentsAdmin() {
 function StudentDetail({ student, lessons, onConversationRead }: { student: StudentOverview; lessons: Lesson[]; onConversationRead: () => void }) {
   const [lessonIds, setLessonIds] = useState<string[] | null>(null);
   const [cards, setCards] = useState<CardsByLevel[] | null>(null);
+  const [codeCopied, setCodeCopied] = useState(false);
 
   useEffect(() => {
     getStudentLessonIds(student.studentId).then(setLessonIds);
@@ -302,6 +304,10 @@ function StudentDetail({ student, lessons, onConversationRead }: { student: Stud
 
   const doneSet = new Set(lessonIds ?? []);
   const a = access(student);
+  const code = taktCode(student.studentId);
+  function copyCode() {
+    navigator.clipboard?.writeText(code).then(() => { setCodeCopied(true); setTimeout(() => setCodeCopied(false), 1200); }).catch(() => { /* ignore */ });
+  }
 
   return (
     <div className="border-t border-gold/15 p-4 space-y-5 bg-bordeaux-deep/30">
@@ -323,6 +329,23 @@ function StudentDetail({ student, lessons, onConversationRead }: { student: Stud
         <Fact label="🎟️ Lesson credits" value={`${student.lessonCredits} h`} color={student.lessonCredits > 0 ? "var(--green-accent)" : undefined} />
         <Fact label="🗓️ Upcoming lessons" value={student.lessonsUpcoming > 0 ? `${student.lessonsUpcoming} · next ${fmtDate(student.nextLessonAt)}` : "none"} />
         <Fact label="✅ Booked (total)" value={String(student.lessonsBooked)} />
+      </div>
+
+      {/* Takt-Code: anonymer Kalender-Titel; in Takt beim Schueler als calendar_match eintragen */}
+      <div className="rounded-lg p-3 text-sm flex flex-wrap items-center gap-2" style={{ background: "var(--bordeaux-deep)" }}>
+        <span className="text-[11px] uppercase tracking-wide text-cream-dim">Takt-Code</span>
+        <code className="font-mono text-gold-bright">{code}</code>
+        <span
+          role="button"
+          tabIndex={0}
+          onClick={copyCode}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); copyCode(); } }}
+          className="cursor-pointer rounded px-1 text-cream-dim hover:text-cream"
+          style={{ color: codeCopied ? "var(--green-accent)" : undefined }}
+        >
+          {codeCopied ? "✓ copied" : "⧉ copy"}
+        </span>
+        <span className="text-[11px] text-cream-dim">→ in Takt bei diesem Schüler als „calendar match“ eintragen; der Kalender zeigt „Unterricht · {code}“ (Preply sieht nur den Code).</span>
       </div>
 
       {/* Konversation mit genau diesem Schüler */}

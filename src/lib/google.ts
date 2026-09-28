@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { taktCode } from "@/lib/taktCode";
 
 // Server-seitige Google-Kalender-Anbindung (nur in API-Routen benutzen).
 // Nötige Env-Vars: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SUPABASE_SERVICE_ROLE_KEY
@@ -13,12 +14,12 @@ export const GOOGLE_SCOPES = [
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const CAL = "https://www.googleapis.com/calendar/v3";
 
-// Kalender-Titel = "Unterricht {Initiale}". Genug, dass DU (und Takt, das deinen
-// Google-Kalender liest) die Stunde zuordnest; Preply sieht nur eine Initiale,
-// keinen vollen Namen. Zusammen mit "keine Teilnehmer" bleibt die Identitaet privat.
-function eventTitle(studentName?: string | null): string {
-  const i = (studentName || "").trim().charAt(0).toUpperCase();
-  return i ? `Unterricht ${i}` : "Unterricht";
+// Kalender-Titel = "Unterricht · {CODE}" mit dem anonymen Takt-Code des Schuelers.
+// Preply sieht nur den Code; Takt ordnet ihn (via calendar_match) dem vollen Namen
+// zu. Zusammen mit "keine Teilnehmer" bleibt die Identitaet privat.
+function eventTitle(studentId?: string | null): string {
+  const code = taktCode(studentId);
+  return code ? `Unterricht · ${code}` : "Unterricht";
 }
 
 function admin() {
@@ -163,17 +164,17 @@ export async function listEvents(fromISO: string, toISO: string, teacherId = 1):
 }
 
 // Termin + Meet-Link anlegen. Gibt eventId + meetLink zurück (oder leer).
-export async function createEvent(opts: { startISO: string; endISO: string; attendeeEmail?: string | null; timezone: string; studentName?: string | null; teacherId?: number }): Promise<{ eventId?: string; meetLink?: string }> {
+export async function createEvent(opts: { startISO: string; endISO: string; attendeeEmail?: string | null; timezone: string; studentName?: string | null; studentId?: string | null; teacherId?: number }): Promise<{ eventId?: string; meetLink?: string }> {
   const token = await accessToken(opts.teacherId ?? 1);
   if (!token) return {};
   const res = await fetch(`${CAL}/calendars/primary/events?conferenceDataVersion=1&sendUpdates=all`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      // Titel = "Unterricht {Initiale}", KEINE Teilnehmer: Preply synchronisiert
-      // marvin.h.graf und darf weder vollen Namen noch E-Mail sehen. Der Schueler
-      // bekommt Termin + Meet-Link in der App (LessonsList), nicht per Einladung.
-      summary: eventTitle(opts.studentName),
+      // Titel = "Unterricht · {CODE}", KEINE Teilnehmer: Preply synchronisiert
+      // marvin.h.graf und darf weder Namen noch E-Mail sehen. Der Schueler bekommt
+      // Termin + Meet-Link in der App (LessonsList), nicht per Einladung.
+      summary: eventTitle(opts.studentId),
       start: { dateTime: opts.startISO, timeZone: opts.timezone },
       end: { dateTime: opts.endISO, timeZone: opts.timezone },
       conferenceData: { createRequest: { requestId: `gwm-${Date.now()}`, conferenceSolutionKey: { type: "hangoutsMeet" } } },
@@ -208,7 +209,7 @@ export async function syncStudentGoogleEvents(userId: string): Promise<number> {
   let n = 0;
   for (const b of (bookings ?? []) as { id: string; starts_at: string; ends_at: string }[]) {
     try {
-      const { eventId, meetLink } = await createEvent({ startISO: b.starts_at, endISO: b.ends_at, attendeeEmail: email, timezone: tz, studentName: name });
+      const { eventId, meetLink } = await createEvent({ startISO: b.starts_at, endISO: b.ends_at, attendeeEmail: email, timezone: tz, studentName: name, studentId: userId });
       if (eventId || meetLink) {
         await db.from("lesson_bookings").update({ google_event_id: eventId ?? null, meet_link: meetLink ?? null }).eq("id", b.id);
         n += 1;
