@@ -13,6 +13,12 @@ export const GOOGLE_SCOPES = [
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const CAL = "https://www.googleapis.com/calendar/v3";
 
+// Titel der Kalendertermine. BEWUSST neutral, ohne Schuelername: der verbundene
+// Kalender (marvin.h.graf) wird auch von Preply synchronisiert und darf die
+// Identitaet privater Schueler nicht preisgeben. Schueler sehen Termin + Meet-
+// Link ohnehin in der App. Beliebig anpassbar.
+const EVENT_TITLE = "Busy";
+
 function admin() {
   return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
 }
@@ -162,10 +168,12 @@ export async function createEvent(opts: { startISO: string; endISO: string; atte
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      summary: opts.studentName ? `German lesson — ${opts.studentName}` : "German lesson (1-on-1)",
+      // Neutraler Titel + KEINE Teilnehmer: Preply synchronisiert marvin.h.graf und
+      // darf weder Name noch E-Mail des Schuelers sehen. Der Schueler bekommt Termin
+      // + Meet-Link in der App (LessonsList), nicht ueber eine Google-Einladung.
+      summary: EVENT_TITLE,
       start: { dateTime: opts.startISO, timeZone: opts.timezone },
       end: { dateTime: opts.endISO, timeZone: opts.timezone },
-      attendees: opts.attendeeEmail ? [{ email: opts.attendeeEmail }] : undefined,
       conferenceData: { createRequest: { requestId: `gwm-${Date.now()}`, conferenceSolutionKey: { type: "hangoutsMeet" } } },
     }),
   });
