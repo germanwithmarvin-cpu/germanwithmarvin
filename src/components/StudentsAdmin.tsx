@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { getStudents, getStudentLessonIds, getStudentCardsByLevel, getIpMatches, type StudentOverview, type CardsByLevel, type IpMatch } from "@/lib/teacher";
+import { getTeacherBookings, getStudentNames, getMyTeacherId, type Booking } from "@/lib/schedule";
 import { getLessons } from "@/lib/lessons";
 import type { Lesson } from "@/lib/data";
 import { getBannerForTarget, saveBanner, clearBanner, type BannerTone } from "@/lib/banners";
@@ -19,6 +20,10 @@ function timeAgo(iso: string | null): string {
 
 function fmtDate(iso: string | null): string {
   return iso ? new Date(iso).toLocaleDateString() : "—";
+}
+
+function fmtDateTime(iso: string): string {
+  return new Date(iso).toLocaleString(undefined, { weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
 }
 
 // Zugangsstatus ableiten. Ein aktives (Test-)Abo hat IMMER Vorrang vor den
@@ -74,6 +79,8 @@ export default function StudentsAdmin() {
   const [subsOnly, setSubsOnly] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [syncMsg, setSyncMsg] = useState<string | null>(null);
+  const [showAgenda, setShowAgenda] = useState(false);
+  const [agenda, setAgenda] = useState<{ list: Booking[]; names: Record<string, string> } | null>(null);
 
   // Holt Abo-Status + Verlaengerungsdatum frisch aus Stripe (befuellt Bestandsabos).
   async function syncSubs() {
@@ -126,6 +133,16 @@ export default function StudentsAdmin() {
     getStudents().then(setStudents);
     getLessons().then(setLessons);
     refreshUnread();
+    // Privater Stundenplan: alle kuenftigen gebuchten 1-zu-1-Stunden mit Namen.
+    (async () => {
+      try {
+        const tid = (await getMyTeacherId()) ?? 1;
+        const bs = await getTeacherBookings(tid);
+        const upcoming = bs.filter((b) => b.status === "booked" && new Date(b.startsAt).getTime() > Date.now());
+        const names = upcoming.length ? await getStudentNames(upcoming.map((b) => b.studentId)) : {};
+        setAgenda({ list: upcoming, names });
+      } catch { setAgenda({ list: [], names: {} }); }
+    })();
   }, [refreshUnread]);
 
   if (students === null) return <p className="text-sm text-cream-dim">Loading students…</p>;
@@ -154,6 +171,9 @@ export default function StudentsAdmin() {
           <span className="text-cream">{consented}</span> allow marketing 📣
         </p>
         <div className="flex items-center gap-2 flex-wrap">
+          <button onClick={() => setShowAgenda((v) => !v)} className={`px-3 py-1.5 text-sm ${showAgenda ? "btn-gold" : "btn-outline"}`}>
+            🗓️ Upcoming lessons{agenda ? ` (${agenda.list.length})` : ""}
+          </button>
           <button onClick={() => setSubsOnly((v) => !v)} className={`px-3 py-1.5 text-sm ${subsOnly ? "btn-gold" : "btn-outline"}`}>
             💳 Subscribers only
           </button>
@@ -170,6 +190,27 @@ export default function StudentsAdmin() {
         </div>
       </div>
       {syncMsg && <p className="text-xs text-cream-dim">{syncMsg}</p>}
+
+      {showAgenda && (
+        <div className="card p-4 space-y-2">
+          <h3 className="font-bold text-sm">🗓️ Upcoming 1-on-1 lessons <span className="text-cream-dim font-normal">— your private schedule (Preply never sees this)</span></h3>
+          {agenda === null ? (
+            <p className="text-sm text-cream-dim">Loading…</p>
+          ) : agenda.list.length === 0 ? (
+            <p className="text-sm text-cream-dim">No upcoming lessons booked.</p>
+          ) : (
+            <ul className="divide-y divide-gold/10">
+              {agenda.list.map((b) => (
+                <li key={b.id} className="flex items-center justify-between gap-3 py-2 text-sm">
+                  <span className="text-cream shrink-0 w-40">{fmtDateTime(b.startsAt)}</span>
+                  <span className="flex-1 min-w-0 truncate text-cream">{agenda.names[b.studentId] || "Student"}</span>
+                  {b.meetLink && <a href={b.meetLink} target="_blank" rel="noreferrer" className="text-gold-bright underline shrink-0">Join</a>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
 
       {showGlobal && (
         <div className="card p-4">
