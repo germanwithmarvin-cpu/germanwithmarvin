@@ -88,6 +88,21 @@ export default function StudentsAdmin() {
     setSyncing(false);
   }
 
+  const [gsync, setGsync] = useState(false);
+  // Holt fehlende Google-Termine fuer alle kuenftigen gebuchten Stunden nach.
+  async function syncLessons() {
+    if (gsync) return;
+    setGsync(true); setSyncMsg(null);
+    try {
+      const res = await fetch("/api/google/sync-bookings", { method: "POST" });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) setSyncMsg(j.error || "Google sync failed");
+      else if (j.connected === false) setSyncMsg("Google Calendar isn’t connected — connect it on the 1-on-1 lessons page first, then click again.");
+      else setSyncMsg(`Added ${j.created ?? 0} lesson${j.created === 1 ? "" : "s"} to your Google Calendar${j.created === 0 ? " (all already synced)" : ""}.`);
+    } catch { setSyncMsg("Google sync failed"); }
+    setGsync(false);
+  }
+
   // Duplikat-Pruefung (geteilte IPs) beim ersten Aufklappen laden.
   function toggleIp() {
     setShowIp((v) => {
@@ -144,6 +159,9 @@ export default function StudentsAdmin() {
           </button>
           <button onClick={syncSubs} disabled={syncing} className="btn-outline px-3 py-1.5 text-sm disabled:opacity-50" title="Fetch subscription status & renewal dates from Stripe">
             {syncing ? "Syncing…" : "🔄 Sync subscriptions"}
+          </button>
+          <button onClick={syncLessons} disabled={gsync} className="btn-outline px-3 py-1.5 text-sm disabled:opacity-50" title="Add any booked lessons that are missing from your Google Calendar">
+            {gsync ? "Syncing…" : "🗓️ Sync lessons → Google"}
           </button>
           <button onClick={toggleIp} className="btn-outline px-3 py-1.5 text-sm">🕵️ Duplicate check</button>
           <button onClick={() => setShowGlobal((v) => !v)} className="btn-outline px-3 py-1.5 text-sm">
