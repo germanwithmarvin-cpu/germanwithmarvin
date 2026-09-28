@@ -27,6 +27,11 @@ export type StudentOverview = {
   subStatus: string | null;            // active | trialing | past_due | canceled | null (= kein Abo)
   subRenewsAt: string | null;          // naechste Verlaengerung / Ende der Periode
   subCancelAtPeriodEnd: boolean;       // laeuft zum Periodenende aus
+  // 1-zu-1 Stunden
+  lessonCredits: number;               // verbleibende Stunden (nicht abgelaufen)
+  lessonsUpcoming: number;             // kuenftige gebuchte Stunden
+  nextLessonAt: string | null;         // naechste gebuchte Stunde
+  lessonsBooked: number;               // jemals gebucht (ohne Stornos)
 };
 
 export async function getStudents(): Promise<StudentOverview[]> {
@@ -54,6 +59,10 @@ export async function getStudents(): Promise<StudentOverview[]> {
     subStatus: (r.sub_status as string) ?? null,
     subRenewsAt: (r.sub_current_period_end as string) ?? null,
     subCancelAtPeriodEnd: Boolean(r.sub_cancel_at_period_end),
+    lessonCredits: Number(r.lesson_credits ?? 0),
+    lessonsUpcoming: Number(r.lessons_upcoming ?? 0),
+    nextLessonAt: (r.next_lesson_at as string) ?? null,
+    lessonsBooked: Number(r.lessons_booked ?? 0),
   }));
 }
 

@@ -236,6 +236,11 @@ export default function StudentsAdmin() {
                   <span className="text-[11px] px-1.5 py-0.5 rounded-full" style={{ background: "color-mix(in srgb, var(--gold) 12%, transparent)", color: a.color }}>
                     {a.text}
                   </span>
+                  {(s.lessonCredits > 0 || s.lessonsBooked > 0) && (
+                    <span className="text-[11px] px-1.5 py-0.5 rounded-full font-semibold" style={{ background: "color-mix(in srgb, var(--gold-bright) 18%, transparent)", color: "var(--gold-bright)" }}>
+                      🎟️ {s.lessonCredits}h{s.lessonsUpcoming > 0 ? ` · next ${fmtDate(s.nextLessonAt)}` : ""}
+                    </span>
+                  )}
                   {unread.has(s.studentId) && (
                     <span className="text-[11px] px-1.5 py-0.5 rounded-full font-semibold" style={{ background: "color-mix(in srgb, var(--gold-bright) 25%, transparent)", color: "var(--gold-bright)" }}>
                       💬 new reply
@@ -293,6 +298,13 @@ function StudentDetail({ student, lessons, onConversationRead }: { student: Stud
           <div className="text-cream mt-0.5">{sourceLine(student)}</div>
           {student.signupReferrer && <div className="text-xs text-cream-dim mt-0.5 truncate">referrer: {student.signupReferrer}</div>}
         </div>
+      </div>
+
+      {/* 1-zu-1 Stunden: Guthaben + Buchungen */}
+      <div className="grid sm:grid-cols-3 gap-3 text-sm">
+        <Fact label="🎟️ Lesson credits" value={`${student.lessonCredits} h`} color={student.lessonCredits > 0 ? "var(--green-accent)" : undefined} />
+        <Fact label="🗓️ Upcoming lessons" value={student.lessonsUpcoming > 0 ? `${student.lessonsUpcoming} · next ${fmtDate(student.nextLessonAt)}` : "none"} />
+        <Fact label="✅ Booked (total)" value={String(student.lessonsBooked)} />
       </div>
 
       {/* Konversation mit genau diesem Schüler */}
