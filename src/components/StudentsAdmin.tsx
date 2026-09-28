@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { getStudents, getStudentLessonIds, getStudentCardsByLevel, getIpMatches, getTeacherUpcomingLessons, type StudentOverview, type CardsByLevel, type IpMatch, type UpcomingLesson } from "@/lib/teacher";
+import { getStudents, getStudentLessonIds, getStudentCardsByLevel, getIpMatches, type StudentOverview, type CardsByLevel, type IpMatch } from "@/lib/teacher";
 import { getLessons } from "@/lib/lessons";
 import type { Lesson } from "@/lib/data";
 import { getBannerForTarget, saveBanner, clearBanner, type BannerTone } from "@/lib/banners";
@@ -19,10 +19,6 @@ function timeAgo(iso: string | null): string {
 
 function fmtDate(iso: string | null): string {
   return iso ? new Date(iso).toLocaleDateString() : "—";
-}
-
-function fmtDateTime(iso: string): string {
-  return new Date(iso).toLocaleString(undefined, { weekday: "short", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
 }
 
 // Zugangsstatus ableiten. Ein aktives (Test-)Abo hat IMMER Vorrang vor den
@@ -78,8 +74,6 @@ export default function StudentsAdmin() {
   const [subsOnly, setSubsOnly] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [syncMsg, setSyncMsg] = useState<string | null>(null);
-  const [showAgenda, setShowAgenda] = useState(false);
-  const [agenda, setAgenda] = useState<UpcomingLesson[] | null>(null);
 
   // Holt Abo-Status + Verlaengerungsdatum frisch aus Stripe (befuellt Bestandsabos).
   async function syncSubs() {
@@ -132,8 +126,6 @@ export default function StudentsAdmin() {
     getStudents().then(setStudents);
     getLessons().then(setLessons);
     refreshUnread();
-    // Privater Stundenplan: alle kuenftigen gebuchten 1-zu-1-Stunden mit Namen.
-    getTeacherUpcomingLessons().then(setAgenda).catch(() => setAgenda([]));
   }, [refreshUnread]);
 
   if (students === null) return <p className="text-sm text-cream-dim">Loading students…</p>;
@@ -162,9 +154,6 @@ export default function StudentsAdmin() {
           <span className="text-cream">{consented}</span> allow marketing 📣
         </p>
         <div className="flex items-center gap-2 flex-wrap">
-          <button onClick={() => setShowAgenda((v) => !v)} className={`px-3 py-1.5 text-sm ${showAgenda ? "btn-gold" : "btn-outline"}`}>
-            🗓️ Upcoming lessons{agenda ? ` (${agenda.length})` : ""}
-          </button>
           <button onClick={() => setSubsOnly((v) => !v)} className={`px-3 py-1.5 text-sm ${subsOnly ? "btn-gold" : "btn-outline"}`}>
             💳 Subscribers only
           </button>
@@ -181,27 +170,6 @@ export default function StudentsAdmin() {
         </div>
       </div>
       {syncMsg && <p className="text-xs text-cream-dim">{syncMsg}</p>}
-
-      {showAgenda && (
-        <div className="card p-4 space-y-2">
-          <h3 className="font-bold text-sm">🗓️ Upcoming 1-on-1 lessons <span className="text-cream-dim font-normal">— your private schedule (Preply never sees this)</span></h3>
-          {agenda === null ? (
-            <p className="text-sm text-cream-dim">Loading…</p>
-          ) : agenda.length === 0 ? (
-            <p className="text-sm text-cream-dim">No upcoming lessons booked.</p>
-          ) : (
-            <ul className="divide-y divide-gold/10">
-              {agenda.map((l) => (
-                <li key={l.bookingId} className="flex items-center justify-between gap-3 py-2 text-sm">
-                  <span className="text-cream shrink-0 w-40">{fmtDateTime(l.startsAt)}</span>
-                  <span className="flex-1 min-w-0 truncate text-cream">{l.studentName}</span>
-                  {l.meetLink && <a href={l.meetLink} target="_blank" rel="noreferrer" className="text-gold-bright underline shrink-0">Join</a>}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
 
       {showGlobal && (
         <div className="card p-4">

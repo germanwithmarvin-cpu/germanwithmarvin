@@ -13,11 +13,13 @@ export const GOOGLE_SCOPES = [
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const CAL = "https://www.googleapis.com/calendar/v3";
 
-// Titel der Kalendertermine. BEWUSST neutral, ohne Schuelername: der verbundene
-// Kalender (marvin.h.graf) wird auch von Preply synchronisiert und darf die
-// Identitaet privater Schueler nicht preisgeben. Schueler sehen Termin + Meet-
-// Link ohnehin in der App. Beliebig anpassbar.
-const EVENT_TITLE = "Busy";
+// Kalender-Titel = "Unterricht {Initiale}". Genug, dass DU (und Takt, das deinen
+// Google-Kalender liest) die Stunde zuordnest; Preply sieht nur eine Initiale,
+// keinen vollen Namen. Zusammen mit "keine Teilnehmer" bleibt die Identitaet privat.
+function eventTitle(studentName?: string | null): string {
+  const i = (studentName || "").trim().charAt(0).toUpperCase();
+  return i ? `Unterricht ${i}` : "Unterricht";
+}
 
 function admin() {
   return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
@@ -168,10 +170,10 @@ export async function createEvent(opts: { startISO: string; endISO: string; atte
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      // Neutraler Titel + KEINE Teilnehmer: Preply synchronisiert marvin.h.graf und
-      // darf weder Name noch E-Mail des Schuelers sehen. Der Schueler bekommt Termin
-      // + Meet-Link in der App (LessonsList), nicht ueber eine Google-Einladung.
-      summary: EVENT_TITLE,
+      // Titel = "Unterricht {Initiale}", KEINE Teilnehmer: Preply synchronisiert
+      // marvin.h.graf und darf weder vollen Namen noch E-Mail sehen. Der Schueler
+      // bekommt Termin + Meet-Link in der App (LessonsList), nicht per Einladung.
+      summary: eventTitle(opts.studentName),
       start: { dateTime: opts.startISO, timeZone: opts.timezone },
       end: { dateTime: opts.endISO, timeZone: opts.timezone },
       conferenceData: { createRequest: { requestId: `gwm-${Date.now()}`, conferenceSolutionKey: { type: "hangoutsMeet" } } },
