@@ -23,6 +23,10 @@ export type StudentOverview = {
   signupRef: string | null;
   signupReferrer: string | null;
   totalReviews: number;
+  // App-Abo ($39) aus paid_subscriptions (per E-Mail zugeordnet).
+  subStatus: string | null;            // active | trialing | past_due | canceled | null (= kein Abo)
+  subRenewsAt: string | null;          // naechste Verlaengerung / Ende der Periode
+  subCancelAtPeriodEnd: boolean;       // laeuft zum Periodenende aus
 };
 
 export async function getStudents(): Promise<StudentOverview[]> {
@@ -47,6 +51,9 @@ export async function getStudents(): Promise<StudentOverview[]> {
     signupRef: (r.signup_ref as string) ?? null,
     signupReferrer: (r.signup_referrer as string) ?? null,
     totalReviews: Number(r.total_reviews ?? 0),
+    subStatus: (r.sub_status as string) ?? null,
+    subRenewsAt: (r.sub_current_period_end as string) ?? null,
+    subCancelAtPeriodEnd: Boolean(r.sub_cancel_at_period_end),
   }));
 }
 

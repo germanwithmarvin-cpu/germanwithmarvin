@@ -23,15 +23,22 @@ function admin() {
 }
 
 // ---- All-Access-Abo (unverändert) -----------------------------------------
-async function upsertPaid(email: string | null | undefined, customerId: string | null | undefined, status: string) {
+async function upsertPaid(
+  email: string | null | undefined,
+  customerId: string | null | undefined,
+  status: string,
+  extra?: { periodEnd?: string | null; cancelAtPeriodEnd?: boolean },
+) {
   if (!email) return;
-  await admin().from("paid_subscriptions").upsert(
-    { email: email.toLowerCase(), stripe_customer_id: customerId ?? null, status, updated_at: new Date().toISOString() },
-    { onConflict: "email" },
-  );
+  const row: Record<string, unknown> = { email: email.toLowerCase(), stripe_customer_id: customerId ?? null, status, updated_at: new Date().toISOString() };
+  if (extra?.periodEnd !== undefined) row.current_period_end = extra.periodEnd;
+  if (extra?.cancelAtPeriodEnd !== undefined) row.cancel_at_period_end = extra.cancelAtPeriodEnd;
+  await admin().from("paid_subscriptions").upsert(row, { onConflict: "email" });
 }
-async function setStatusByCustomer(customerId: string, status: string) {
-  await admin().from("paid_subscriptions").update({ status, updated_at: new Date().toISOString() }).eq("stripe_customer_id", customerId);
+async function setStatusByCustomer(customerId: string, status: string, sub?: Stripe.Subscription) {
+  const patch: Record<string, unknown> = { status, updated_at: new Date().toISOString() };
+  if (sub) { patch.current_period_end = periodEndISO(sub); patch.cancel_at_period_end = sub.cancel_at_period_end; }
+  await admin().from("paid_subscriptions").update(patch).eq("stripe_customer_id", customerId);
 }
 
 // ---- 1-zu-1 Stunden-Abo ----------------------------------------------------
@@ -167,7 +174,16 @@ export async function POST(req: Request) {
         } else {
           const email = s.customer_details?.email ?? s.customer_email ?? null;
           const customerId = typeof s.customer === "string" ? s.customer : s.customer?.id ?? null;
-          await upsertPaid(email, customerId, "active");
+          // Verlaengerungsdatum + Kuendigungsflag fuer den Students-Tab mitschreiben (best effort).
+          let extra: { periodEnd?: string | null; cancelAtPeriodEnd?: boolean } | undefined;
+          const appSubId = typeof s.subscription === "string" ? s.subscription : s.subscription?.id;
+          if (appSubId) {
+            try {
+              const appSub = await stripe.subscriptions.retrieve(appSubId);
+              extra = { periodEnd: periodEndISO(appSub), cancelAtPeriodEnd: appSub.cancel_at_period_end };
+            } catch { /* Datum optional — Status wird trotzdem gesetzt */ }
+          }
+          await upsertPaid(email, customerId, "active", extra);
           await recordReferral(s); // Provision: Zahlung ggf. einem Empfehlungscode zuordnen
         }
         break;
@@ -212,7 +228,7 @@ export async function POST(req: Request) {
           await onLessonSubChange(sub);
         } else {
           const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
-          await setStatusByCustomer(customerId, sub.status);
+          await setStatusByCustomer(customerId, sub.status, sub);
         }
         break;
       }

@@ -21,8 +21,21 @@ function fmtDate(iso: string | null): string {
   return iso ? new Date(iso).toLocaleDateString() : "—";
 }
 
-// Zugangsstatus aus scope + Ablaufdatum ableiten.
+// Zugangsstatus ableiten. Ein aktives (Test-)Abo hat IMMER Vorrang vor den
+// Trial-Feldern aus dem Profil — sonst zeigt der Tab "Trial expired", obwohl der
+// Schueler laengst zahlt (das Abo steht in paid_subscriptions, nicht im Profil).
 function access(s: StudentOverview): { text: string; color: string } {
+  const st = s.subStatus;
+  if (st === "active" || st === "trialing") {
+    const base = st === "trialing" ? "Subscribed (trial)" : "Subscribed";
+    if (s.subCancelAtPeriodEnd && s.subRenewsAt) return { text: `${base} · ends ${fmtDate(s.subRenewsAt)}`, color: "var(--gold-bright)" };
+    if (s.subRenewsAt) return { text: `${base} · renews ${fmtDate(s.subRenewsAt)}`, color: "var(--green-accent)" };
+    return { text: base, color: "var(--green-accent)" };
+  }
+  if (st === "past_due") return { text: "Subscription past due", color: "var(--gold-bright)" };
+  if (st === "canceled") return { text: "Subscription canceled", color: "var(--cream-dim)" };
+
+  // Kein Abo -> Trial-/Code-Logik wie bisher.
   const exp = s.accessExpiresAt ? new Date(s.accessExpiresAt).getTime() : null;
   if (exp !== null) {
     const days = Math.ceil((exp - Date.now()) / 86_400_000);
@@ -31,6 +44,11 @@ function access(s: StudentOverview): { text: string; color: string } {
   }
   if (s.accessScope === "full") return { text: "Full access", color: "var(--green-accent)" };
   return { text: s.accessScope || "no access", color: "var(--cream-dim)" };
+}
+
+// Zaehlt ein Schueler als zahlender Abonnent?
+function isSubscribed(s: StudentOverview): boolean {
+  return s.subStatus === "active" || s.subStatus === "trialing";
 }
 
 // Kurzform der Herkunft (für die Detail-Ansicht).
@@ -53,6 +71,22 @@ export default function StudentsAdmin() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [showIp, setShowIp] = useState(false);
   const [ipMatches, setIpMatches] = useState<IpMatch[] | null>(null);
+  const [subsOnly, setSubsOnly] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [syncMsg, setSyncMsg] = useState<string | null>(null);
+
+  // Holt Abo-Status + Verlaengerungsdatum frisch aus Stripe (befuellt Bestandsabos).
+  async function syncSubs() {
+    if (syncing) return;
+    setSyncing(true); setSyncMsg(null);
+    try {
+      const res = await fetch("/api/admin/sync-subscriptions", { method: "POST" });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) { setSyncMsg(j.error || "Sync failed"); }
+      else { setSyncMsg(`Updated ${j.updated ?? 0} subscription${j.updated === 1 ? "" : "s"}`); getStudents().then(setStudents); }
+    } catch { setSyncMsg("Sync failed"); }
+    setSyncing(false);
+  }
 
   // Duplikat-Pruefung (geteilte IPs) beim ersten Aufklappen laden.
   function toggleIp() {
@@ -90,21 +124,34 @@ export default function StudentsAdmin() {
 
   const totalLessons = lessons.length;
   const consented = students.filter((s) => s.marketingConsent).length;
+  const subbed = students.filter(isSubscribed).length;
+  const trialing = students.filter((s) => !isSubscribed(s) && s.accessExpiresAt && new Date(s.accessExpiresAt).getTime() > Date.now()).length;
+  const shown = subsOnly ? students.filter(isSubscribed) : students;
 
   return (
     <div className="space-y-3">
       {/* Kopf: Zusammenfassung + globales Banner */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-cream-dim">
-          {students.length} student{students.length === 1 ? "" : "s"} · <span className="text-cream">{consented}</span> allow marketing 📣
+          {students.length} student{students.length === 1 ? "" : "s"} ·{" "}
+          <span className="text-green-accent font-semibold">{subbed}</span> subscribed 💳 ·{" "}
+          <span className="text-cream">{trialing}</span> in trial ·{" "}
+          <span className="text-cream">{consented}</span> allow marketing 📣
         </p>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <button onClick={() => setSubsOnly((v) => !v)} className={`px-3 py-1.5 text-sm ${subsOnly ? "btn-gold" : "btn-outline"}`}>
+            💳 Subscribers only
+          </button>
+          <button onClick={syncSubs} disabled={syncing} className="btn-outline px-3 py-1.5 text-sm disabled:opacity-50" title="Fetch subscription status & renewal dates from Stripe">
+            {syncing ? "Syncing…" : "🔄 Sync subscriptions"}
+          </button>
           <button onClick={toggleIp} className="btn-outline px-3 py-1.5 text-sm">🕵️ Duplicate check</button>
           <button onClick={() => setShowGlobal((v) => !v)} className="btn-outline px-3 py-1.5 text-sm">
             📣 Banner for everyone
           </button>
         </div>
       </div>
+      {syncMsg && <p className="text-xs text-cream-dim">{syncMsg}</p>}
 
       {showGlobal && (
         <div className="card p-4">
@@ -146,7 +193,11 @@ export default function StudentsAdmin() {
         </div>
       )}
 
-      {students.map((s) => {
+      {subsOnly && shown.length === 0 && (
+        <p className="text-sm text-cream-dim">No active subscribers yet. Tip: click “🔄 Sync subscriptions” to pull the latest from Stripe.</p>
+      )}
+
+      {shown.map((s) => {
         const open = openId === s.studentId;
         const a = access(s);
         return (
