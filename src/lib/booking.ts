@@ -90,6 +90,19 @@ export async function getMyCredits(teacherId = 1): Promise<CreditInfo> {
   return { balance, nextExpiry: rows[0]?.expires_at ?? null };
 }
 
+// Gratis-Probestunde (30 Min) bei einem Lehrer — vergibt 1 einmaliges Guthaben.
+export async function claimFreeTrial(teacherId: number): Promise<{ granted: boolean; error?: string }> {
+  const { data, error } = await createClient().rpc("grant_free_trial", { p_teacher: teacherId });
+  if (error) return { granted: false, error: error.message };
+  return { granted: data === true };
+}
+
+// Hat der Schüler noch eine Gratis-Probestunde bei diesem Lehrer offen?
+export async function freeTrialAvailable(teacherId: number): Promise<boolean> {
+  const { data } = await createClient().rpc("free_trial_available", { p_teacher: teacherId });
+  return data === true;
+}
+
 // Stripe-Checkout für ein neues Stunden-Abo bei einem Lehrer starten.
 export async function startLessonCheckout(quantity: number, teacherId = 1): Promise<{ url?: string; error?: string }> {
   const res = await fetch("/api/lesson-checkout", {

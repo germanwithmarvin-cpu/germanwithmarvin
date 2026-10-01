@@ -19,12 +19,19 @@ export default function RegisterPage() {
   const [marketing, setMarketing] = useState(false);
   // ?intent=lesson: eigener Funnel für Privatunterricht (statt Kurs-Trial).
   const [isLesson, setIsLesson] = useState(false);
+  // ?t=2: Lehrer, der nach der Registrierung auf /booking vorgewählt wird (z. B. von /ha).
+  const [teacherParam, setTeacherParam] = useState("");
 
   useEffect(() => {
-    try { setIsLesson(new URLSearchParams(window.location.search).get("intent") === "lesson"); } catch { /* egal */ }
+    try {
+      const q = new URLSearchParams(window.location.search);
+      setIsLesson(q.get("intent") === "lesson");
+      const t = q.get("t") ?? "";
+      if (/^\d+$/.test(t)) setTeacherParam(t);
+    } catch { /* egal */ }
   }, []);
 
-  const nextPath = isLesson ? "/booking" : "/dashboard";
+  const nextPath = isLesson ? (teacherParam ? `/booking?teacher=${teacherParam}` : "/booking") : "/dashboard";
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
@@ -38,7 +45,7 @@ export default function RegisterPage() {
       password,
       options: {
         // Ziel des Bestätigungslinks in der E-Mail (verifiziert die Adresse).
-        emailRedirectTo: `${window.location.origin}/auth/confirm?next=${nextPath}`,
+        emailRedirectTo: `${window.location.origin}/auth/confirm?next=${encodeURIComponent(nextPath)}`,
         data: {
           full_name: fullName,
           marketing_consent: marketing,

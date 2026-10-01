@@ -73,15 +73,15 @@ export default function HaPage() {
             <span className="font-semibold text-[#3B2922]"> explained in your own language</span> until it clicks.
           </p>
 
-          <Link href="/register?intent=lesson" className="mt-8 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
-            Book a lesson with Ha
+          <Link href="/register?intent=lesson&t=2" className="mt-8 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
+            Start with a free 30-min trial
           </Link>
-          <p className="mt-3 text-sm text-[#3B2922]/70">Create a free account, then choose <span className="font-semibold">Ha</span> when you book — from ${PRICE} per 50-minute lesson.</p>
+          <p className="mt-3 text-sm text-[#3B2922]/70">No payment, no card — just create a free account and claim your free lesson with <span className="font-semibold">Ha</span>.</p>
 
           <div className="mt-5 flex flex-wrap gap-x-4 gap-y-1 text-sm text-[#3B2922]/70">
+            <span>🎁 First lesson free</span>
             <span>🎓 Learned German to university level</span>
             <span>🗣 Explains in English</span>
-            <span>⏱ Flexible times</span>
           </div>
         </div>
 
@@ -194,10 +194,10 @@ export default function HaPage() {
       {/* Abschluss-CTA */}
       <section className="max-w-2xl mx-auto px-6 py-16">
         <div className="bg-[#FBF2DA] rounded-2xl p-8 sm:p-10 text-center shadow-md border border-[#E3A12F]/40">
-          <h2 className="text-2xl font-bold">Ready to start with Ha?</h2>
-          <p className="mt-2 text-sm text-[#3B2922]/70">Create a free account, choose Ha and book — ${PRICE} per 50-minute lesson.</p>
-          <Link href="/register?intent=lesson" className="mt-6 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition">
-            Book a lesson with Ha
+          <h2 className="text-2xl font-bold">Your first lesson is free</h2>
+          <p className="mt-2 text-sm text-[#3B2922]/70">Try a free 30-minute trial with Ha — no payment, no card. After that, lessons are ${PRICE} each.</p>
+          <Link href="/register?intent=lesson&t=2" className="mt-6 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition">
+            Claim your free 30-min trial
           </Link>
           <p className="text-xs text-[#3B2922]/55 mt-4">
             Looking for exam prep with the founder?{" "}

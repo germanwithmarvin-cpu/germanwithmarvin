@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { LESSON, lessonPriceLabel, TAX_NOTE } from "@/lib/config";
-import { getMySubscription, getMyCredits, startLessonCheckout, manageLessonSubscription, getTeachers, type LessonSubscription, type CreditInfo, type TeacherProfile } from "@/lib/booking";
+import { getMySubscription, getMyCredits, startLessonCheckout, manageLessonSubscription, getTeachers, claimFreeTrial, freeTrialAvailable, type LessonSubscription, type CreditInfo, type TeacherProfile } from "@/lib/booking";
 import { getMyBookings, getTeacherBookings, getMyTeacherId, getStudentNames, getGoogleEvents, getMyRecurring, cancelRecurring, type Booking, type ExternalEvent, type Recurring } from "@/lib/schedule";
 import AvailabilityEditor from "@/components/booking/AvailabilityEditor";
 import BookingCalendar from "@/components/booking/BookingCalendar";
@@ -30,6 +30,7 @@ export default function BookingPage() {
   const [myRecurring, setMyRecurring] = useState<Recurring | null>(null);
   const [teachers, setTeachers] = useState<TeacherProfile[]>([]);
   const [selectedId, setSelectedId] = useState(1); // gewählter Lehrer (Default: Marvin)
+  const [trialAvail, setTrialAvail] = useState(false); // Gratis-Probestunde bei Ha noch offen?
 
   async function refresh() {
     // „Buchungs-Lehrer" = eigener Eintrag in teachers (Marvin ODER Thanh Ha),
@@ -44,6 +45,8 @@ export default function BookingPage() {
     setCredits(c);
     setBookings(b);
     setMyRecurring(rec);
+    // Gratis-Probestunde nur für Schüler bei Ha (teacher 2) und nur wenn noch offen.
+    setTrialAvail(!teacher && selectedId === 2 && c.balance === 0 ? await freeTrialAvailable(selectedId) : false);
     if (teacher) {
       if (b.length) setNames(await getStudentNames(b.map((x) => x.studentId)));
       const from = new Date(Date.now() - 7 * 86400e3).toISOString();
@@ -60,6 +63,9 @@ export default function BookingPage() {
     const q = new URLSearchParams(window.location.search);
     setCheckoutState(q.get("checkout"));
     setGoogleState(q.get("google"));
+    // Lehrer vorwählen, wenn z. B. von /ha mit ?teacher=2 gekommen.
+    const tParam = Number(q.get("teacher"));
+    if (Number.isFinite(tParam) && tParam >= 1) setSelectedId(Math.round(tParam));
   }, []);
   // Bei Wechsel des gewählten Lehrers Guthaben/Abo/Kalender neu laden (läuft auch initial).
   useEffect(() => { refresh(); }, [selectedId]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -119,6 +125,15 @@ export default function BookingPage() {
   const perHour = hours >= LESSON.discountThreshold ? LESSON.discountedPerHour : LESSON.pricePerHour;
   // Preis-Anzeige je gewähltem Lehrer: Marvin (1) mit config-Staffelpreis, weitere
   // Lehrer mit flachem Stundensatz aus der teachers-Tabelle (z. B. Thanh Ha $30).
+  async function claimTrial() {
+    setBusy(true); setErr(null);
+    const { granted, error } = await claimFreeTrial(2);
+    setBusy(false);
+    if (error) { setErr(error); return; }
+    if (!granted) { setTrialAvail(false); setErr("Your free trial with Ha has already been used."); return; }
+    await refresh();
+  }
+
   const isMarvin = selectedId === 1;
   const teacherRate = selected?.hourlyRate ?? LESSON.pricePerHour;
   const money = (n: number) => `$${n % 1 === 0 ? n : n.toFixed(2)}`;
@@ -265,6 +280,17 @@ export default function BookingPage() {
                 </>
               )}
             </>
+          )}
+
+          {!active && selectedId === 2 && credits.balance === 0 && trialAvail && (
+            <div className="card study-card p-6 space-y-3" style={{ border: "1px solid color-mix(in srgb, var(--green-accent) 40%, transparent)" }}>
+              <div className="font-semibold text-lg">🎁 Your first lesson with Ha is free</div>
+              <p className="text-sm text-cream-dim">A 30-minute trial — meet Ha and see how it feels. No payment, no card.</p>
+              <button onClick={claimTrial} disabled={busy} className="btn-gold w-full py-3 disabled:opacity-50">
+                {busy ? "…" : "Claim my free 30-min trial"}
+              </button>
+              <p className="text-xs text-cream-dim text-center">After claiming, pick a time below to book your free lesson.</p>
+            </div>
           )}
 
           {!active && (
