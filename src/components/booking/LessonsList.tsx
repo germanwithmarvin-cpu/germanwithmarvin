@@ -10,7 +10,9 @@ export default function LessonsList({ bookings, onChange, teacher = false, names
   const [busy, setBusy] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
-  const upcoming = bookings.filter((b) => b.status === "booked" && new Date(b.startsAt).getTime() > Date.now());
+  // Bis zum ENDE (+15 Min Puffer) anzeigen, nicht bis zum Start — sonst verschwindet
+  // der „Join"-Link genau dann, wenn die Stunde beginnt.
+  const upcoming = bookings.filter((b) => b.status === "booked" && new Date(b.endsAt).getTime() + 15 * 60_000 > Date.now());
 
   async function cancel(b: Booking) {
     const free = new Date(b.startsAt).getTime() > Date.now() + 24 * 3600e3;
