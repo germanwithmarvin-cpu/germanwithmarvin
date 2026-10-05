@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createAdmin } from "@supabase/supabase-js";
 import { createEvent } from "@/lib/google";
+import { sendLessonConfirmation } from "@/lib/lessonEmails";
 
 export const runtime = "nodejs";
 
@@ -34,21 +35,31 @@ export async function POST(req: Request) {
   const { data: bookingId, error } = await supabase.rpc("book_lesson", { p_teacher: teacherId, p_start: start });
   if (error) return json({ error: friendly(error.message) }, 400);
 
-  // Google-Termin (best effort – Buchung bleibt gültig, auch wenn das scheitert).
-  // Termin landet im Kalender des gewählten Lehrers.
+  const db = admin();
+  const { data: settings } = await db.from("lesson_teacher_settings").select("slot_minutes, timezone").eq("teacher_id", teacherId).maybeSingle();
+  const slotMin = settings?.slot_minutes ?? 50;
+  const tz = settings?.timezone ?? "Europe/Berlin";
+  const endISO = new Date(new Date(start).getTime() + slotMin * 60e3).toISOString();
+  const studentName = (user.user_metadata?.full_name as string) || user.email || null;
+
+  // Google-Termin + Meet-Link (best effort – Buchung bleibt gültig, auch wenn
+  // das scheitert). Termin landet im Kalender des gewählten Lehrers.
+  let meetLink: string | null = null;
   try {
-    const db = admin();
-    const { data: settings } = await db.from("lesson_teacher_settings").select("slot_minutes, timezone").eq("teacher_id", teacherId).maybeSingle();
-    const slotMin = settings?.slot_minutes ?? 50;
-    const tz = settings?.timezone ?? "Europe/Berlin";
-    const endISO = new Date(new Date(start).getTime() + slotMin * 60e3).toISOString();
-    const studentName = (user.user_metadata?.full_name as string) || user.email || null;
-    const { eventId, meetLink } = await createEvent({ startISO: start, endISO, attendeeEmail: user.email, timezone: tz, studentName, studentId: user.id, teacherId });
-    if (eventId || meetLink) {
-      await db.from("lesson_bookings").update({ google_event_id: eventId ?? null, meet_link: meetLink ?? null }).eq("id", bookingId);
-      return json({ id: bookingId, meetLink: meetLink ?? null });
+    const { eventId, meetLink: ml } = await createEvent({ startISO: start, endISO, attendeeEmail: user.email, timezone: tz, studentName, studentId: user.id, teacherId });
+    meetLink = ml ?? null;
+    if (eventId || ml) {
+      await db.from("lesson_bookings").update({ google_event_id: eventId ?? null, meet_link: ml ?? null }).eq("id", bookingId);
     }
   } catch { /* Google optional */ }
 
-  return json({ id: bookingId });
+  // Bestätigungs-Mail an den Schüler (mit .ics + Join-Link). Ersetzt die frühere
+  // Google-Einladung (Teilnehmer entfernt wegen Preply). Best effort.
+  if (user.email) {
+    try {
+      await sendLessonConfirmation({ bookingId: String(bookingId), to: user.email, studentName, startISO: start, endISO, meetLink, timezone: tz });
+    } catch { /* Mail optional */ }
+  }
+
+  return json({ id: bookingId, meetLink });
 }
