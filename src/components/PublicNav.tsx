@@ -17,6 +17,7 @@ export default function PublicNav({
     <nav className="flex items-center gap-1 sm:gap-2 text-sm">
       <Link href="/german-course" className="hidden sm:inline px-3 py-2 rounded-lg text-[#8A3030] hover:bg-[#8A3030]/5 transition">Course</Link>
       <Link href="/online-german-lessons" className="hidden sm:inline px-3 py-2 rounded-lg text-[#8A3030] hover:bg-[#8A3030]/5 transition">1-on-1 lessons</Link>
+      <Link href="/pricing" className="hidden sm:inline px-3 py-2 rounded-lg text-[#8A3030] hover:bg-[#8A3030]/5 transition">Pricing</Link>
       <Link href="/login" className="px-4 py-2 rounded-lg border border-[#8A3030] text-[#8A3030] hover:bg-[#8A3030]/5 transition">Sign in</Link>
       <Link href={ctaHref} className="px-4 py-2 rounded-lg bg-[#8A3030] text-white hover:brightness-110 transition">{ctaLabel}</Link>
     </nav>

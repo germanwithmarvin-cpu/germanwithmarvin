@@ -19,26 +19,21 @@ export const SITE = {
   discountPaymentLink: "https://buy.stripe.com/7sY00j5AF5hccsx6X17Re01",
 };
 
-// Pay-first: Der Kunde zahlt zuerst; das Konto entsteht danach. Die Zuordnung
-// läuft über die bezahlte E-Mail (Webhook). Optional eine E-Mail vorbefüllen.
-function withEmail(link: string, email?: string): string {
-  const url = new URL(link);
-  if (email) url.searchParams.set("prefilled_email", email);
-  return url.toString();
+// Alle Abo-CTAs führen jetzt auf die /pricing-Seite (Plan-Wähler: Monat $29 /
+// Jahr $19 als Einmalzahlung). Der eigentliche Checkout läuft login-pflichtig
+// über /api/course-checkout. Der frühere direkte Stripe-Payment-Link wird nicht
+// mehr verlinkt; der email-Parameter bleibt nur aus Kompatibilität erhalten.
+export function checkoutUrl(_email?: string): string {
+  return "/pricing";
 }
-export function checkoutUrl(email?: string): string {
-  return withEmail(SITE.stripePaymentLink, email);
-}
-// Rabattierter Checkout für Trial-Absolventen (fällt auf den normalen Link zurück,
-// solange discountPaymentLink leer ist).
-export function discountCheckoutUrl(email?: string): string {
-  return withEmail(SITE.discountPaymentLink || SITE.stripePaymentLink, email);
+export function discountCheckoutUrl(_email?: string): string {
+  return "/pricing";
 }
 export const hasDiscountLink = (): boolean => Boolean(SITE.discountPaymentLink);
 
 // ---- Preis- & Zugangsmodell -------------------------------------------------
 // App-Abo pro Monat (alles inklusive: Videos, Aufgaben, Flashcards, Stories).
-export const APP_PRICE = 39;
+export const APP_PRICE = 29; // Monatspreis (neues Modell); Jahr günstiger über /pricing
 export const DISCOUNT_PRICE = 19; // vergünstigt für Preply/Skool-Trial-Absolventen
 export const APP_CURRENCY = "USD";
 

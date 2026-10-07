@@ -25,7 +25,7 @@ const included = [
 const faqs = [
   { q: "What language is the course taught in?", a: "In English, with clear German examples throughout — no prior German needed." },
   { q: "Do I need a credit card for the free trial?", a: "No. The 5 days are completely free and need no credit card." },
-  { q: "What happens after the 5 free days?", a: "Nothing is charged automatically. Your access simply pauses, and you choose whether to continue for $39/month — or not." },
+  { q: "What happens after the 5 free days?", a: "Nothing is charged automatically. Your access simply pauses, and you choose whether to continue — from $19/month (billed yearly) or $29 monthly — or not." },
   { q: "Which levels are included?", a: "Everything from A1 (complete beginner) to B2 (upper-intermediate): lessons, flashcards, exercises and stories for every level." },
   { q: "Which level should I start at?", a: "Start at A1 if you're new, or jump straight to your level. The in-app check (“Where you stand”) points you to the right starting point." },
   { q: "Do you add new content?", a: "Yes — I add new lessons, exercises and vocabulary regularly, and you get all updates while subscribed." },

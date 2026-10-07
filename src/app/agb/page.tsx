@@ -56,9 +56,10 @@ function TermsEN() {
       </Section>
       <Section title="4. Price & payment">
         <p>
-          The subscription costs {priceLabel()} per month and renews automatically each month until cancelled.
-          Payment is processed by Stripe. Prices shown exclude tax; any applicable VAT/sales tax is added at
-          checkout based on your location.
+          The monthly subscription costs {priceLabel()} per month and renews automatically each month until
+          cancelled. A yearly plan is also available as a single payment for 12 months of access; it does not
+          renew automatically. Payment is processed by Stripe. Prices shown exclude tax; any applicable VAT/sales
+          tax is added at checkout based on your location.
         </p>
       </Section>
       <Section title="5. Term & cancellation">
@@ -153,9 +154,10 @@ function TermsDE() {
       </Section>
       <Section title="4. Preis & Zahlung">
         <p>
-          Das Abo kostet {priceLabel()} pro Monat und verlängert sich automatisch monatlich, bis es gekündigt
-          wird. Die Zahlung wickelt Stripe ab. Die angegebenen Preise verstehen sich zzgl. der jeweils
-          anwendbaren Steuer (USt./VAT), die Stripe standortabhängig an der Kasse aufschlägt.
+          Das Monatsabo kostet {priceLabel()} pro Monat und verlängert sich automatisch monatlich, bis es
+          gekündigt wird. Alternativ gibt es einen Jahreszugang als Einmalzahlung für 12 Monate, der sich nicht
+          automatisch verlängert. Die Zahlung wickelt Stripe ab. Die angegebenen Preise verstehen sich zzgl. der
+          jeweils anwendbaren Steuer (USt./VAT), die Stripe standortabhängig an der Kasse aufschlägt.
         </p>
       </Section>
       <Section title="5. Laufzeit & Kündigung">

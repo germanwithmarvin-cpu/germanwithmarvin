@@ -1,19 +1,11 @@
-import { checkoutUrl } from "@/lib/config";
-
-// Direkter Weg zum Monats-Abo (OHNE 5-Tage-Trial) – zum Weitergeben an private
-// Leads, die sofort abschließen wollen.
+// Kurzlink zum Preis-/Abo-Wähler. Früher führte er direkt zum Stripe-Checkout
+// ($39/Monat, pay-first). Jetzt zur /pricing-Seite mit beiden Plänen (Monat $29
+// bzw. Jahr $19 als Einmalzahlung). Der Checkout dort ist login-pflichtig.
 //
-//   www.germanwithmarvin.com/subscribe            -> Stripe-Checkout ($39/Monat)
-//   www.germanwithmarvin.com/subscribe?email=x@y  -> zusätzlich E-Mail vorbefüllt
-//
-// Pay-first: Nach der Zahlung führt Stripe (Success-URL) auf /register; der
-// Kunde legt mit DERSELBEN E-Mail sein Konto an und ist sofort voll freigeschaltet.
+//   www.germanwithmarvin.com/subscribe  ->  /pricing
 
-export const runtime = "nodejs";
 export const dynamic = "force-dynamic"; // nie cachen – immer frisch weiterleiten
 
 export function GET(req: Request) {
-  const email = new URL(req.url).searchParams.get("email") ?? "";
-  const dest = checkoutUrl(email.includes("@") ? email : undefined);
-  return Response.redirect(dest, 307);
+  return Response.redirect(new URL("/pricing", req.url), 307);
 }
