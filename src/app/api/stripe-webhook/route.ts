@@ -171,6 +171,18 @@ export async function POST(req: Request) {
             const firstInvoice = typeof sub.latest_invoice === "string" ? sub.latest_invoice : sub.latest_invoice?.id;
             await grantLessonCredits(userId, teacherId, subQuantity(sub), firstInvoice ?? `${sub.id}_initial`);
           }
+        } else if (s.mode === "payment") {
+          // Einmalzahlung fürs Jahr (einmaliger Stripe-Preis): Zugang 365 Tage ab
+          // jetzt über profiles — my_access() wertet access_expires_at bereits aus,
+          // keine automatische Verlängerung. Der Checkout ist login-pflichtig, daher
+          // steht die user_id in client_reference_id.
+          const userId = s.client_reference_id ?? s.metadata?.user_id ?? null;
+          const days = Number(s.metadata?.grant_days ?? 365) || 365;
+          if (userId) {
+            const until = new Date(Date.now() + days * 86400000).toISOString();
+            await admin().from("profiles").update({ access_scope: "full", access_expires_at: until }).eq("id", userId);
+          }
+          await recordReferral(s);
         } else {
           const email = s.customer_details?.email ?? s.customer_email ?? null;
           const customerId = typeof s.customer === "string" ? s.customer : s.customer?.id ?? null;

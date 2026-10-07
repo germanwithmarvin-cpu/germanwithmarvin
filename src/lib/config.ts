@@ -6,7 +6,7 @@
 export const SITE = {
   // Verkaufsvideo auf der Startseite (YouTube). Kann Link oder reine ID sein.
   introVideoId: "1U2sTcL5BBA",
-  contactEmail: "germanwithmarvin@gmail.com",
+  contactEmail: "marvin@germanwithmarvin.com",
   // Für "Nur Vokabel"-Nutzer (Skool): Link zu deinem Skool-Kurs mit den Videos.
   skoolUrl: "https://www.skool.com/german-with-marvin-5887/about",
   // Verkaufskanäle (Zugang läuft über diese Plattformen – dort gibt es die Codes).
@@ -41,6 +41,18 @@ export const hasDiscountLink = (): boolean => Boolean(SITE.discountPaymentLink);
 export const APP_PRICE = 39;
 export const DISCOUNT_PRICE = 19; // vergünstigt für Preply/Skool-Trial-Absolventen
 export const APP_CURRENCY = "USD";
+
+// Neues Preismodell (wird über /pricing + /api/course-checkout scharf geschaltet).
+// Monat $29 (flexibel) · Jahr $228 am Stück = $19/Mon (Einmalzahlung).
+// WICHTIG: Diese Zahlen sind nur die Anzeige — berechnet wird, was hinter den
+// Stripe-Price-IDs steht. Bitte die Beträge mit Stripe abgleichen.
+export const APP_PRICE_MONTHLY = 29;
+export const APP_YEARLY_PER_MONTH = 19;
+export const APP_YEARLY_TOTAL = 228;
+export const COURSE = {
+  monthlyPriceId: "price_1UNweyEsa6rPVhI2vU6lsJgC",
+  yearlyPriceId: "price_1UNwh9Esa6rPVhI2cyDCS6qY",
+};
 
 // Preis hübsch formatiert, z. B. "$39".
 export function priceLabel(): string {
