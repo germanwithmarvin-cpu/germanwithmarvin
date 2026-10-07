@@ -2,6 +2,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { SITE } from "@/lib/config";
+import PublicNav from "@/components/PublicNav";
 import { TEACHERS } from "@/lib/landing";
 
 export const metadata: Metadata = {
@@ -55,10 +56,7 @@ export default function HaPage() {
         <Link href="/" className="flex items-center">
           <img src="/logo-light.png" alt="German Simplified" className="h-[104px] md:h-[125px] w-auto object-contain" />
         </Link>
-        <nav className="flex items-center gap-3">
-          <Link href="/login" className="px-4 py-2 text-sm rounded-lg border border-[#8A3030] text-[#8A3030] hover:bg-[#8A3030]/5 transition">Sign in</Link>
-          <Link href="/register?intent=lesson" className="px-4 py-2 text-sm rounded-lg bg-[#8A3030] text-white hover:brightness-110 transition">Get started</Link>
-        </nav>
+        <PublicNav ctaLabel="Get started" ctaHref="/register?intent=lesson" />
       </header>
 
       {/* Hero */}

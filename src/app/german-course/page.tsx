@@ -2,6 +2,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import VideoPlayer from "@/components/VideoPlayer";
+import PublicNav from "@/components/PublicNav";
 import { SITE, priceLabel, TAX_NOTE } from "@/lib/config";
 import { REVIEWS, PREPLY_STATS } from "@/lib/reviews";
 import { SHOTS } from "@/lib/landing";
@@ -43,10 +44,7 @@ export default function GermanCoursePage() {
         <Link href="/" className="flex items-center">
           <img src="/logo-light.png" alt="Marvin Graf — German Simplified" className="h-[104px] md:h-[125px] w-auto object-contain" />
         </Link>
-        <nav className="flex items-center gap-3">
-          <Link href="/login" className="px-4 py-2 text-sm rounded-lg border border-[#8A3030] text-[#8A3030] hover:bg-[#8A3030]/5 transition">Sign in</Link>
-          <Link href="/register" className="px-4 py-2 text-sm rounded-lg bg-[#8A3030] text-white hover:brightness-110 transition">Start free</Link>
-        </nav>
+        <PublicNav />
       </header>
 
       {/* Hero */}

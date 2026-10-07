@@ -2,6 +2,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { SITE } from "@/lib/config";
+import PublicNav from "@/components/PublicNav";
 import { REVIEWS, PREPLY_STATS } from "@/lib/reviews";
 import { TEACHERS } from "@/lib/landing";
 
@@ -30,10 +31,7 @@ export default function OnlineLessonsPage() {
         <Link href="/" className="flex items-center">
           <img src="/logo-light.png" alt="Marvin Graf — German Simplified" className="h-[104px] md:h-[125px] w-auto object-contain" />
         </Link>
-        <nav className="flex items-center gap-3">
-          <Link href="/login" className="px-4 py-2 text-sm rounded-lg border border-[#8A3030] text-[#8A3030] hover:bg-[#8A3030]/5 transition">Sign in</Link>
-          <Link href="/register?intent=lesson" className="px-4 py-2 text-sm rounded-lg bg-[#8A3030] text-white hover:brightness-110 transition">Get started</Link>
-        </nav>
+        <PublicNav ctaLabel="Get started" ctaHref="/register?intent=lesson" />
       </header>
 
       {/* Hero */}
@@ -108,7 +106,7 @@ export default function OnlineLessonsPage() {
             ))}
           </div>
           <p className="text-center text-sm text-[#3B2922]/70 mt-8">
-            <span className="font-semibold text-[#3B2922]">From $30 per 50-minute lesson.</span> Flexible monthly packages · unused hours stay valid for 5 weeks.
+            <span className="font-semibold text-[#3B2922]">From $30 per 50-minute lesson.</span> Monthly packages from 4 lessons · unused hours stay valid for 5 weeks · cancel anytime.
           </p>
         </div>
       </section>
@@ -134,7 +132,7 @@ export default function OnlineLessonsPage() {
       <section className="max-w-2xl mx-auto px-6 pb-16">
         <div className="bg-[#FBF2DA] rounded-2xl p-8 sm:p-10 text-center shadow-md border border-[#E3A12F]/40">
           <h2 className="text-2xl font-bold">Ready for your first lesson?</h2>
-          <p className="mt-2 text-sm text-[#3B2922]/70">Create a free account, pick your teacher and book — from $30 per 50-minute lesson.</p>
+          <p className="mt-2 text-sm text-[#3B2922]/70">Create a free account, pick your teacher and book — from $30 per 50-minute lesson, in monthly packages from 4 lessons.</p>
           <Link href="/register?intent=lesson" className="mt-6 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition">
             Get started — book a lesson
           </Link>

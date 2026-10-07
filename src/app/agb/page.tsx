@@ -125,10 +125,6 @@ function TermsEN() {
         </p>
       </Section>
 
-      <p className="mt-10 text-xs italic">
-        Note: These terms were prepared to the best of our knowledge and do not constitute legal advice. Please
-        have them reviewed by a lawyer before relying on them.
-      </p>
     </>
   );
 }
@@ -228,10 +224,6 @@ function TermsDE() {
         </p>
       </Section>
 
-      <p className="mt-10 text-xs italic">
-        Hinweis: Diese Bedingungen wurden nach bestem Wissen erstellt und ersetzen keine Rechtsberatung. Bitte
-        vor dem produktiven Einsatz anwaltlich prüfen lassen.
-      </p>
     </>
   );
 }

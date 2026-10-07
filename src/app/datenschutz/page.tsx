@@ -155,11 +155,6 @@ function PrivacyEN() {
         </p>
       </Section>
 
-      <p className="mt-10 text-xs italic">
-        Note: This privacy policy was prepared to the best of our knowledge but does not constitute legal
-        advice. Given the setup (a US company with US providers, users in the EU), we recommend a legal review
-        before going fully live.
-      </p>
     </>
   );
 }
@@ -287,11 +282,6 @@ function PrivacyDE() {
         </p>
       </Section>
 
-      <p className="mt-10 text-xs italic">
-        Hinweis: Diese Datenschutzerklärung wurde nach bestem Wissen erstellt, ersetzt aber keine
-        Rechtsberatung. Aufgrund der Konstellation (US-Gesellschaft mit US-Dienstleistern, Nutzer in der EU)
-        empfehlen wir eine anwaltliche Prüfung vor dem produktiven Verkaufsstart.
-      </p>
     </>
   );
 }
