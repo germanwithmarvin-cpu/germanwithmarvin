@@ -27,7 +27,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <ConversationWidget />
       <div className="flex-1 flex flex-col md:flex-row">
         <AppNav />
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 flex flex-col min-w-0 pb-24 md:pb-20">
           <main
             className={
               fullBleed
