@@ -287,6 +287,9 @@ export default function Home() {
         <Link href="/register" className="mt-6 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
           Start your 5-day free trial
         </Link>
+        <p className="mt-4 text-sm text-[#3B2922]/60">
+          Not ready yet? <Link href="/free-a1-stories" className="text-[#8A3030] underline underline-offset-4 font-semibold">Get a free A1 story →</Link>
+        </p>
       </section>
 
       {/* Footer (hell) */}

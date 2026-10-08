@@ -150,6 +150,9 @@ export default function AudienceLanding(p: AudienceLandingProps) {
         <p className="mt-4 text-sm text-[#3B2922]/60">
           Prefer a real teacher? <Link href="/online-german-lessons" className="text-[#8A3030] underline underline-offset-4 font-semibold">See 1-on-1 lessons →</Link>
         </p>
+        <p className="mt-2 text-sm text-[#3B2922]/60">
+          Not ready yet? <Link href="/free-a1-stories" className="text-[#8A3030] underline underline-offset-4 font-semibold">Get a free A1 story →</Link>
+        </p>
       </section>
 
       {/* Footer */}
