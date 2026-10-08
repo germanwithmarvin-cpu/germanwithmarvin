@@ -4,6 +4,8 @@ import { useEffect } from "react";
 
 // Meta- (Facebook/Instagram) Pixel. Lädt nur, wenn NEXT_PUBLIC_META_PIXEL_ID
 // gesetzt ist (in Vercel → Settings → Environment Variables). Feuert PageView.
+// Hinweis: NEXT_PUBLIC_*-Variablen werden beim Build eingebacken — nach dem
+// Setzen in Vercel einen frischen Build auslösen (nicht nur aus dem Cache).
 const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
 export default function MetaPixel() {
