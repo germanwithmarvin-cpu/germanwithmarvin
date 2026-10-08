@@ -136,8 +136,8 @@ export default function BookingCalendar({ canBook, onBooked, teacherId = 1 }: { 
 
       {err && !confirm && <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-2">{err}</p>}
 
-      {/* Wochen-Raster: 7 Tagesspalten */}
-      <div className="overflow-x-auto -mx-1 px-1">
+      {/* Große Bildschirme: Wochen-Raster mit 7 Tagesspalten */}
+      <div className="hidden lg:block overflow-x-auto -mx-1 px-1">
         <div className="grid grid-cols-7 gap-2 min-w-[640px]">
           {days.map((k) => {
             const daySlots = byDay.get(k) ?? [];
@@ -165,6 +165,36 @@ export default function BookingCalendar({ canBook, onBooked, teacherId = 1 }: { 
             );
           })}
         </div>
+      </div>
+
+      {/* Handy/Tablet: vertikale Tages-Liste (kein Querscrollen) */}
+      <div className="lg:hidden space-y-4">
+        {days.map((k) => {
+          const daySlots = byDay.get(k) ?? [];
+          if (daySlots.length === 0) return null;
+          const isToday = k === dayKey(new Date().toISOString());
+          return (
+            <div key={k}>
+              <div className={`text-sm font-semibold mb-2 ${isToday ? "text-gold-bright" : "text-cream"}`}>
+                {weekdayLabel(k)}, {dayNumLabel(k)}{isToday ? " · today" : ""}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {daySlots.map((s) => (
+                  <button
+                    key={s.startISO}
+                    onClick={() => { setErr(null); setConfirm(s); }}
+                    className="btn-outline px-4 py-2.5 text-sm"
+                  >
+                    {timeLabel(s.startISO)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+        {days.every((k) => (byDay.get(k) ?? []).length === 0) && (
+          <p className="text-center text-cream-dim text-sm py-3">No free times this week — try › for the next one.</p>
+        )}
       </div>
 
       {!canBook && <p className="text-xs text-cream-dim">You need lesson hours to book — subscribe or top up above.</p>}
