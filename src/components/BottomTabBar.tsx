@@ -12,13 +12,13 @@ import { createClient } from "@/lib/supabase/client";
 
 const PRIMARY = [
   { href: "/dashboard", label: "Home", icon: "🏠" },
-  { href: "/lessons", label: "Lessons", icon: "🎬" },
+  { href: "/booking", label: "1-on-1", icon: "🗓️" },
   { href: "/training", label: "Training", icon: "🎓" },
   { href: "/decks", label: "Cards", icon: "🗂️" },
 ];
 
 const MORE = [
-  { href: "/booking", label: "1-on-1 lessons", icon: "🗓️" },
+  { href: "/lessons", label: "Lessons", icon: "🎬" },
   { href: "/words", label: "Vocabulary", icon: "🔊" },
   { href: "/game", label: "Word Rocket", icon: "🚀" },
   { href: "/stories", label: "Stories", icon: "📖" },
@@ -50,8 +50,13 @@ export default function BottomTabBar() {
 
   const active = (href: string) => path === href || path.startsWith(href + "/");
 
+  // Demo-Konto darf nicht buchen → 1-on-1-Tab durch Lessons ersetzen; Lessons
+  // dann nicht doppelt im More-Sheet.
+  const primary = isDemo
+    ? PRIMARY.map((t) => (t.href === "/booking" ? { href: "/lessons", label: "Lessons", icon: "🎬" } : t))
+    : PRIMARY;
   const moreItems = [
-    ...(isDemo ? MORE.filter((m) => m.href !== "/booking") : MORE),
+    ...MORE.filter((m) => !(isDemo && m.href === "/lessons")),
     ...(isTeacher ? TEACHER_MORE : []),
   ];
   const moreActive = moreItems.some((m) => active(m.href));
@@ -102,7 +107,7 @@ export default function BottomTabBar() {
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <div className="flex items-stretch">
-          {PRIMARY.map((t) => (
+          {primary.map((t) => (
             <Link
               key={t.href}
               href={t.href}
