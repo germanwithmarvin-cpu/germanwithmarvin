@@ -3,7 +3,8 @@
 
 export type Review = { name: string; date: string; text: string };
 
-export const PREPLY_STATS = { rating: 4.9, reviews: 44, lessons: 3000 };
+// Stand 8. Okt 2026 vom Preply-Profil übernommen (Top 10% of German tutors).
+export const PREPLY_STATS = { rating: 4.9, reviews: 48, lessons: 2587, countries: 23 };
 
 export const REVIEWS: Review[] = [
   { name: "Doron", date: "Apr 2026", text: "Marvin is an easy going tutor that makes lessons enjoyable and fun." },

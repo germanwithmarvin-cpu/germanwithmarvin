@@ -25,7 +25,7 @@ const VISA_LEVELS = [
 const STEPS = [
   { n: "1", title: "See where you stand", text: "Take a short placement test — no guessing where to begin." },
   { n: "2", title: "Follow your daily plan", text: "About 20 minutes a day: a video lesson, practice and flashcards — in the right order." },
-  { n: "3", title: "Speak in the live session", text: "Join the weekly group call to ask questions and practice out loud.", soon: true },
+  { n: "3", title: "Practice with a real teacher", text: "Whenever you want to speak out loud or get unstuck, book a 1-on-1 lesson with Marvin or Thanh Ha — right inside the app." },
 ];
 
 const included = [
@@ -74,12 +74,12 @@ export default function Home() {
             <span className="font-semibold text-[#3B2922]">Free for 5 days · no credit card.</span> Cancel anytime.
           </p>
 
-          <p className="mt-5 text-sm flex items-center gap-2 flex-wrap">
-            <Stars /> <span className="font-bold">{PREPLY_STATS.rating}</span>
-            <a href={SITE.preplyUrl} target="_blank" rel="noreferrer" className="text-[#3B2922]/60 underline underline-offset-2 hover:text-[#8A3030]">
-              on Preply
-            </a>
-            <span className="text-[#3B2922]/60">· {PREPLY_STATS.lessons.toLocaleString("en-US")}+ lessons taught</span>
+          <a href={SITE.preplyUrl} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#8A3030]/10 border border-[#8A3030]/20 px-3.5 py-1.5 text-xs font-bold text-[#8A3030] hover:bg-[#8A3030]/15 transition">
+            🏆 Top 10% of German tutors on Preply
+          </a>
+          <p className="mt-3 text-sm flex items-center gap-2 flex-wrap text-[#3B2922]/70">
+            <Stars /> <span className="font-bold text-[#3B2922]">{PREPLY_STATS.rating}</span>
+            <span>· {PREPLY_STATS.lessons.toLocaleString("en-US")} lessons taught · students in {PREPLY_STATS.countries} countries</span>
           </p>
         </div>
 
@@ -159,7 +159,6 @@ export default function Home() {
                 <div className="w-10 h-10 mx-auto grid place-items-center rounded-full bg-[#8A3030] text-white font-bold">{s.n}</div>
                 <h3 className="mt-3 font-bold">{s.title}</h3>
                 <p className="mt-1 text-sm text-[#3B2922]/70">{s.text}</p>
-                {s.soon && <span className="mt-3 inline-block text-xs font-semibold text-[#E3A12F] uppercase tracking-wide">Coming soon</span>}
               </div>
             ))}
           </div>
