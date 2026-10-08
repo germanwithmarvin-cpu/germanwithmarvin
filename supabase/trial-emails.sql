@@ -10,7 +10,7 @@ create table if not exists public.trial_email_log (
 );
 
 -- Kandidaten für die Sequenz:
---   * kein Lehrer / kein Demo-Konto
+--   * kein Lehrer
 --   * hat der Werbung zugestimmt (EU-Opt-in; Angebote nur mit Einwilligung)
 --   * Registrierung in den letzten 25 Tagen (Sequenz läuft Tag 0–20)
 --   * access_expires_at gesetzt UND <= heute + 30 Tage → Trial oder abgelaufener
@@ -30,7 +30,6 @@ language sql security definer set search_path = public as $$
   join public.profiles p on p.id = u.id
   left join public.trial_email_log l on l.user_id = u.id
   where coalesce(p.is_teacher, false) = false
-    and coalesce(p.is_demo, false) = false
     and coalesce(p.marketing_consent, false) = true
     and u.created_at >= now() - interval '25 days'
     and p.access_expires_at is not null
