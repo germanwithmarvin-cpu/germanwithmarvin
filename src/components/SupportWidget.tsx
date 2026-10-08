@@ -18,7 +18,7 @@ export default function SupportWidget() {
   }
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end gap-3">
+    <div className="fixed bottom-24 right-5 md:bottom-5 z-50 flex flex-col items-end gap-3">
       {open && (
         <div
           className="card w-[min(88vw,340px)] p-4 shadow-2xl"

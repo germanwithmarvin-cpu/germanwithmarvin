@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import AppNav from "@/components/AppNav";
+import BottomTabBar from "@/components/BottomTabBar";
 import LegalFooter from "@/components/LegalFooter";
 import SupportWidget from "@/components/SupportWidget";
 import IntroTour from "@/components/IntroTour";
@@ -27,7 +28,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <ConversationWidget />
       <div className="flex-1 flex flex-col md:flex-row">
         <AppNav />
-        <div className="flex-1 flex flex-col min-w-0 pb-24 md:pb-20">
+        <div className="flex-1 flex flex-col min-w-0 pb-28 md:pb-20">
           <main
             className={
               fullBleed
@@ -42,6 +43,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </div>
       <SupportWidget />
       <NewsWidget />
+      <BottomTabBar />
       <IntroTour />
       <IpTracker />
     </div>

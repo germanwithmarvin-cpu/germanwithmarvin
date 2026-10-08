@@ -44,7 +44,7 @@ export default function NewsWidget() {
   if (NEWS.length === 0) return null;
 
   return (
-    <div className="fixed bottom-5 left-5 z-40 flex flex-col items-start gap-3">
+    <div className="fixed bottom-24 left-5 md:bottom-5 z-40 flex flex-col items-start gap-3">
       {open && (
         <div
           className="card w-[min(88vw,340px)] p-4"

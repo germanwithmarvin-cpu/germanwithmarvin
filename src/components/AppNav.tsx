@@ -55,7 +55,7 @@ export default function AppNav() {
   }
 
   return (
-    <aside className="w-full md:w-72 shrink-0 md:min-h-screen border-b md:border-b-0 md:border-r border-gold/15 p-5">
+    <aside className="hidden md:block w-72 shrink-0 min-h-screen border-r border-gold/15 p-5">
       <div className="mb-8">
         <Logo href="/dashboard" size={96} />
       </div>
