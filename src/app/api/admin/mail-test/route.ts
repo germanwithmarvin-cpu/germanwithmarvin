@@ -49,10 +49,18 @@ export async function GET() {
     }
   }
 
+  // Meta-Pixel-Diagnose: ist NEXT_PUBLIC_META_PIXEL_ID überhaupt in Vercel
+  // gesetzt? (Serverseitig sichtbar, unabhängig vom Build-Inlining.)
+  const metaPixel = process.env.NEXT_PUBLIC_META_PIXEL_ID;
+  const metaPixelSet = Boolean(metaPixel);
+  const metaPixelMasked = metaPixel ? `set (…${metaPixel.slice(-4)}, ${metaPixel.length} digits)` : "NOT set in Production — check the name NEXT_PUBLIC_META_PIXEL_ID and the Production scope";
+
   return json({
     hasResendKey,
     mailFrom: mailFrom ?? "(not set → falls back to onboarding@resend.dev; delivers only to your own Resend address)",
     readyForStudents,
+    metaPixelSet,
+    metaPixel: metaPixelMasked,
     testEmailSentTo,
     sendError,
     hint: readyForStudents
