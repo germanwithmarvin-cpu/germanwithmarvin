@@ -1,13 +1,19 @@
 -- 10 SEO-Blogartikel (German with Marvin). Idempotent ueber on conflict(slug).
+-- Cover + Inline-Grafik pro Artikel (public/blog/*.png). Erneut ausfuehrbar.
 insert into public.blog_posts (slug, title, excerpt, cover_url, body, published, published_at)
 values
-  ($s$german-level-chancenkarte-opportunity-card$s$, $t$Which German Level Do You Need for the Chancenkarte (Opportunity Card)?$t$, $e$A1 gets you in the door, but every level up earns points toward the Chancenkarte — here's exactly what German you need.$e$, $c$/screens/learning-path.jpg$c$, $BODY$<p>Short answer: you need at least <strong>German A1</strong> to qualify for the Chancenkarte — or <strong>English B2</strong> if your German isn't there yet. But the more German you bring, the more points you earn, and points are what get you the card.</p>
+  ($s$german-level-chancenkarte-opportunity-card$s$, $t$Which German Level Do You Need for the Chancenkarte (Opportunity Card)?$t$, $e$A1 gets you in the door, but every level up earns points toward the Chancenkarte — here's exactly what German you need.$e$, $c$https://www.germanwithmarvin.com/blog/german-level-chancenkarte-opportunity-card-cover.jpg$c$, $BODY$<p>Short answer: you need at least <strong>German A1</strong> to qualify for the Chancenkarte — or <strong>English B2</strong> if your German isn't there yet. But the more German you bring, the more points you earn, and points are what get you the card.</p>
 
 <h2>What the Chancenkarte actually is</h2>
 <p>The Chancenkarte, or Opportunity Card, is a job-seeker residence permit (Section 20a of the Residence Act, introduced in June 2024). It lets you come to Germany to look for work — without a job offer in hand.</p>
 <p>It runs on a points system. You need at least <strong>6 points</strong>, and your German level is one of the easiest ways to collect them. If you're weighing a move, my <a href="/german-for-moving-to-germany">German for moving to Germany</a> track is built around exactly this.</p>
 
 <h2>How German level earns you points</h2>
+<figure>
+<img src="/blog/german-level-chancenkarte-opportunity-card-fig.png" alt="Chart: A2 earns 1 point, B1 2 points, B2 or higher 3 points toward the Chancenkarte; you need at least 6 in total." width="1140" height="660" loading="lazy">
+<figcaption>How each German level earns points toward the Opportunity Card.</figcaption>
+</figure>
+
 <p>Every step up the ladder adds points:</p>
 <ul>
 <li><strong>A2</strong> — 1 point</li>
@@ -26,9 +32,14 @@ values
 <p>The exact points table and the rules vary by case and change over time, so always confirm with the official source: <a href="https://www.make-it-in-germany.com/en/">Make it in Germany</a> and the German mission handling your application.</p>
 
 <p>Want a head start on those points? <a href="/register">Start your 5-day free trial</a> and see how fast A1 can come together. 🚀</p>$BODY$, true, now()),
-  ($s$german-level-ausbildung-visa$s$, $t$What German Level Do You Need for an Ausbildung in Germany?$t$, $e$B1 is the usual Ausbildung visa minimum, but some trades need A2 or B2 — here's the level you actually need.$e$, $c$/screens/video-lesson.jpg$c$, $BODY$<p>Short answer: for most qualified vocational training you need German at <strong>B1</strong>. Some programs start lower at around <strong>A2</strong>, and healthcare trades often want <strong>B2</strong>.</p>
+  ($s$german-level-ausbildung-visa$s$, $t$What German Level Do You Need for an Ausbildung in Germany?$t$, $e$B1 is the usual Ausbildung visa minimum, but some trades need A2 or B2 — here's the level you actually need.$e$, $c$https://www.germanwithmarvin.com/blog/german-level-ausbildung-visa-cover.jpg$c$, $BODY$<p>Short answer: for most qualified vocational training you need German at <strong>B1</strong>. Some programs start lower at around <strong>A2</strong>, and healthcare trades often want <strong>B2</strong>.</p>
 
 <h2>What level by training type</h2>
+<figure>
+<img src="/blog/german-level-ausbildung-visa-fig.png" alt="The German level needed by Ausbildung type: A2 for some, B1 for most qualified training, B2 for healthcare trades." width="1140" height="570" loading="lazy">
+<figcaption>The German level you typically need by type of Ausbildung.</figcaption>
+</figure>
+
 <p>It depends on the Ausbildung you pick. Here's the rough map.</p>
 <ul>
 <li><strong>B1</strong> (CEFR) is the usual minimum for qualified vocational training.</li>
@@ -55,9 +66,14 @@ values
 <p>One honest caveat: the rules vary by the German mission in your country and by the type of training. Confirm the exact level on your embassy's page and on <a href="https://www.make-it-in-germany.com/en/">Make it in Germany</a> before you book an exam.</p>
 
 <p>Want to hit your Ausbildung level without guessing? <a href="/register">Start your 5-day free trial</a> and see how far you get in five days. 🚀</p>$BODY$, true, now()),
-  ($s$german-for-nurses-level-work-germany$s$, $t$German for Nurses: What Level Do You Need to Work in Germany?$t$, $e$B2 gets your nursing qualification recognised in Germany — here's how to start lower and which Pflege exam you actually need.$e$, $c$/screens/practice.jpg$c$, $BODY$<p>The short answer: to work as a nurse in Germany, you need <strong>B2</strong> German to get your qualification recognised in most federal states. <strong>B1</strong> on its own is generally not enough for the recognition itself.</p>
+  ($s$german-for-nurses-level-work-germany$s$, $t$German for Nurses: What Level Do You Need to Work in Germany?$t$, $e$B2 gets your nursing qualification recognised in Germany — here's how to start lower and which Pflege exam you actually need.$e$, $c$https://www.germanwithmarvin.com/blog/german-for-nurses-level-work-germany-cover.jpg$c$, $BODY$<p>The short answer: to work as a nurse in Germany, you need <strong>B2</strong> German to get your qualification recognised in most federal states. <strong>B1</strong> on its own is generally not enough for the recognition itself.</p>
 
 <h2>Why B2 is the real target</h2>
+<figure>
+<img src="/blog/german-for-nurses-level-work-germany-fig.png" alt="The nursing path: enter with A2 via a recognition partnership, then reach B2 for the Berufserlaubnis." width="1140" height="540" loading="lazy">
+<figcaption>The nursing route: start at A2, land at B2 for recognition.</figcaption>
+</figure>
+
 <p>Recognition of your foreign nursing qualification is called the <em>Berufserlaubnis</em>. The standard language requirement for it is <strong>B2</strong> (CEFR) in most states.</p>
 <p>That makes sense — you'll be talking with patients, doctors and families every shift, often about things that really matter.</p>
 <p>Here's the part people miss: you usually only have to prove <strong>B2</strong> by the time your recognition certificate (the <em>Urkunde</em>) is issued — not on day one.</p>
@@ -84,11 +100,16 @@ values
 <p>One honest caveat: the exact level and process vary by federal state and recognition authority, so always check the competent recognition office for your target state. <a href="https://www.make-it-in-germany.com/en/working-in-germany/professions-in-demand/nursing">Make it in Germany's nursing page</a> is a solid starting point.</p>
 
 <p>Want to reach <strong>B2</strong> with less stress and a clear plan? Come practice with me. 🚀 <a href="/register">Start your 5-day free trial</a>.</p>$BODY$, true, now()),
-  ($s$german-level-study-german-university$s$, $t$What German Level Do You Need to Study at a German University?$t$, $e$Most German degrees need B2–C1 — but the exact level depends on your programme. Here's what to aim for and which test to take.$e$, $c$/screens/video-library.jpg$c$, $BODY$<p>Short answer: for most German-taught degree programmes you need <strong>B2</strong> to <strong>C1</strong>. The exact level depends on the university and the specific course.</p>
+  ($s$german-level-study-german-university$s$, $t$What German Level Do You Need to Study at a German University?$t$, $e$Most German degrees need B2–C1 — but the exact level depends on your programme. Here's what to aim for and which test to take.$e$, $c$https://www.germanwithmarvin.com/blog/german-level-study-german-university-cover.jpg$c$, $BODY$<p>Short answer: for most German-taught degree programmes you need <strong>B2</strong> to <strong>C1</strong>. The exact level depends on the university and the specific course.</p>
 
 <p>So before you book any exam, find the requirement for your programme. It varies a lot, and guessing wastes months.</p>
 
 <h2>Which German proofs do universities accept?</h2>
+<figure>
+<img src="/blog/german-level-study-german-university-fig.png" alt="German certificates universities accept: TestDaF TDN 4, DSH-2, telc C1 Hochschule, Goethe C2; target B2 to C1." width="1140" height="560" loading="lazy">
+<figcaption>The German proofs universities accept, and the level to aim for.</figcaption>
+</figure>
+
 
 <p>Most German universities accept a small set of recognised certificates. The common ones are:</p>
 
@@ -121,9 +142,14 @@ values
 <p>So confirm the exact level for your specific programme before you pick a test. The official portal <a href="https://www.make-it-in-germany.com/en/">Make it in Germany</a> is a solid starting point, then check your university's own admissions page.</p>
 
 <p>Once you know your target, the job is simple: build that German steadily, with a plan. That's what my course on <a href="/german-for-moving-to-germany">German for moving to Germany</a> is for. <a href="/register">Start your 5-day free trial</a> and see how far you get. 🚀</p>$BODY$, true, now()),
-  ($s$german-level-family-reunification-visa$s$, $t$German for Family Reunification: The A1 Requirement Explained$t$, $e$Joining your spouse in Germany? Here's the A1 German you actually need, how to prove it, and who's exempt.$e$, $c$/screens/flashcards.jpg$c$, $BODY$<p>If you're joining your spouse in Germany, you usually need to prove German at <strong>A1</strong> level before the family-reunification visa is granted. That's the short answer. Below is what it means in practice.</p>
+  ($s$german-level-family-reunification-visa$s$, $t$German for Family Reunification: The A1 Requirement Explained$t$, $e$Joining your spouse in Germany? Here's the A1 German you actually need, how to prove it, and who's exempt.$e$, $c$https://www.germanwithmarvin.com/blog/german-level-family-reunification-visa-cover.jpg$c$, $BODY$<p>If you're joining your spouse in Germany, you usually need to prove German at <strong>A1</strong> level before the family-reunification visa is granted. That's the short answer. Below is what it means in practice.</p>
 
 <h2>What A1 means, and how you prove it</h2>
+<figure>
+<img src="/blog/german-level-family-reunification-visa-fig.png" alt="A1 for family reunification: prove it with Start Deutsch 1; exemptions for Blue Card sponsors, some nationalities, illness and hardship." width="1140" height="520" loading="lazy">
+<figcaption>A1 for family reunification — how to prove it, and who may be exempt.</figcaption>
+</figure>
+
 <p><strong>A1</strong> is the first rung on the CEFR scale. It's basic German: introducing yourself, simple questions, everyday phrases. The requirement sits in Section 30 of the Residence Act.</p>
 <p>Here's the part people miss: studying at home on your own doesn't count. You need an official certificate from a recognised body. The most common one is <strong>Start Deutsch 1</strong> from the Goethe-Institut.</p>
 <p>So the goal isn't just "speak a little German" — it's passing a recognised A1 exam and holding the certificate to show for it.</p>
@@ -144,9 +170,14 @@ values
 <p>On a different route? See <a href="/blog/german-level-chancenkarte-opportunity-card">the German level you need for the Chancenkarte</a>, or read <a href="/blog/best-way-to-learn-german-before-moving">the best way to learn German before you move</a>.</p>
 
 <p>Want to start today? <a href="/register">Start your 5-day free trial</a> and get your A1 foundation in place. 🚀</p>$BODY$, true, now()),
-  ($s$goethe-vs-telc-which-german-exam$s$, $t$Goethe vs telc: Which German Exam Should You Take?$t$, $e$There's no single "best" German exam — here's how to choose between Goethe and telc based on who's actually asking for it.$e$, $c$/screens/practice.jpg$c$, $BODY$<p>Short answer: there's no single winner. The right German exam is the one your authority — embassy, employer, university or recognition office — actually names.</p>
+  ($s$goethe-vs-telc-which-german-exam$s$, $t$Goethe vs telc: Which German Exam Should You Take?$t$, $e$There's no single "best" German exam — here's how to choose between Goethe and telc based on who's actually asking for it.$e$, $c$https://www.germanwithmarvin.com/blog/goethe-vs-telc-which-german-exam-cover.jpg$c$, $BODY$<p>Short answer: there's no single winner. The right German exam is the one your authority — embassy, employer, university or recognition office — actually names.</p>
 
 <h2>Goethe vs telc: the real difference</h2>
+<figure>
+<img src="/blog/goethe-vs-telc-which-german-exam-fig.png" alt="Goethe vs telc compared: Goethe is the global academic brand; telc is strong for jobs and immigration and often cheaper." width="1140" height="570" loading="lazy">
+<figcaption>Goethe and telc, side by side.</figcaption>
+</figure>
+
 <p>Both the <strong>Goethe-Zertifikat</strong> and <strong>telc</strong> follow the same CEFR levels and are widely recognised. Neither is simply "better" — it depends on who's asking.</p>
 <p><strong>Goethe</strong> is the globally known brand, strong in academic and cultural contexts. <strong>telc</strong> is strong across Europe, especially for jobs and immigration, and is often cheaper with more flexible exam dates.</p>
 
@@ -167,9 +198,14 @@ values
 <p>Good to know: <strong>Goethe</strong> certificates don't expire, but many authorities still want recent results, so don't sit the exam years too early.</p>
 
 <p>Not sure which level you're even at yet? Try my course free and find out — <a href="/register">Start your 5-day free trial</a>. 🚀</p>$BODY$, true, now()),
-  ($s$how-long-to-learn-german-a1-b1-b2$s$, $t$How Long Does It Really Take to Learn German (A1 to B1 or B2)?$t$, $e$From zero to B1 is a few hundred hours — here's the real timeline by level, plus the two habits that get you there faster.$e$, $c$/screens/learning-path.jpg$c$, $BODY$<p>Here's the honest answer: getting to <strong>B1</strong> from zero usually takes a few hundred hours of focused study. <strong>B2</strong> adds a good chunk more on top of that.</p>
+  ($s$how-long-to-learn-german-a1-b1-b2$s$, $t$How Long Does It Really Take to Learn German (A1 to B1 or B2)?$t$, $e$From zero to B1 is a few hundred hours — here's the real timeline by level, plus the two habits that get you there faster.$e$, $c$https://www.germanwithmarvin.com/blog/how-long-to-learn-german-a1-b1-b2-cover.jpg$c$, $BODY$<p>Here's the honest answer: getting to <strong>B1</strong> from zero usually takes a few hundred hours of focused study. <strong>B2</strong> adds a good chunk more on top of that.</p>
 
 <h2>The rough numbers by level</h2>
+<figure>
+<img src="/blog/how-long-to-learn-german-a1-b1-b2-fig.png" alt="Goethe-Institut teaching-hour estimates from zero: A1 60 to 150, A2 150 to 260, B1 260 to 490, B2 450 to 600 hours, cumulative." width="1140" height="530" loading="lazy">
+<figcaption>Goethe-Institut teaching-hour estimates by level (cumulative).</figcaption>
+</figure>
+
 <p>The Goethe-Institut gives planning estimates in teaching hours, counted from zero. Treat them as a map, not a promise.</p>
 <ul>
 <li><strong>A1</strong>: about 60–150 hours</li>
@@ -188,9 +224,14 @@ values
 <p>Then protect a small daily slot and keep it. That's the whole secret — in my course we build around short daily reps so the hours actually add up. If you're getting ready before the move, here's my take on the <a href="/blog/best-way-to-learn-german-before-moving">best way to learn German before moving</a>.</p>
 
 <p>Want to feel how fast steady practice adds up? Take a look at <a href="/german-course">my structured German course</a> and <a href="/register">Start your 5-day free trial</a>. 🚀</p>$BODY$, true, now()),
-  ($s$german-levels-a1-a2-b1-b2-c1-explained$s$, $t$A1, A2, B1, B2, C1: What the German Levels Actually Mean$t$, $e$What A1 to C1 really mean — and the exact German level you need for citizenship, nursing, a job or university.$e$, $c$/screens/video-library.jpg$c$, $BODY$<p>German levels run from <strong>A1</strong> (total beginner) to <strong>C2</strong> (mastery). Most people living in Germany are aiming for <strong>B1</strong> or <strong>B2</strong> — so once you know your target, you know exactly how far you have to go.</p>
+  ($s$german-levels-a1-a2-b1-b2-c1-explained$s$, $t$A1, A2, B1, B2, C1: What the German Levels Actually Mean$t$, $e$What A1 to C1 really mean — and the exact German level you need for citizenship, nursing, a job or university.$e$, $c$https://www.germanwithmarvin.com/blog/german-levels-a1-a2-b1-b2-c1-explained-cover.jpg$c$, $BODY$<p>German levels run from <strong>A1</strong> (total beginner) to <strong>C2</strong> (mastery). Most people living in Germany are aiming for <strong>B1</strong> or <strong>B2</strong> — so once you know your target, you know exactly how far you have to go.</p>
 
 <h2>The levels in plain words</h2>
+<figure>
+<img src="/blog/german-levels-a1-a2-b1-b2-c1-explained-fig.png" alt="What each CEFR level lets you do, from A1 basics to C2 mastery; most learners in Germany aim for B1 or B2." width="1140" height="710" loading="lazy">
+<figcaption>What each CEFR level actually lets you do.</figcaption>
+</figure>
+
 <p>They all sit on the CEFR scale. Here is what each one actually lets you do.</p>
 <ul>
 <li><strong>A1</strong> — the basics. Introduce yourself, order food, ask for directions, handle simple everyday phrases.</li>
@@ -212,9 +253,14 @@ values
 <h2>So what's the plan?</h2>
 <p>Pick your target level first, then work backwards. Curious about the timeline? I break it down in <a href="/blog/how-long-to-learn-german-a1-b1-b2">how long it really takes to reach A1, B1 and B2</a>. And when it's exam time, <a href="/blog/goethe-vs-telc-which-german-exam">Goethe vs telc: which German exam to take</a> helps you choose.</p>
 <p>In my course I take you step by step from A1 upward, so you never have to guess which level you're on. <a href="/german-course">See how the German course is structured</a> and start where you actually are. Ready to try it? <a href="/register">Start your 5-day free trial</a> 🚀</p>$BODY$, true, now()),
-  ($s$how-to-pass-goethe-b1-exam$s$, $t$How to Pass the Goethe B1 Exam: Format and a Simple Plan$t$, $e$The Goethe B1 exam has four modules you can pass one at a time — here's the format and a simple plan to clear it.$e$, $c$/screens/video-lesson.jpg$c$, $BODY$<p>Short version: learn the exam in its exact format, start speaking out loud on day one, and treat the four modules as four separate goals. Once you pass, the certificate is yours for life.</p>
+  ($s$how-to-pass-goethe-b1-exam$s$, $t$How to Pass the Goethe B1 Exam: Format and a Simple Plan$t$, $e$The Goethe B1 exam has four modules you can pass one at a time — here's the format and a simple plan to clear it.$e$, $c$https://www.germanwithmarvin.com/blog/how-to-pass-goethe-b1-exam-cover.jpg$c$, $BODY$<p>Short version: learn the exam in its exact format, start speaking out loud on day one, and treat the four modules as four separate goals. Once you pass, the certificate is yours for life.</p>
 
 <h2>What's actually on the B1 exam</h2>
+<figure>
+<img src="/blog/how-to-pass-goethe-b1-exam-fig.png" alt="The four Goethe B1 modules — Reading, Listening, Writing, Speaking — each scored separately; pass 60 of 100, retake only what you fail." width="1140" height="580" loading="lazy">
+<figcaption>The four modules of the Goethe B1 exam.</figcaption>
+</figure>
+
 <p>The <strong>Goethe-Zertifikat B1</strong> has four modules: Reading, Listening, Writing and Speaking. Each one is scored on its own.</p>
 <p>That's the good news. If you don't pass a module, you retake only that one — not the whole exam.</p>
 <p><strong>B1</strong> is the common bar for the Ausbildung visa, German citizenship and a lot of jobs. If you're heading into an apprenticeship, check <a href="/blog/german-level-ausbildung-visa">which German level the Ausbildung visa needs</a> before you book.</p>
@@ -237,11 +283,16 @@ values
 <p>Still not sure Goethe is even your exam? Here's <a href="/blog/goethe-vs-telc-which-german-exam">how Goethe and telc compare</a>. And when you're ready to drill properly, my <a href="/german-exam-prep-b1-b2">B1 and B2 exam prep</a> walks you through every module in the real format.</p>
 
 <p>Want to see if it clicks for you? <a href="/register">Start your 5-day free trial</a> and prep your first module today. 🚀</p>$BODY$, true, now()),
-  ($s$best-way-to-learn-german-before-moving$s$, $t$The Best Way to Learn German Before Moving to Germany$t$, $e$Know your target level, learn in order, and speak early — the smart way to prepare your German before moving to Germany.$e$, $c$/screens/word-rocket.jpg$c$, $BODY$<p>The best way is simple: know your target level, learn in the right order, and start speaking from day one. Everything after that is just detail.</p>
+  ($s$best-way-to-learn-german-before-moving$s$, $t$The Best Way to Learn German Before Moving to Germany$t$, $e$Know your target level, learn in order, and speak early — the smart way to prepare your German before moving to Germany.$e$, $c$https://www.germanwithmarvin.com/blog/best-way-to-learn-german-before-moving-cover.jpg$c$, $BODY$<p>The best way is simple: know your target level, learn in the right order, and start speaking from day one. Everything after that is just detail.</p>
 
 <p>I teach this every week. The students who arrive in Germany ready almost always got these few things right before they packed a single box.</p>
 
 <h2>First, know your target level</h2>
+<figure>
+<img src="/blog/best-way-to-learn-german-before-moving-fig.png" alt="A four-step plan: know your target level, learn in order A1 to B1, practise daily and speak early, train in the exam format." width="1140" height="460" loading="lazy">
+<figcaption>A simple four-step plan before you move to Germany.</figcaption>
+</figure>
+
 <p>Don't learn German in general. Learn it for your goal, so you actually know when you're finished.</p>
 <ul>
 <li><strong>A1</strong> for the Chancenkarte or family reunification</li>
