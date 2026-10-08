@@ -36,6 +36,9 @@ const included = [
   "Statistics & progress tracking",
 ];
 
+// Verifizierte Preply-Auszeichnungen (vom Profil, Stand 8. Okt 2026).
+const PREPLY_BADGES = ["🏆 Top 10% of German tutors", "⭐ Super Tutor", "🎓 Professional Tutor (verified)"];
+
 function Stars() {
   return <span className="text-[#E3A12F] tracking-tight">★★★★★</span>;
 }
@@ -74,12 +77,16 @@ export default function Home() {
             <span className="font-semibold text-[#3B2922]">Free for 5 days · no credit card.</span> Cancel anytime.
           </p>
 
-          <a href={SITE.preplyUrl} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#8A3030]/10 border border-[#8A3030]/20 px-3.5 py-1.5 text-xs font-bold text-[#8A3030] hover:bg-[#8A3030]/15 transition">
-            🏆 Top 10% of German tutors on Preply
-          </a>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {PREPLY_BADGES.map((b) => (
+              <a key={b} href={SITE.preplyUrl} target="_blank" rel="noreferrer" className="inline-flex items-center rounded-full bg-[#8A3030]/10 border border-[#8A3030]/20 px-3 py-1.5 text-xs font-bold text-[#8A3030] hover:bg-[#8A3030]/15 transition">
+                {b}
+              </a>
+            ))}
+          </div>
           <p className="mt-3 text-sm flex items-center gap-2 flex-wrap text-[#3B2922]/70">
             <Stars /> <span className="font-bold text-[#3B2922]">{PREPLY_STATS.rating}</span>
-            <span>· {PREPLY_STATS.lessons.toLocaleString("en-US")} lessons taught · students in {PREPLY_STATS.countries} countries</span>
+            <span>· {PREPLY_STATS.lessons.toLocaleString("en-US")} lessons taught · students in {PREPLY_STATS.countries} countries · verified on Preply</span>
           </p>
         </div>
 
