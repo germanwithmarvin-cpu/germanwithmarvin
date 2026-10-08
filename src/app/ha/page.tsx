@@ -54,7 +54,7 @@ export default function HaPage() {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto w-full">
         <Link href="/" className="flex items-center">
-          <img src="/logo-light.png" alt="German Simplified" className="h-[104px] md:h-[125px] w-auto object-contain" />
+          <img src="/logo-light.png" alt="German Simplified" className="h-16 md:h-[125px] w-auto object-contain" />
         </Link>
         <PublicNav ctaLabel="Get started" ctaHref="/register?intent=lesson" />
       </header>

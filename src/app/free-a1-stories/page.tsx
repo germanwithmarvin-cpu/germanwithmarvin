@@ -18,7 +18,7 @@ export default function Page() {
     <div className="bg-[#FFF1D2] text-[#3B2922] min-h-screen">
       <header className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto w-full">
         <Link href="/" className="flex items-center">
-          <img src="/logo-light.png" alt="Marvin Graf — German Simplified" className="h-[104px] md:h-[125px] w-auto object-contain" />
+          <img src="/logo-light.png" alt="Marvin Graf — German Simplified" className="h-16 md:h-[125px] w-auto object-contain" />
         </Link>
         <PublicNav />
       </header>
