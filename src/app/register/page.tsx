@@ -137,7 +137,7 @@ export default function RegisterPage() {
 
             <label className="flex items-start gap-2 text-xs text-cream-dim cursor-pointer">
               <input type="checkbox" checked={marketing} onChange={(e) => setMarketing(e.target.checked)} className="mt-0.5 accent-[color:var(--gold)]" />
-              <span>Yes — email me my 5-day learning plan, German tips &amp; the occasional offer. Unsubscribe anytime.</span>
+              <span>Yes — send me a free A1 story 📖, my 5-day learning plan &amp; German tips. Unsubscribe anytime.</span>
             </label>
 
             {error && <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-3">{error}</p>}

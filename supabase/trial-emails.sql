@@ -12,6 +12,8 @@ create table if not exists public.trial_email_log (
 -- Kandidaten für die Sequenz:
 --   * kein Lehrer
 --   * hat der Werbung zugestimmt (EU-Opt-in; Angebote nur mit Einwilligung)
+--   * E-Mail bestätigt (email_confirmed_at) → Willkommens-Mail + Gratis-PDF
+--     kommen erst NACH der Bestätigung
 --   * Registrierung in den letzten 25 Tagen (Sequenz läuft Tag 0–20)
 --   * access_expires_at gesetzt UND <= heute + 30 Tage → Trial oder abgelaufener
 --     Trial, aber KEIN Dauer-/Jahres-Zugang (einmaliges Jahr liegt ~365 Tage weg)
@@ -31,6 +33,7 @@ language sql security definer set search_path = public as $$
   left join public.trial_email_log l on l.user_id = u.id
   where coalesce(p.is_teacher, false) = false
     and coalesce(p.marketing_consent, false) = true
+    and u.email_confirmed_at is not null
     and u.created_at >= now() - interval '25 days'
     and p.access_expires_at is not null
     and p.access_expires_at <= now() + interval '30 days'

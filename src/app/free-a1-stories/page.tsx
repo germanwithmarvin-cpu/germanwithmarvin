@@ -2,7 +2,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import PublicNav from "@/components/PublicNav";
-import LeadMagnet from "@/components/LeadMagnet";
 import { SITE } from "@/lib/config";
 import { PREPLY_STATS } from "@/lib/reviews";
 import { PREPLY_BADGES } from "@/lib/landing";
@@ -32,12 +31,17 @@ export default function Page() {
           </h1>
           <p className="mt-4 text-[#3B2922]/80">
             A short, illustrated story at beginner level — the gentle, fun way to start reading real German.
-            Pop in your email and we&rsquo;ll send the PDF straight over.
+            Create your free account and it&rsquo;s yours — plus 5 days of full access to the whole course.
           </p>
         </div>
 
-        <div className="mt-8">
-          <LeadMagnet source="a1-stories-page" />
+        <div className="mt-8 text-center">
+          <Link href="/register" className="inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
+            Create your free account
+          </Link>
+          <p className="mt-3 text-sm text-[#3B2922]/70">
+            Free for 5 days · no credit card. Say yes to emails at sign-up and the story lands in your inbox as a welcome gift.
+          </p>
         </div>
 
         <div className="mt-6 flex flex-wrap justify-center gap-2">
