@@ -10,7 +10,7 @@ const WELCOME_VIDEO = "https://youtu.be/kDVR9XRFQQw";
 
 export default function WelcomePage() {
   const router = useRouter();
-  const [step, setStep] = useState<"loading" | "video" | "lena">("loading");
+  const [step, setStep] = useState<"loading" | "video" | "lena" | "path">("loading");
   const [saving, setSaving] = useState(false);
 
   // Wer das Willkommen schon gesehen hat, landet direkt im Dashboard.
@@ -28,10 +28,10 @@ export default function WelcomePage() {
     return () => { cancelled = true; };
   }, [router]);
 
-  async function finish() {
+  async function go(dest: string) {
     setSaving(true);
     await markWelcomed();
-    router.replace("/dashboard");
+    router.replace(dest);
   }
 
   if (step === "loading") return <p className="text-sm text-cream-dim">Loading…</p>;
@@ -40,7 +40,7 @@ export default function WelcomePage() {
     <div className="max-w-2xl mx-auto space-y-6">
       {/* Fortschritt der zwei Schritte */}
       <div className="flex items-center justify-center gap-2">
-        {["video", "lena"].map((s) => (
+        {["video", "lena", "path"].map((s) => (
           <span key={s} className="h-1.5 rounded-full transition-all"
             style={{ width: s === step ? 34 : 18, background: s === step ? "var(--gold-bright)" : "var(--bordeaux-deep)" }} />
         ))}
@@ -85,10 +85,36 @@ export default function WelcomePage() {
           </div>
 
           <div className="flex justify-center mt-6">
-            <button onClick={finish} disabled={saving} className="btn-gold px-8 py-3.5 text-lg font-bold disabled:opacity-50">
-              {saving ? "One moment…" : "Let's start 🚀"}
+            <button onClick={() => setStep("path")} className="btn-gold px-8 py-3.5 text-lg font-bold">
+              Continue →
             </button>
           </div>
+        </div>
+      )}
+
+      {step === "path" && (
+        <div className="space-y-5">
+          <div className="text-center">
+            <h1 className="text-2xl sm:text-3xl font-bold">Where should we start?</h1>
+            <p className="text-cream-dim mt-2">Pick what fits you — you can change course anytime.</p>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <button onClick={() => go("/dashboard")} disabled={saving}
+              className="card p-6 text-left hover:border-gold/50 transition disabled:opacity-50">
+              <div className="text-3xl">🌱</div>
+              <h3 className="mt-2 text-lg font-bold">I&apos;m new to German</h3>
+              <p className="text-sm text-cream-dim mt-1">Start from the very beginning — A1, step by step.</p>
+              <span className="inline-block mt-3 text-gold-bright font-semibold">Start from A1 →</span>
+            </button>
+            <button onClick={() => go("/check")} disabled={saving}
+              className="card p-6 text-left hover:border-gold/50 transition disabled:opacity-50">
+              <div className="text-3xl">🧭</div>
+              <h3 className="mt-2 text-lg font-bold">I already know some German</h3>
+              <p className="text-sm text-cream-dim mt-1">Take a quick level check (~5 min) and we&apos;ll point you to the right lessons.</p>
+              <span className="inline-block mt-3 text-gold-bright font-semibold">Check my level →</span>
+            </button>
+          </div>
+          {saving && <p className="text-center text-xs text-cream-dim">One moment…</p>}
         </div>
       )}
     </div>
