@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
 import { createClient } from "@/lib/supabase/client";
 import { getAttribution } from "@/lib/attribution";
 import { trackSignupConversion } from "@/lib/track";
@@ -116,7 +117,11 @@ export default function RegisterPage() {
             </div>
           )}
 
-          <form className="mt-5 space-y-4" onSubmit={handleRegister}>
+          <div className="mt-5">
+            <GoogleSignInButton nextPath={nextPath} />
+          </div>
+
+          <form className="space-y-4" onSubmit={handleRegister}>
             <div>
               <label className="block text-sm mb-1 text-cream-dim">Name</label>
               <input value={fullName} onChange={(e) => setFullName(e.target.value)} type="text" required placeholder="Your name" className="w-full rounded-lg bg-bordeaux-deep/60 border border-gold/25 px-3 py-2 outline-none focus:border-gold" />

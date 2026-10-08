@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
@@ -40,7 +41,11 @@ export default function LoginPage() {
             Sign in to keep learning.
           </p>
 
-          <form className="mt-6 space-y-4" onSubmit={handleLogin}>
+          <div className="mt-6">
+            <GoogleSignInButton nextPath="/dashboard" />
+          </div>
+
+          <form className="space-y-4" onSubmit={handleLogin}>
             <div>
               <label className="block text-sm mb-1 text-cream-dim">Email</label>
               <input
