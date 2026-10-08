@@ -49,6 +49,10 @@ export const COURSE = {
   yearlyPriceId: "price_1UNwh9Esa6rPVhI2cyDCS6qY",
 };
 
+// Lead-Magnet: gratis A1-Story-PDF gegen E-Mail. Datei nach public/materials/
+// legen (Marvin lädt sein A1-Story-PDF genau unter diesem Namen hoch).
+export const LEAD_MAGNET_PDF = "/materials/a1-stories.pdf";
+
 // Preis hübsch formatiert, z. B. "$39".
 export function priceLabel(): string {
   return `$${APP_PRICE % 1 === 0 ? APP_PRICE : APP_PRICE.toFixed(2)}`;
