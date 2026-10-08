@@ -1,5 +1,8 @@
 // Geteilte Landingpage-Daten (Startseite + fokussierte Kurs-/1:1-Seiten).
 
+// Verifizierte Preply-Auszeichnungen (vom Profil, Stand 8. Okt 2026).
+export const PREPLY_BADGES = ["🏆 Top 10% of German tutors", "⭐ Super Tutor", "🎓 Professional Tutor (verified)"];
+
 // Echte Produkt-Screenshots. Dateien liegen in public/screens/.
 export const SHOTS = [
   { src: "/screens/learning-path.jpg", alt: "Structured A1 to B2 vocabulary path", title: "A clear path, not random flashcards.", text: "Build your vocabulary in a structured order — one topic at a time, from A1 to B2." },

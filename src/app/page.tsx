@@ -4,7 +4,7 @@ import VideoPlayer from "@/components/VideoPlayer";
 import PublicNav from "@/components/PublicNav";
 import { SITE, priceLabel, APP_YEARLY_PER_MONTH, TAX_NOTE } from "@/lib/config";
 import { REVIEWS, PREPLY_STATS } from "@/lib/reviews";
-import { SHOTS, TEACHERS } from "@/lib/landing";
+import { SHOTS, TEACHERS, PREPLY_BADGES } from "@/lib/landing";
 
 // Wen die Seite anspricht — Positionierung über die Zielgruppe, nicht Features.
 const AUDIENCES = [
@@ -35,9 +35,6 @@ const included = [
   "The vocab game & reading stories",
   "Statistics & progress tracking",
 ];
-
-// Verifizierte Preply-Auszeichnungen (vom Profil, Stand 8. Okt 2026).
-const PREPLY_BADGES = ["🏆 Top 10% of German tutors", "⭐ Super Tutor", "🎓 Professional Tutor (verified)"];
 
 function Stars() {
   return <span className="text-[#E3A12F] tracking-tight">★★★★★</span>;
