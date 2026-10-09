@@ -11,6 +11,7 @@ const links = [
   { href: "/dashboard", label: "Overview", icon: "🏠" },
   { href: "/lessons", label: "Lessons", icon: "🎬" },
   { href: "/training", label: "Training", icon: "🎓" },
+  { href: "/exams", label: "Exam prep", icon: "📝" },
   { href: "/booking", label: "1-on-1 lessons", icon: "🗓️" },
   { href: "/decks", label: "Flashcards", icon: "🗂️" },
   { href: "/words", label: "Vocabulary", icon: "🔊" },

@@ -49,6 +49,18 @@ export const COURSE = {
   yearlyPriceId: "price_1UNwh9Esa6rPVhI2cyDCS6qY",
 };
 
+// ---- Prüfungstrainer / KI-Schreibkorrektur ---------------------------------
+// Tokenlimit mehrschichtig: günstiges Modell + pro-Abgabe-Deckel + Tageslimit
+// pro Nutzer + globale Monats-Notbremse. Zahlen hier zentral anpassbar.
+export const EXAM_AI = {
+  model: "claude-haiku-5-5",     // günstig & schnell, reicht für A1–B2-Feedback
+  maxOutputTokens: 1200,         // Deckel pro Antwort
+  maxInputChars: 1800,           // Schülertext wird darauf gekürzt (kein Roman)
+  dailyLimitTrial: 3,            // KI-Korrekturen/Tag im Trial (Häppchen)
+  dailyLimitPaid: 20,            // KI-Korrekturen/Tag für zahlende Nutzer
+  monthlyOutputTokenCap: 2_000_000, // globale Notbremse (~hunderte Korrekturen); drüber: KI pausiert
+};
+
 // Lead-Magnet: gratis A1-Story-PDF gegen E-Mail. Datei nach public/materials/
 // legen (Marvin lädt sein A1-Story-PDF genau unter diesem Namen hoch).
 export const LEAD_MAGNET_PDF = "/materials/a1-stories.pdf";

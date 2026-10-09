@@ -18,6 +18,7 @@ const PRIMARY = [
 ];
 
 const MORE = [
+  { href: "/exams", label: "Exam prep", icon: "📝" },
   { href: "/lessons", label: "Lessons", icon: "🎬" },
   { href: "/words", label: "Vocabulary", icon: "🔊" },
   { href: "/game", label: "Word Rocket", icon: "🚀" },
