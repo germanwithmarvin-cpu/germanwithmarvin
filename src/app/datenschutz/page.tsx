@@ -38,7 +38,7 @@ function PrivacyEN() {
   return (
     <>
       <h1 className="text-3xl font-bold text-cream">Privacy Policy</h1>
-      <p className="mt-3 text-sm">Last updated: July 2026</p>
+      <p className="mt-3 text-sm">Last updated: October 2026</p>
 
       <Section title="1. Controller">
         <p>The controller responsible for data processing on this website is:</p>
@@ -91,14 +91,52 @@ function PrivacyEN() {
         </p>
       </Section>
 
-      <Section title="7. Access codes">
+      <Section title="7. Google Calendar integration (Google user data)">
+        <p>
+          Our teacher can connect a Google Calendar to the booking system so that your 1-on-1 lessons are added
+          to the calendar and existing appointments are taken into account when showing available times. This
+          Google connection is used <strong>only by the account owner (the teacher)</strong>; students do not
+          connect their own Google accounts.
+        </p>
+        <p className="mt-2">When the calendar is connected, we request only the minimum Google OAuth scopes needed for this feature:</p>
+        <ul className="list-disc pl-5 mt-2 space-y-1">
+          <li><strong>.../auth/calendar.events</strong> — to create and remove the lesson appointments we schedule;</li>
+          <li><strong>.../auth/calendar.readonly</strong> — to read existing busy times so that lessons are not double-booked.</li>
+        </ul>
+        <p className="mt-2">
+          <strong>How we protect this data:</strong> Google access tokens are stored encrypted and transmitted only
+          over encrypted connections (TLS/HTTPS). They are kept in access-controlled infrastructure (Supabase)
+          protected by row-level security and restricted to the owner&apos;s account. We access calendar data only
+          to show availability and to manage lesson appointments — we do not otherwise read, store or share your
+          calendar content.
+        </p>
+        <p className="mt-2">
+          <strong>No secondary use:</strong> Google user data is never used for advertising, is not sold, and is not
+          used to develop, improve or train generalized AI/ML models. It is not shared with third parties except as
+          strictly necessary to provide this feature or where required by law.
+        </p>
+        <p className="mt-2">
+          <strong>Revoking access:</strong> The owner can disconnect the calendar at any time in the app and can
+          revoke access at{" "}
+          <a href="https://myaccount.google.com/permissions" className="text-gold-bright underline underline-offset-4">myaccount.google.com/permissions</a>.
+          On disconnection or account deletion, the stored Google tokens are deleted.
+        </p>
+        <p className="mt-2">
+          <strong>Limited Use:</strong> Our use and transfer to any other app of information received from Google APIs
+          will adhere to the{" "}
+          <a href="https://developers.google.com/terms/api-services-user-data-policy" className="text-gold-bright underline underline-offset-4">Google API Services User Data Policy</a>,
+          including the Limited Use requirements.
+        </p>
+      </Section>
+
+      <Section title="8. Access codes">
         <p>
           Some students unlock the app with an access code obtained through external platforms. Any payments made
           on those platforms are handled by the respective providers under their own privacy policies.
         </p>
       </Section>
 
-      <Section title="8. Cookies &amp; advertising measurement">
+      <Section title="9. Cookies &amp; advertising measurement">
         <p>
           We use technically necessary cookies to keep you signed in (login session). Without them, logging in
           is not possible. Legal basis: Art. 6(1)(f) GDPR / § 25(2) TDDDG (strictly necessary cookies).
@@ -113,13 +151,13 @@ function PrivacyEN() {
         </p>
       </Section>
 
-      <Section title="9. Recipients & transfers to third countries">
+      <Section title="10. Recipients & transfers to third countries">
         <p>To provide our service we use the following processors:</p>
         <ul className="list-disc pl-5 mt-2 space-y-1">
           <li>Vercel Inc. (hosting, USA)</li>
           <li>Supabase Inc. (account &amp; database, USA/Singapore)</li>
           <li>Stripe (payment processing / merchant of record, USA &amp; Ireland)</li>
-          <li>Google Ireland Ltd. (YouTube video hosting; Google Ads conversion measurement, EU/USA)</li>
+          <li>Google Ireland Ltd. / Google LLC (YouTube video hosting; Google Ads conversion measurement; Google Calendar API for the booking calendar integration, used by the account owner; EU/USA)</li>
         </ul>
         <p className="mt-2">
           This may involve transferring personal data to the USA. Where required, we base such transfers on
@@ -128,14 +166,14 @@ function PrivacyEN() {
         </p>
       </Section>
 
-      <Section title="10. Retention period">
+      <Section title="11. Retention period">
         <p>
           We store personal data only as long as necessary for the stated purposes or as required by law. If
           you delete your account, the associated data is deleted unless retention obligations apply.
         </p>
       </Section>
 
-      <Section title="11. Your rights">
+      <Section title="12. Your rights">
         <p>Under the GDPR you have the following rights:</p>
         <ul className="list-disc pl-5 mt-2 space-y-1">
           <li>Access (Art. 15), rectification (Art. 16), erasure (Art. 17)</li>
@@ -148,7 +186,7 @@ function PrivacyEN() {
         </p>
       </Section>
 
-      <Section title="12. Right to lodge a complaint">
+      <Section title="13. Right to lodge a complaint">
         <p>
           You have the right to lodge a complaint with a data protection supervisory authority, in particular
           in the Member State of your residence.
@@ -163,7 +201,7 @@ function PrivacyDE() {
   return (
     <>
       <h1 className="text-3xl font-bold text-cream">Datenschutzerklärung</h1>
-      <p className="mt-3 text-sm">Stand: Juli 2026</p>
+      <p className="mt-3 text-sm">Stand: Oktober 2026</p>
 
       <Section title="1. Verantwortlicher">
         <p>Verantwortlich für die Datenverarbeitung auf dieser Website ist:</p>
@@ -216,7 +254,46 @@ function PrivacyDE() {
         </p>
       </Section>
 
-      <Section title="7. Zugangscodes">
+      <Section title="7. Google-Kalender-Anbindung (Google-Nutzerdaten)">
+        <p>
+          Unser Lehrer kann einen Google-Kalender mit dem Buchungssystem verbinden, damit deine 1:1-Stunden in
+          den Kalender eingetragen und bereits bestehende Termine bei der Anzeige freier Zeiten berücksichtigt
+          werden. Diese Google-Verbindung nutzt <strong>ausschließlich der Kontoinhaber (der Lehrer)</strong>;
+          Schüler verbinden keine eigenen Google-Konten.
+        </p>
+        <p className="mt-2">Bei verbundenem Kalender fordern wir nur die für diese Funktion nötigen minimalen Google-OAuth-Scopes an:</p>
+        <ul className="list-disc pl-5 mt-2 space-y-1">
+          <li><strong>.../auth/calendar.events</strong> — zum Anlegen und Entfernen der von uns geplanten Stundentermine;</li>
+          <li><strong>.../auth/calendar.readonly</strong> — zum Lesen bestehender Belegt-Zeiten, damit Stunden nicht doppelt gebucht werden.</li>
+        </ul>
+        <p className="mt-2">
+          <strong>Schutz dieser Daten:</strong> Google-Zugriffstoken werden verschlüsselt gespeichert und nur über
+          verschlüsselte Verbindungen (TLS/HTTPS) übertragen. Sie liegen in zugriffsgeschützter Infrastruktur
+          (Supabase) mit Row-Level-Security und sind auf das Konto des Inhabers beschränkt. Wir greifen auf
+          Kalenderdaten ausschließlich zu, um Verfügbarkeiten anzuzeigen und Stundentermine zu verwalten — darüber
+          hinaus lesen, speichern oder teilen wir deine Kalenderinhalte nicht.
+        </p>
+        <p className="mt-2">
+          <strong>Keine Zweitverwendung:</strong> Google-Nutzerdaten werden niemals für Werbung verwendet, nicht
+          verkauft und nicht zur Entwicklung, Verbesserung oder zum Training allgemeiner KI-/ML-Modelle genutzt.
+          Eine Weitergabe an Dritte erfolgt nur, soweit für die Funktion zwingend erforderlich oder gesetzlich
+          vorgeschrieben.
+        </p>
+        <p className="mt-2">
+          <strong>Widerruf:</strong> Der Inhaber kann den Kalender jederzeit in der App trennen und den Zugriff
+          unter{" "}
+          <a href="https://myaccount.google.com/permissions" className="text-gold-bright underline underline-offset-4">myaccount.google.com/permissions</a>{" "}
+          widerrufen. Beim Trennen oder bei Kontolöschung werden die gespeicherten Google-Token gelöscht.
+        </p>
+        <p className="mt-2">
+          <strong>Limited Use:</strong> Die Nutzung und Weitergabe von Informationen, die wir über Google-APIs
+          erhalten, an andere Apps erfolgt im Einklang mit der{" "}
+          <a href="https://developers.google.com/terms/api-services-user-data-policy" className="text-gold-bright underline underline-offset-4">Google API Services User Data Policy</a>,
+          einschließlich der Limited-Use-Anforderungen.
+        </p>
+      </Section>
+
+      <Section title="8. Zugangscodes">
         <p>
           Manche Schüler schalten die App per Zugangscode frei, den sie über externe Plattformen erhalten.
           Etwaige Zahlungen auf diesen Plattformen wickeln die jeweiligen Anbieter unter ihren eigenen
@@ -224,7 +301,7 @@ function PrivacyDE() {
         </p>
       </Section>
 
-      <Section title="8. Cookies &amp; Werbe-Erfolgsmessung">
+      <Section title="9. Cookies &amp; Werbe-Erfolgsmessung">
         <p>
           Wir verwenden technisch notwendige Cookies, um deine Anmeldung (Login-Sitzung) aufrechtzuerhalten.
           Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO / § 25 Abs. 2 TDDDG.
@@ -240,13 +317,13 @@ function PrivacyDE() {
         </p>
       </Section>
 
-      <Section title="9. Empfänger & Übermittlung in Drittländer">
+      <Section title="10. Empfänger & Übermittlung in Drittländer">
         <p>Zur Bereitstellung unseres Angebots setzen wir folgende Auftragsverarbeiter ein:</p>
         <ul className="list-disc pl-5 mt-2 space-y-1">
           <li>Vercel Inc. (Hosting, USA)</li>
           <li>Supabase Inc. (Konto &amp; Datenbank, USA/Singapur)</li>
           <li>Stripe (Zahlungsabwicklung / Merchant of Record, USA &amp; Irland)</li>
-          <li>Google Ireland Ltd. (YouTube-Videohosting; Google-Ads-Conversion-Messung, EU/USA)</li>
+          <li>Google Ireland Ltd. / Google LLC (YouTube-Videohosting; Google-Ads-Conversion-Messung; Google Calendar API für die Buchungs-Kalenderanbindung, genutzt vom Kontoinhaber; EU/USA)</li>
         </ul>
         <p className="mt-2">
           Dabei kann es zu einer Übermittlung in die USA kommen; soweit erforderlich, gestützt auf geeignete
@@ -254,7 +331,7 @@ function PrivacyDE() {
         </p>
       </Section>
 
-      <Section title="10. Speicherdauer">
+      <Section title="11. Speicherdauer">
         <p>
           Wir speichern Daten nur so lange, wie für die Zwecke erforderlich oder gesetzlich vorgeschrieben.
           Bei Kontolöschung werden die zugehörigen Daten gelöscht, soweit keine Aufbewahrungspflichten
@@ -262,7 +339,7 @@ function PrivacyDE() {
         </p>
       </Section>
 
-      <Section title="11. Deine Rechte">
+      <Section title="12. Deine Rechte">
         <p>Dir stehen nach der DSGVO folgende Rechte zu:</p>
         <ul className="list-disc pl-5 mt-2 space-y-1">
           <li>Auskunft (Art. 15), Berichtigung (Art. 16), Löschung (Art. 17)</li>
@@ -275,7 +352,7 @@ function PrivacyDE() {
         </p>
       </Section>
 
-      <Section title="12. Beschwerderecht bei einer Aufsichtsbehörde">
+      <Section title="13. Beschwerderecht bei einer Aufsichtsbehörde">
         <p>
           Du hast das Recht, dich bei einer Datenschutz-Aufsichtsbehörde zu beschweren, insbesondere im
           Mitgliedstaat deines Aufenthaltsorts.
