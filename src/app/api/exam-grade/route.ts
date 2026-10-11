@@ -88,6 +88,9 @@ export async function POST(req: Request) {
   ].join("\n");
   const userMsg = `AUFGABE (${level}):\n${prompt || "(keine Aufgabenbeschreibung übergeben)"}\n\nSCHÜLERTEXT:\n${text}`;
 
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return j({ error: "ai", message: "KI-Korrektur nicht konfiguriert (ANTHROPIC_API_KEY fehlt in der Umgebung)." }, 502);
+  }
   let feedback: Feedback | null = null;
   let inTok = 0, outTok = 0;
   try {
@@ -104,8 +107,15 @@ export async function POST(req: Request) {
     const raw = resp.content.filter((b) => b.type === "text").map((b) => (b as { text: string }).text).join("").trim();
     const m = raw.match(/\{[\s\S]*\}/);
     if (m) feedback = JSON.parse(m[0]) as Feedback;
-  } catch {
-    return j({ error: "ai", message: "Die KI-Korrektur ist gerade nicht erreichbar. Bitte später erneut." }, 502);
+  } catch (e) {
+    const status = (e as { status?: number })?.status;
+    const name = (e as { name?: string })?.name;
+    console.error("[exam-grade] Anthropic-Fehler:", status, name, (e as { message?: string })?.message);
+    const hint = status === 401 || status === 403 ? "Ungültiger/fehlender API-Key"
+      : status === 429 ? "API-Ratenlimit erreicht"
+      : status === 404 ? "Modell nicht verfügbar"
+      : status ? `HTTP ${status}` : "Verbindungsfehler";
+    return j({ error: "ai", message: `Die KI-Korrektur ist gerade nicht erreichbar (${hint}). Bitte später erneut.` }, 502);
   }
   if (!feedback || typeof feedback.score !== "number") {
     return j({ error: "parse", message: "Konnte das Feedback nicht auswerten. Bitte erneut versuchen." }, 502);
