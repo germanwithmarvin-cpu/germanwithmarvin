@@ -54,7 +54,7 @@ export const COURSE = {
 // pro Nutzer + globale Monats-Notbremse. Zahlen hier zentral anpassbar.
 export const EXAM_AI = {
   model: "claude-haiku-5-5",     // günstig & schnell, reicht für A1–B2-Feedback
-  maxOutputTokens: 1200,         // Deckel pro Antwort
+  maxOutputTokens: 1600,         // Deckel pro Antwort (Puffer, damit das JSON nicht abgeschnitten wird)
   maxInputChars: 1800,           // Schülertext wird darauf gekürzt (kein Roman)
   dailyLimitTrial: 3,            // KI-Korrekturen/Tag im Trial (Häppchen)
   dailyLimitPaid: 20,            // KI-Korrekturen/Tag für zahlende Nutzer

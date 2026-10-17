@@ -98,6 +98,9 @@ export async function POST(req: Request) {
     const resp = await anthropic.messages.create({
       model: EXAM_AI.model,
       max_tokens: EXAM_AI.maxOutputTokens,
+      // Thinking aus: die Bewertung braucht kein Reasoning im Output, und die
+      // Denk-Tokens würden sonst das JSON abschneiden (stop_reason max_tokens).
+      thinking: { type: "disabled" },
       output_config: { effort: "low" },
       system,
       messages: [{ role: "user", content: userMsg }],
