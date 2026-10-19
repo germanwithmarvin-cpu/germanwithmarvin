@@ -8,7 +8,13 @@ import LegalFooter from "@/components/LegalFooter";
 import VideoPlayer from "@/components/VideoPlayer";
 import { PREPLY_BADGES } from "@/lib/landing";
 import { PLACEMENT_ITEMS } from "@/lib/placement";
+import { REVIEWS, PREPLY_STATS } from "@/lib/reviews";
 import { SITE } from "@/lib/config";
+
+// Kuratierte echte Reviews (Prüfung/Niveau/Struktur/Freude) für den Funnel.
+const PICKED_REVIEWS = ["Ivan", "Erin", "Sama", "Beatrice", "Karolina", "Veronika"]
+  .map((n) => REVIEWS.find((r) => r.name === n))
+  .filter((r): r is (typeof REVIEWS)[number] => Boolean(r));
 
 // Öffentliche Werbe-Landingpage (für FB-Ads): kostenloser Einstufungstest OHNE
 // Login → Niveau-Teaser sofort → volle Auswertung + Plan erst nach Anmeldung
@@ -227,6 +233,28 @@ export default function LevelTest() {
               <div className="text-3xl">{c.e}</div>
               <div className="font-bold mt-2">{c.t}</div>
               <div className="text-sm text-[#3B2922]/65 mt-1">{c.x}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ---------- REVIEWS ---------- */}
+      <section className="px-5 sm:px-8 pb-14 max-w-5xl mx-auto w-full">
+        <div className="text-center">
+          <h2 className="text-3xl font-extrabold">What my students say</h2>
+          <p className="mt-2 text-[#3B2922]/70">
+            <span className="text-[#e3a12f]">★★★★★</span>{" "}
+            <b className="text-[#3B2922]">{PREPLY_STATS.rating}</b> · {PREPLY_STATS.reviews} reviews ·{" "}
+            {PREPLY_STATS.lessons.toLocaleString("en-US")}+ lessons taught ·{" "}
+            <a href={SITE.preplyUrl} target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-[#8A3030]">verified on Preply</a>
+          </p>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
+          {PICKED_REVIEWS.map((r, i) => (
+            <div key={i} className="rounded-2xl bg-white border border-[#e3a12f]/35 p-5 shadow-sm">
+              <div className="text-[#e3a12f]">★★★★★</div>
+              <p className="mt-2 text-sm text-[#3B2922]/85 leading-relaxed">“{r.text}”</p>
+              <p className="mt-3 text-xs text-[#3B2922]/55 font-semibold">— {r.name}, {r.date}</p>
             </div>
           ))}
         </div>
