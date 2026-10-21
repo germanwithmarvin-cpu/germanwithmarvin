@@ -66,6 +66,16 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
           <div className="richtext text-cream mt-6 leading-relaxed" dangerouslySetInnerHTML={{ __html: post.body }} />
         </article>
 
+        {/* Level-Test-CTA */}
+        <div className="card p-5 sm:p-6 mt-10 flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left" style={{ borderLeft: "5px solid var(--gold-bright)" }}>
+          <div className="text-3xl">🧭</div>
+          <div className="flex-1">
+            <h2 className="text-lg font-bold">Find your German level in 5 minutes — free</h2>
+            <p className="text-sm text-cream-dim mt-1">Vocabulary, grammar, reading &amp; listening. No sign-up to start.</p>
+          </div>
+          <Link href="/level-test?src=blog" className="btn-outline whitespace-nowrap px-5 py-2.5">Take the free test →</Link>
+        </div>
+
         {/* Conversion-CTA */}
         <div className="card p-6 sm:p-8 mt-10 text-center" style={{ borderLeft: "5px solid var(--gold)" }}>
           <div className="text-3xl">🚀</div>

@@ -10,6 +10,7 @@ import { PREPLY_BADGES } from "@/lib/landing";
 import { PLACEMENT_ITEMS } from "@/lib/placement";
 import { REVIEWS, PREPLY_STATS } from "@/lib/reviews";
 import { getPlacement, type PItem, type PSection, type Lv } from "@/lib/placementTest";
+import { getAttribution } from "@/lib/attribution";
 import { SITE } from "@/lib/config";
 
 // Öffentliche Werbe-Landingpage (FB-Ads): mehrteiliger Gratis-Einstufungstest
@@ -120,7 +121,15 @@ export default function LevelTest() {
   function pick(id: string, i: number) { setAnswers((a) => ({ ...a, [id]: i })); }
   function next() {
     if (secIdx < sections.length - 1) { setSecIdx(secIdx + 1); document.getElementById("test")?.scrollIntoView({ behavior: "smooth" }); }
-    else { setPhase("result"); fbq("Lead"); document.getElementById("test")?.scrollIntoView({ behavior: "smooth" }); }
+    else {
+      setPhase("result"); fbq("Lead");
+      const a = getAttribution();
+      fetch("/api/level-test-done", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ level: result.level, utm_source: a.utm_source, utm_medium: a.utm_medium, referrer: a.referrer }),
+      }).catch(() => {});
+      document.getElementById("test")?.scrollIntoView({ behavior: "smooth" });
+    }
   }
 
   const estMinutes = multi ? 10 : 5;

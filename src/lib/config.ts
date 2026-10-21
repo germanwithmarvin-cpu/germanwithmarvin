@@ -11,6 +11,9 @@ export const SITE = {
   skoolUrl: "https://www.skool.com/german-with-marvin-5887/about",
   // Verkaufskanäle (Zugang läuft über diese Plattformen – dort gibt es die Codes).
   preplyUrl: "https://preply.com/en/tutor/6416829",
+  // Social Media (englische Kurzvideos für Deutschlerner).
+  tiktokUrl: "https://www.tiktok.com/@germanwithmarvin",
+  instagramUrl: "https://www.instagram.com/germanwithmarvin/",
   // Stripe-Zahlungslink für das Monats-Abo (Managed Payments / Merchant of Record) – LIVE.
   // Pay-first für NEUE Kunden: Success-URL → /register (Konto entsteht nach Zahlung).
   stripePaymentLink: "https://buy.stripe.com/6oU9AT7INcJE505chl7Re00",

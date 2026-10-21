@@ -2,6 +2,7 @@
 import Link from "next/link";
 import VideoPlayer from "@/components/VideoPlayer";
 import PublicNav from "@/components/PublicNav";
+import SocialLinks from "@/components/SocialLinks";
 import { SITE, priceLabel, APP_YEARLY_PER_MONTH, TAX_NOTE } from "@/lib/config";
 import { REVIEWS, PREPLY_STATS } from "@/lib/reviews";
 import { SHOTS, TEACHERS, PREPLY_BADGES } from "@/lib/landing";
@@ -40,9 +41,19 @@ function Stars() {
   return <span className="text-[#E3A12F] tracking-tight">★★★★★</span>;
 }
 
+const ORG_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "German with Marvin",
+  url: "https://www.germanwithmarvin.com",
+  logo: "https://www.germanwithmarvin.com/logo-light.png",
+  sameAs: [SITE.tiktokUrl, SITE.instagramUrl, SITE.preplyUrl],
+};
+
 export default function Home() {
   return (
     <div className="bg-[#FFF1D2] text-[#3B2922] min-h-screen">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSONLD) }} />
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto w-full">
         <Link href="/" className="flex items-center">
@@ -72,6 +83,11 @@ export default function Home() {
           </Link>
           <p className="mt-3 text-sm text-[#3B2922]/70">
             <span className="font-semibold text-[#3B2922]">Free for 5 days · no credit card.</span> Cancel anytime.
+          </p>
+          <p className="mt-2 text-sm">
+            <Link href="/level-test?src=home" className="text-[#8A3030] font-semibold underline underline-offset-4 hover:brightness-110">
+              Not sure about your level? Take the free 5-minute test →
+            </Link>
           </p>
 
           <div className="mt-5 flex flex-wrap gap-2">
@@ -288,13 +304,15 @@ export default function Home() {
           Start your 5-day free trial
         </Link>
         <p className="mt-4 text-sm text-[#3B2922]/60">
-          Not ready yet? <Link href="/free-a1-stories" className="text-[#8A3030] underline underline-offset-4 font-semibold">Get a free A1 story →</Link>
+          Not ready yet? <Link href="/free-a1-stories" className="text-[#8A3030] underline underline-offset-4 font-semibold">Get a free A1 story</Link>
+          {" "}or <Link href="/level-test?src=home" className="text-[#8A3030] underline underline-offset-4 font-semibold">find your level free →</Link>
         </p>
       </section>
 
       {/* Footer (hell) */}
       <footer className="bg-[#F7DEAD] border-t border-black/5 py-8 text-center text-sm text-[#3B2922]/70">
         <div>© {new Date().getFullYear()} German with Marvin LLC · German Simplified</div>
+        <SocialLinks className="justify-center mt-3 text-[#3B2922]" />
         <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
           <a href={`mailto:${SITE.contactEmail}`} className="hover:text-[#3B2922] underline underline-offset-4">Contact · Kontakt</a>
           <Link href="/pricing" className="hover:text-[#3B2922] underline underline-offset-4">Pricing</Link>
