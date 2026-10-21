@@ -86,8 +86,7 @@ function TermsEN() {
         <p>
           Separately from the app subscription, you can subscribe to a monthly package of private 1-on-1 lessons
           ({LESSON.durationMin} minutes each). You choose how many lessons per month (minimum {LESSON.minHours}). The
-          price is ${LESSON.pricePerHour} per lesson; from {LESSON.discountThreshold} lessons per month a 5% discount
-          applies. This lesson subscription renews automatically each month and is billed via Stripe.
+          price is ${LESSON.pricePerHour} per lesson. This lesson subscription renews automatically each month and is billed via Stripe.
         </p>
         <p className="mt-2">
           Each monthly payment credits the matching number of lesson hours to your account. You book specific times
@@ -184,8 +183,7 @@ function TermsDE() {
         <p>
           Unabhängig vom App-Abo kannst du ein Monatspaket für private Einzelstunden ({LESSON.durationMin} Minuten je
           Stunde) abschließen. Du wählst die Anzahl der Stunden pro Monat (mindestens {LESSON.minHours}). Der Preis
-          beträgt ${LESSON.pricePerHour} pro Stunde; ab {LESSON.discountThreshold} Stunden pro Monat gilt ein Rabatt
-          von 5 %. Dieses Stunden-Abo verlängert sich automatisch monatlich und wird über Stripe abgerechnet.
+          beträgt ${LESSON.pricePerHour} pro Stunde. Dieses Stunden-Abo verlängert sich automatisch monatlich und wird über Stripe abgerechnet.
         </p>
         <p className="mt-2">
           Jede Monatszahlung schreibt dir die entsprechende Anzahl an Stunden-Guthaben gut. Konkrete Termine buchst

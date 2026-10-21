@@ -268,7 +268,7 @@ export default function BookingPage() {
                     <p className="text-xs text-cream-dim">Increases apply right away (charged pro-rata, hours added now). Decreases take effect next month — you keep your current hours.</p>
                     <HourStepper value={hours} onChange={setHours} />
                     <div className="flex items-center justify-between gap-3">
-                      <div className="text-sm text-cream-dim">{planLabel(hours)}/mo{isMarvin && hours >= LESSON.discountThreshold && <span className="text-gold-bright"> · 5% off</span>}</div>
+                      <div className="text-sm text-cream-dim">{planLabel(hours)}/mo</div>
                       <button onClick={() => changeHours(hours)} disabled={busy || hours === sub.quantity} className="btn-gold px-5 py-2.5 text-sm disabled:opacity-40">
                         {hours > sub.quantity ? "Add hours now" : hours < sub.quantity ? "Lower from next month" : "No change"}
                       </button>
@@ -304,7 +304,6 @@ export default function BookingPage() {
                 </div>
                 <div className="text-sm text-cream-dim mt-1">
                   {hours} lessons × {LESSON.durationMin} min · {money(perHourNow)} per lesson
-                  {isMarvin && (hours >= LESSON.discountThreshold ? <span className="text-gold-bright"> (5% off — 8+ hours)</span> : <span> · reach 8 h for 5% off</span>)}
                 </div>
               </div>
               <button onClick={subscribe} disabled={busy} className="btn-gold w-full py-3 disabled:opacity-50">

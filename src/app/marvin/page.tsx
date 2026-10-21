@@ -10,7 +10,7 @@ import { REVIEWS, PREPLY_STATS } from "@/lib/reviews";
 export const metadata: Metadata = {
   title: "1-on-1 German lessons with Marvin — exam prep & a clear method",
   description:
-    "Learn German 1-on-1 with Marvin — full-time teacher, Preply Super Tutor (top 10%), A1–C1. Structured lessons and real Goethe/telc exam prep. 50-minute online lessons from $59.",
+    "Learn German 1-on-1 with Marvin — full-time teacher, Preply Super Tutor (top 10%), A1–C1. Structured lessons and real Goethe/telc exam prep. 50-minute online lessons from $33.",
   alternates: { canonical: "https://www.germanwithmarvin.com/marvin" },
 };
 
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 const MARVIN_VIDEO_ID = SITE.introVideoId;
 
 const MARVIN = TEACHERS.find((t) => t.name.toLowerCase().includes("marvin")) ?? TEACHERS[0];
-const PRICE = MARVIN?.price ?? 59;
+const PRICE = MARVIN?.price ?? 33;
 const PHOTO = MARVIN?.photo ?? "/teachers/marvin.jpg";
 
 // Kuratierte ECHTE Bewertungen (1:1-Qualität) aus src/lib/reviews.ts.
