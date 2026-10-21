@@ -26,6 +26,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },
     { url: `${base}/german-course`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${base}/online-german-lessons`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${base}/marvin`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${base}/ha`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${base}/pricing`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
     { url: `${base}/german-for-ausbildung`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
     { url: `${base}/german-exam-prep-b1-b2`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },

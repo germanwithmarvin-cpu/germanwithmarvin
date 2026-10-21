@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { SITE } from "@/lib/config";
 import PublicNav from "@/components/PublicNav";
+import SocialLinks from "@/components/SocialLinks";
 import { TEACHERS } from "@/lib/landing";
 
 export const metadata: Metadata = {
@@ -207,6 +208,7 @@ export default function HaPage() {
       {/* Footer */}
       <footer className="bg-[#F7DEAD] border-t border-black/5 py-8 text-center text-sm text-[#3B2922]/70">
         <div>© {new Date().getFullYear()} German with Marvin LLC · German Simplified</div>
+        <SocialLinks className="justify-center mt-3 text-[#3B2922]" />
         <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
           <a href={`mailto:${SITE.contactEmail}`} className="hover:text-[#3B2922] underline underline-offset-4">Contact · Kontakt</a>
           <Link href="/impressum" className="hover:text-[#3B2922] underline underline-offset-4">Legal Notice · Impressum</Link>

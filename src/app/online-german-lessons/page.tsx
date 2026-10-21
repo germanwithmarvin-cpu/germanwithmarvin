@@ -84,8 +84,8 @@ export default function OnlineLessonsPage() {
               <p className="mt-3 text-sm text-[#3B2922]/75">{t.blurb}</p>
               <div className="mt-3 text-sm text-[#3B2922]/70">🗣 {t.langs}</div>
               <div className="mt-1 font-semibold">${t.price} <span className="font-normal text-[#3B2922]/60">/ 50-min lesson</span></div>
-              <Link href="/register?intent=lesson" className="mt-4 inline-block rounded-lg bg-[#8A3030] text-white px-5 py-2.5 text-sm font-semibold hover:brightness-110 transition">
-                Book with {t.name.split(" ")[0]}
+              <Link href={t.name.toLowerCase().includes("marvin") ? "/marvin" : "/ha"} className="mt-4 inline-block rounded-lg bg-[#8A3030] text-white px-5 py-2.5 text-sm font-semibold hover:brightness-110 transition">
+                Lessons with {t.name.split(" ")[0]} →
               </Link>
             </div>
           ))}
