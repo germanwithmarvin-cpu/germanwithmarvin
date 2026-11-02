@@ -83,6 +83,44 @@ export async function sendLessonConfirmation(m: LessonMail): Promise<boolean> {
   });
 }
 
+export async function sendLessonRescheduled(m: LessonMail, oldStartISO: string): Promise<boolean> {
+  const when = formatWhen(m.startISO, m.timezone);
+  const old = formatWhen(oldStartISO, m.timezone);
+  const hi = m.studentName ? `Hi ${m.studentName.split(" ")[0]},` : "Hi,";
+  const intro = `${hi} your German lesson has been moved to a new time. The calendar file attached updates the time in your own calendar.`;
+  const ics = lessonIcsBase64({
+    uid: `${m.bookingId}@germanwithmarvin.com`,
+    startISO: m.startISO,
+    endISO: m.endISO,
+    summary: "German lesson · German with Marvin",
+    description: m.meetLink ? `Join: ${m.meetLink}` : "Open your account for the join link.",
+    location: m.meetLink ?? undefined,
+  });
+  const html = buildHtml({ heading: "Lesson rescheduled", intro, whenLine: when, tz: m.timezone, meetLink: m.meetLink })
+    .replace("</h1>", `</h1><p style="font-size:13px;color:#9a8a7a;margin:-6px 0 14px;text-decoration:line-through;">Was: ${old}</p>`);
+  return sendEmail({
+    to: m.to,
+    replyTo: SITE.contactEmail,
+    subject: "Your German lesson has been rescheduled 🗓️",
+    html,
+    text: `${intro}\n\nNew time: ${when} (${m.timezone})\nWas: ${old}\n\n${m.meetLink ? `Join: ${m.meetLink}\n` : ""}\nYour lessons: ${BASE_URL}/booking\n\nGerman with Marvin`,
+    attachments: [{ filename: "german-lesson.ics", content: ics, contentType: "text/calendar" }],
+  });
+}
+
+export async function sendLessonCancelledByTeacher(m: LessonMail): Promise<boolean> {
+  const when = formatWhen(m.startISO, m.timezone);
+  const hi = m.studentName ? `Hi ${m.studentName.split(" ")[0]},` : "Hi,";
+  const intro = `${hi} unfortunately your German lesson below had to be cancelled. The hour has been returned to your balance — you can book a new time whenever it suits you.`;
+  return sendEmail({
+    to: m.to,
+    replyTo: SITE.contactEmail,
+    subject: "Your German lesson has been cancelled",
+    html: buildHtml({ heading: "Lesson cancelled", intro, whenLine: when, tz: m.timezone, meetLink: null }),
+    text: `${intro}\n\nCancelled lesson: ${when} (${m.timezone})\n\nBook a new time: ${BASE_URL}/booking\n\nGerman with Marvin`,
+  });
+}
+
 export async function sendLessonReminder(m: LessonMail): Promise<boolean> {
   const when = formatWhen(m.startISO, m.timezone);
   const hi = m.studentName ? `Hi ${m.studentName.split(" ")[0]},` : "Hi,";

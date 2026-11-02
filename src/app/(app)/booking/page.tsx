@@ -5,6 +5,7 @@ import { LESSON, lessonPriceLabel, TAX_NOTE } from "@/lib/config";
 import { getMySubscription, getMyCredits, startLessonCheckout, manageLessonSubscription, getTeachers, claimFreeTrial, freeTrialAvailable, type LessonSubscription, type CreditInfo, type TeacherProfile } from "@/lib/booking";
 import { getMyBookings, getTeacherBookings, getMyTeacherId, getStudentNames, getGoogleEvents, getMyRecurring, cancelRecurring, type Booking, type ExternalEvent, type Recurring } from "@/lib/schedule";
 import AvailabilityEditor from "@/components/booking/AvailabilityEditor";
+import CalendarSync from "@/components/booking/CalendarSync";
 import BookingCalendar from "@/components/booking/BookingCalendar";
 import LessonsList from "@/components/booking/LessonsList";
 import LessonCalendar from "@/components/booking/LessonCalendar";
@@ -184,6 +185,7 @@ export default function BookingPage() {
         // -------- Lehrer: Verfügbarkeit + alle Termine --------
         <>
           <AvailabilityEditor teacherId={myTeacherId ?? 1} />
+          <CalendarSync onChange={refresh} />
           <div className="space-y-3">
             <div className="font-semibold text-lg">Your schedule</div>
             <WeekSchedule bookings={bookings} names={names} external={extEvents} />

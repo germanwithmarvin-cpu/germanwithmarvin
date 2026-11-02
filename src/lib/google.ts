@@ -285,3 +285,39 @@ export async function deleteEvent(eventId: string, teacherId = 1): Promise<void>
   if (!token) return;
   await fetch(`${CAL}/calendars/primary/events/${eventId}?sendUpdates=all`, { method: "DELETE", headers: { Authorization: `Bearer ${token}` } });
 }
+
+// Verschiebt einen bestehenden Termin (neue Start-/Endzeit) und benachrichtigt
+// den Teilnehmer per Google (sendUpdates=all). Für die In-Platform-Verschiebung.
+export async function updateEventTime(
+  eventId: string, startISO: string, endISO: string, timezone: string, teacherId = 1,
+): Promise<boolean> {
+  const token = await accessToken(teacherId);
+  if (!token) return false;
+  const res = await fetch(`${CAL}/calendars/primary/events/${eventId}?sendUpdates=all`, {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      start: { dateTime: startISO, timeZone: timezone },
+      end: { dateTime: endISO, timeZone: timezone },
+    }),
+  });
+  return res.ok;
+}
+
+// Aktuellen Stand eines Events (um im Google-Kalender verschobene/gelöschte
+// Termine zu erkennen). gone=true, wenn das Event gelöscht/abgesagt wurde.
+export async function getEventById(
+  eventId: string, teacherId = 1,
+): Promise<{ startISO: string; endISO: string; gone: boolean } | null> {
+  const token = await accessToken(teacherId);
+  if (!token) return null;
+  const res = await fetch(`${CAL}/calendars/primary/events/${eventId}`, { headers: { Authorization: `Bearer ${token}` } });
+  if (res.status === 404 || res.status === 410) return { startISO: "", endISO: "", gone: true };
+  if (!res.ok) return null; // Netz-/Auth-Fehler → nicht als Änderung werten
+  const e = await res.json();
+  if (e.status === "cancelled") return { startISO: "", endISO: "", gone: true };
+  const s = e.start?.dateTime ?? (e.start?.date ? `${e.start.date}T00:00:00Z` : null);
+  const en = e.end?.dateTime ?? (e.end?.date ? `${e.end.date}T00:00:00Z` : null);
+  if (!s || !en) return null;
+  return { startISO: new Date(s).toISOString(), endISO: new Date(en).toISOString(), gone: false };
+}
