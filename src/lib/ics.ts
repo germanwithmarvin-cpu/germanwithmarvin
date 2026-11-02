@@ -28,6 +28,8 @@ export function buildLessonIcs(opts: {
   description?: string;
   location?: string; // z. B. der Meet-Link
   alarmsMinutes?: number[]; // Erinnerungen vor Beginn, Standard 60 + 10 Min
+  sequence?: number; // Revisionsnummer: muss bei Änderungen (Verschiebung) STEIGEN,
+                     // damit Kalender-Clients den Termin aktualisieren statt zu duplizieren.
 }): string {
   const alarms = opts.alarmsMinutes ?? [60, 10];
   const lines: string[] = [
@@ -38,6 +40,7 @@ export function buildLessonIcs(opts: {
     "METHOD:PUBLISH",
     "BEGIN:VEVENT",
     `UID:${opts.uid}`,
+    `SEQUENCE:${Math.max(0, Math.floor(opts.sequence ?? 0))}`,
     `DTSTAMP:${toICSDate(new Date().toISOString())}`,
     `DTSTART:${toICSDate(opts.startISO)}`,
     `DTEND:${toICSDate(opts.endISO)}`,

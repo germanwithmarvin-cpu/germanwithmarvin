@@ -95,6 +95,10 @@ export async function sendLessonRescheduled(m: LessonMail, oldStartISO: string):
     summary: "German lesson · German with Marvin",
     description: m.meetLink ? `Join: ${m.meetLink}` : "Open your account for the join link.",
     location: m.meetLink ?? undefined,
+    // Aufsteigende Revisionsnummer (Sekunden seit ~2020): jede Verschiebung liegt
+    // später → größere SEQUENCE als die Bestätigung (0) und als frühere
+    // Verschiebungen, damit der Kalender den Termin verschiebt statt zu duplizieren.
+    sequence: Math.floor(Date.now() / 1000) - 1_600_000_000,
   });
   const html = buildHtml({ heading: "Lesson rescheduled", intro, whenLine: when, tz: m.timezone, meetLink: m.meetLink })
     .replace("</h1>", `</h1><p style="font-size:13px;color:#9a8a7a;margin:-6px 0 14px;text-decoration:line-through;">Was: ${old}</p>`);

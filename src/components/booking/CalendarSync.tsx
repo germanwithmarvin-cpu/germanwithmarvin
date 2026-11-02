@@ -8,7 +8,7 @@ type Item = {
   email: string | null;
   dbStart: string;
   dbEnd: string;
-  kind: "moved" | "gone" | "ok" | "error";
+  kind: "moved" | "gone" | "collision" | "ok" | "error";
   googleStart?: string;
   googleEnd?: string;
   mailed?: boolean;
@@ -37,6 +37,7 @@ export default function CalendarSync({ onChange }: { onChange?: () => void }) {
 
   const moved = items.filter((i) => i.kind === "moved");
   const gone = items.filter((i) => i.kind === "gone");
+  const collisions = items.filter((i) => i.kind === "collision");
 
   async function check() {
     setBusy(true); setErr(null); setDone(null);
@@ -95,7 +96,7 @@ export default function CalendarSync({ onChange }: { onChange?: () => void }) {
           {err && <p className="text-sm text-red-700 bg-red-accent/15 rounded-lg p-3">{err}</p>}
           {done && <p className="text-sm text-green-700 bg-green-accent/15 rounded-lg p-3">✓ {done}</p>}
 
-          {checked && !busy && moved.length === 0 && gone.length === 0 && !done && (
+          {checked && !busy && moved.length === 0 && gone.length === 0 && collisions.length === 0 && !done && (
             <p className="text-sm text-cream-dim">Everything is in sync — no moved lessons found.</p>
           )}
 
@@ -118,6 +119,19 @@ export default function CalendarSync({ onChange }: { onChange?: () => void }) {
               <button onClick={apply} disabled={busy || moved.filter((i) => sel[i.bookingId]).length === 0} className="btn-gold px-5 py-2.5 text-sm disabled:opacity-40">
                 {busy ? "Working…" : `Apply & email student${moved.filter((i) => sel[i.bookingId]).length === 1 ? "" : "s"} (${moved.filter((i) => sel[i.bookingId]).length})`}
               </button>
+            </div>
+          )}
+
+          {collisions.length > 0 && (
+            <div className="space-y-2">
+              <div className="text-sm font-medium text-red-700">Moved onto a time that clashes</div>
+              <p className="text-xs text-cream-dim">In Google these were moved onto a slot that overlaps another booked lesson, so they weren&apos;t applied. Fix the overlap in your Google Calendar (or cancel one lesson), then check again.</p>
+              {collisions.map((i) => (
+                <div key={i.bookingId} className="text-sm rounded-lg p-3" style={{ background: "color-mix(in srgb, var(--red-accent) 10%, var(--surface))", border: "1px solid color-mix(in srgb, var(--red-accent) 25%, transparent)" }}>
+                  <span className="font-semibold">{i.studentName || "Student"}</span>
+                  <span className="text-cream-dim"> · <span className="line-through">{fmt(i.dbStart)}</span> → {fmt(i.googleStart)}</span>
+                </div>
+              ))}
             </div>
           )}
 

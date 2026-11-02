@@ -245,6 +245,14 @@ export async function cancelLesson(id: string): Promise<{ result?: string; error
   return { result: json.result };
 }
 
+// Verschiebt eine Stunde (nur Lehrer). startISO = absoluter Zeitpunkt.
+export async function rescheduleLesson(id: string, startISO: string): Promise<{ mailed?: boolean; googleSynced?: boolean; error?: string }> {
+  const res = await fetch("/api/lesson/reschedule", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, start: startISO }) });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok) return { error: json.error ?? "Reschedule failed" };
+  return { mailed: json.mailed, googleSynced: json.googleSynced };
+}
+
 export type ExternalEvent = { summary: string; start: string; end: string };
 
 // Alle Google-Termine des Lehrers (mit Titel) für die Wochenansicht.

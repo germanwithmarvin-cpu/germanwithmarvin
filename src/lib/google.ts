@@ -288,11 +288,13 @@ export async function deleteEvent(eventId: string, teacherId = 1): Promise<void>
 
 // Verschiebt einen bestehenden Termin (neue Start-/Endzeit) und benachrichtigt
 // den Teilnehmer per Google (sendUpdates=all). Für die In-Platform-Verschiebung.
+// "ok" = verschoben, "gone" = Event existiert nicht mehr (im Kalender gelöscht →
+// Aufrufer sollte neu anlegen), "error" = Token-/Netz-/Sonstfehler.
 export async function updateEventTime(
   eventId: string, startISO: string, endISO: string, timezone: string, teacherId = 1,
-): Promise<boolean> {
+): Promise<"ok" | "gone" | "error"> {
   const token = await accessToken(teacherId);
-  if (!token) return false;
+  if (!token) return "error";
   const res = await fetch(`${CAL}/calendars/primary/events/${eventId}?sendUpdates=all`, {
     method: "PATCH",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
@@ -301,7 +303,9 @@ export async function updateEventTime(
       end: { dateTime: endISO, timeZone: timezone },
     }),
   });
-  return res.ok;
+  if (res.ok) return "ok";
+  if (res.status === 404 || res.status === 410) return "gone";
+  return "error";
 }
 
 // Aktuellen Stand eines Events (um im Google-Kalender verschobene/gelöschte

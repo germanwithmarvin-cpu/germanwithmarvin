@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createClient as createAdmin } from "@supabase/supabase-js";
 import { getConnection, googleConfigured, getEventById } from "@/lib/google";
 import { sendLessonRescheduled } from "@/lib/lessonEmails";
+import { hasBookingConflict } from "@/lib/lessonConflicts";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -63,6 +64,7 @@ export async function POST(req: Request) {
     if (!g) continue; // Lese-/Auth-Fehler → nicht als Änderung werten
 
     const dbStart = new Date(b.starts_at).getTime();
+    const dbEnd = new Date(b.ends_at).getTime();
     const student = await studentInfo(db, b.student_id, nameCache);
     const base = { bookingId: b.id, studentName: student.name, email: student.email, dbStart: b.starts_at, dbEnd: b.ends_at };
 
@@ -71,10 +73,20 @@ export async function POST(req: Request) {
       continue; // „apply" rührt gelöschte Termine nicht an (siehe UI-Hinweis).
     }
 
+    // Start ODER Ende abweichend → verschoben (auch reine Dauer-/Endzeitänderung).
     const gStart = new Date(g.startISO).getTime();
-    if (Math.abs(gStart - dbStart) < EPS) {
+    const gEnd = new Date(g.endISO).getTime();
+    const changed = Math.abs(gStart - dbStart) >= EPS || Math.abs(gEnd - dbEnd) >= EPS;
+    if (!changed) {
       if (mode === "preview") continue; // unverändert → nicht anzeigen
       items.push({ ...base, kind: "ok" });
+      continue;
+    }
+
+    // Würde die neue Zeit eine andere gebuchte Stunde überlappen? Dann NICHT
+    // übernehmen/mailen, sondern als Konflikt melden (Lehrer muss es klären).
+    if (await hasBookingConflict(db, teacher.id, g.startISO, g.endISO, b.id)) {
+      items.push({ ...base, kind: "collision", googleStart: g.startISO, googleEnd: g.endISO });
       continue;
     }
 
