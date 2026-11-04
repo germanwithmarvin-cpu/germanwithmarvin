@@ -54,6 +54,9 @@ export default function PricingPage() {
             <p className="font-semibold">What about 1-on-1 lessons?</p>
             <p className="text-sm text-[#3B2922]/75">Private lessons with a real teacher are separate from the course — see <Link href="/online-german-lessons" className="text-[#8A3030] underline underline-offset-4 font-semibold">1-on-1 lessons</Link>.</p>
           </div>
+          <p className="text-center text-sm pt-2">
+            <Link href="/faq" className="text-[#8A3030] underline underline-offset-4 font-semibold">More questions? See the full FAQ →</Link>
+          </p>
         </div>
       </main>
     </div>

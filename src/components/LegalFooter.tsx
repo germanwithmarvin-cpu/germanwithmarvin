@@ -9,6 +9,7 @@ export default function LegalFooter() {
       <div>© {new Date().getFullYear()} German with Marvin LLC · German Simplified</div>
       <SocialLinks className="justify-center mt-3" />
       <div className="mt-2 flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+        <Link href="/faq" className="hover:text-cream underline underline-offset-4">FAQ</Link>
         <Link href="/blog" className="hover:text-cream underline underline-offset-4">Blog</Link>
         <a href={`mailto:${SITE.contactEmail}`} className="hover:text-cream underline underline-offset-4">Contact · Kontakt</a>
         <Link href="/impressum" className="hover:text-cream underline underline-offset-4">Legal Notice · Impressum</Link>
