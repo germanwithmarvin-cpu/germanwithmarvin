@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import { createClient } from "@/lib/supabase/server";
-import { COURSE } from "@/lib/config";
+import { COURSE, APP_PRICE_MONTHLY, APP_YEARLY_TOTAL } from "@/lib/config";
 
 export const runtime = "nodejs";
 
@@ -59,7 +59,9 @@ export async function POST(req: Request) {
     // bei der Einmalzahlung reicht die Session-Metadata (checkout.session.completed).
     ...(mode === "subscription" ? { subscription_data: { metadata: meta } } : {}),
     allow_promotion_codes: true,
-    success_url: `${origin}/dashboard?checkout=success`,
+    // plan + value in der Erfolgs-URL → die Dashboard-Seite feuert damit die
+    // Kauf-Conversion (Meta Purchase / Google Ads) mit korrektem Wert.
+    success_url: `${origin}/dashboard?checkout=success&plan=${plan}&value=${plan === "yearly" ? APP_YEARLY_TOTAL : APP_PRICE_MONTHLY}`,
     cancel_url: `${origin}/pricing?checkout=cancel`,
   });
 

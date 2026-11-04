@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { APP_PRICE_MONTHLY, APP_YEARLY_PER_MONTH, APP_YEARLY_TOTAL, TAX_NOTE } from "@/lib/config";
+import { trackCheckoutClick } from "@/lib/track";
 
 const included = [
   "All video lessons (A1–B2)",
@@ -24,6 +25,7 @@ export default function PricingPlans() {
   async function buy(plan: "monthly" | "yearly") {
     setBusy(plan);
     setErr(null);
+    trackCheckoutClick(); // Kaufabsicht an Meta (InitiateCheckout) + Google (begin_checkout)
     try {
       const res = await fetch("/api/course-checkout", {
         method: "POST",

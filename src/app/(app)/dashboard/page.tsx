@@ -15,6 +15,7 @@ import { checkoutUrl, priceLabel, TAX_NOTE } from "@/lib/config";
 import Lena from "@/components/training/Lena";
 import { hasBeenWelcomed } from "@/lib/onboarding";
 import { useRouter } from "next/navigation";
+import { trackPurchase } from "@/lib/track";
 
 // Rang anhand gelernter Karten (wie im Profil) – spielerische Stufe im Hero.
 const RANKS: [number, string, string][] = [
@@ -73,6 +74,19 @@ export default function Dashboard() {
   useEffect(() => {
     hasBeenWelcomed().then((seen) => { if (!seen) router.replace("/start"); });
   }, [router]);
+
+  // Nach erfolgreichem Kauf (Stripe-Rückleitung ?checkout=success): Kauf-Conversion
+  // genau EINMAL feuern und den Parameter aus der URL entfernen (kein Doppelzählen
+  // bei Reload). Der Zugang selbst kommt serverseitig über den Webhook.
+  useEffect(() => {
+    try {
+      const q = new URLSearchParams(window.location.search);
+      if (q.get("checkout") !== "success") return;
+      const value = Number(q.get("value")) || 0;
+      trackPurchase({ value, currency: "USD" });
+      window.history.replaceState({}, "", "/dashboard");
+    } catch { /* egal */ }
+  }, []);
 
   useEffect(() => {
     loadProgress().then(setProgress);
