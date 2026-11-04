@@ -1,6 +1,7 @@
 {
   "crons": [
     { "path": "/api/cron/lesson-reminders", "schedule": "0 6 * * *" },
-    { "path": "/api/cron/trial-emails", "schedule": "0 7 * * *" }
+    { "path": "/api/cron/trial-emails", "schedule": "0 7 * * *" },
+    { "path": "/api/cron/paid-emails", "schedule": "0 8 * * *" }
   ]
 }

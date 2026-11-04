@@ -56,6 +56,11 @@ export async function POST() {
           status: sub.status,
           current_period_end: periodEndISO(sub),
           cancel_at_period_end: sub.cancel_at_period_end,
+          // Echtes Abo-Startdatum aus Stripe. WICHTIG für die Nachkauf-Mail-
+          // Strecke: beim Reconcilen eines Bestandsabos würde created_at sonst per
+          // DEFAULT auf now() fallen und der Kunde bekäme fälschlich die Onboarding-
+          // Serie. sub.created ist stabil und spiegelt den tatsächlichen Kaufzeitpunkt.
+          created_at: new Date(sub.created * 1000).toISOString(),
           updated_at: new Date().toISOString(),
         },
         { onConflict: "email" },
