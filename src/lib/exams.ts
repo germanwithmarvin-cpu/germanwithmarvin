@@ -11,7 +11,7 @@ export type ExamItemKind = "passage" | "audio" | "choice" | "gap" | "writing";
 
 export type ExamPaper = {
   id: string; level: string; variant: number; title: string; subtitle: string;
-  isPublished: boolean; isSample: boolean; sortOrder: number;
+  isPublished: boolean; isSample: boolean; isFreePublic: boolean; sortOrder: number;
 };
 export type ExamSection = {
   id: string; paperId: string; module: ExamModule; title: string;
@@ -33,6 +33,7 @@ function toPaper(r: Record<string, unknown>): ExamPaper {
     id: r.id as string, level: r.level as string, variant: Number(r.variant),
     title: r.title as string, subtitle: (r.subtitle as string) ?? "",
     isPublished: Boolean(r.is_published), isSample: Boolean(r.is_sample),
+    isFreePublic: Boolean(r.is_free_public),
     sortOrder: Number(r.sort_order ?? 0),
   };
 }
@@ -62,6 +63,24 @@ export async function getPapers(): Promise<ExamPaper[]> {
   const { data } = await sb().from("exam_papers").select("*")
     .order("level").order("variant");
   return (data ?? []).map(toPaper);
+}
+
+// Öffentliche Gratis-Prüfungen (anon lesbar dank is_free_public-RLS). Explizit
+// auf is_free_public gefiltert, damit für eingeloggte Nutzer NICHT die
+// kostenpflichtigen Prüfungen auf der öffentlichen Seite auftauchen.
+export async function getFreePapers(): Promise<ExamPaper[]> {
+  const { data } = await sb().from("exam_papers").select("*")
+    .eq("is_free_public", true).eq("is_published", true)
+    .order("level").order("variant");
+  return (data ?? []).map(toPaper);
+}
+
+export async function getFreePaperByLevel(level: string): Promise<ExamFull | null> {
+  const { data: p } = await sb().from("exam_papers").select("id")
+    .eq("is_free_public", true).eq("is_published", true).eq("level", level)
+    .order("variant").limit(1).maybeSingle();
+  if (!p) return null;
+  return getPaperFull(p.id as string);
 }
 
 export async function getPaperFull(id: string): Promise<ExamFull | null> {
