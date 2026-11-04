@@ -23,7 +23,8 @@ export const TRIAL_STAGES = [
 
 export type TrialStage = (typeof TRIAL_STAGES)[number]["key"];
 
-type Content = { subject: string; heading: string; intro: string; cta: string; href: string; gift?: { label: string; url: string } };
+type Mistake = { wrong: string; right: string; note: string };
+type Content = { subject: string; heading: string; intro: string; cta: string; href: string; gift?: { label: string; url: string }; mistakes?: Mistake[]; proof?: string };
 
 function contentFor(stage: TrialStage, firstName: string): Content {
   const hi = firstName ? `Hi ${firstName},` : "Hi,";
@@ -41,16 +42,24 @@ function contentFor(stage: TrialStage, firstName: string): Content {
       return {
         subject: "Your first German lesson takes 10 minutes ⏱️",
         heading: "Ready for lesson 1?",
-        intro: `${hi} the hardest part is just starting. Your first lesson is short and clear — ten minutes and you'll already understand something new in German.`,
+        intro: `${hi} the hardest part is just starting. Your first lesson is short and clear — ten minutes and you'll already understand something new in German. This is the same step-by-step path my students use to go from "I understand a bit" to actually using German.`,
+        proof: `"I prepared for the B2 exam with Marvin… now I am successful — I received my certificate!" — Ivan`,
         cta: "Open your first lesson",
         href: `${BASE_URL}/dashboard`,
       };
     case "streak":
+      // Wert-/Lehr-Mail statt reinem Nudge (Plan: „mistakes that instantly sound
+      // foreign"): zeigt Marvins Didaktik und baut Vertrauen auf.
       return {
-        subject: "You're building momentum 🔥",
-        heading: "Keep your streak going",
-        intro: `${hi} a few minutes a day beats cramming every time. Keep the words fresh with today's flashcards — that's how real progress happens.`,
-        cta: "Practice today",
+        subject: "3 tiny German mistakes that instantly sound foreign 🙈",
+        heading: "3 mistakes — and the quick fix",
+        intro: `${hi} these three trip up almost every English speaker. Fix them and you'll already sound more like a local:`,
+        mistakes: [
+          { wrong: "Ich bin heiß", right: "Mir ist heiß", note: `"Ich bin heiß" means you're attractive/"in heat". To say you feel hot, use "Mir ist heiß".` },
+          { wrong: "become → bekommen", right: "become → werden", note: `"bekommen" is a false friend: it means "to get/receive", not "to become". "I'm getting tired" = "Ich werde müde".` },
+          { wrong: "Ich bin 25 Jahre", right: "Ich bin 25 Jahre alt", note: `Don't drop "alt" — in German you literally "are 25 years old".` },
+        ],
+        cta: "Practice this in the app",
         href: `${BASE_URL}/dashboard`,
       };
     case "ends_tomorrow":
@@ -89,10 +98,18 @@ function contentFor(stage: TrialStage, firstName: string): Content {
 }
 
 function html(c: Content, unsub: string): string {
+  const mistakes = c.mistakes ? `<div style="margin:0 0 20px;">${c.mistakes.map((m) => `
+    <div style="background:#FBF2DA;border:1px solid #e9d4a3;border-radius:10px;padding:12px 14px;margin:0 0 8px;">
+      <div style="font-size:14px;"><span style="color:#b03030;text-decoration:line-through;">${m.wrong}</span> &nbsp;→&nbsp; <span style="color:#1f7a3f;font-weight:700;">${m.right}</span></div>
+      <div style="font-size:13px;color:#6b5a4a;margin-top:4px;">${m.note}</div>
+    </div>`).join("")}</div>` : "";
+  const proof = c.proof ? `<p style="font-size:14px;font-style:italic;color:#6b5a4a;border-left:3px solid #E3A12F;padding:4px 0 4px 12px;margin:0 0 20px;">${c.proof}</p>` : "";
   return `
   <div style="font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;max-width:520px;margin:0 auto;color:#2a1a12;">
     <h1 style="color:#8A3030;font-size:22px;margin:0 0 12px;">${c.heading}</h1>
     <p style="font-size:15px;line-height:1.55;margin:0 0 20px;">${c.intro}</p>
+    ${mistakes}
+    ${proof}
     ${c.gift ? `<div style="background:#FBF2DA;border:1px solid #e9d4a3;border-radius:12px;padding:16px;margin:0 0 10px;text-align:center;">
       <div style="font-size:13px;color:#8A3030;font-weight:700;">🎁 Your welcome gift</div>
       <p style="font-size:14px;margin:6px 0 12px;color:#4a3528;">A free A1 German story — the fun way to start reading from day one.</p>
@@ -110,7 +127,9 @@ function html(c: Content, unsub: string): string {
 }
 
 function text(c: Content, unsub: string): string {
-  return `${c.intro}\n\n${c.gift ? `Your free A1 story: ${c.gift.url}\n\n` : ""}${c.cta}: ${c.href}\n\n—\nGerman with Marvin · reply to reach your teacher.\nUnsubscribe: ${unsub}`;
+  const mistakes = c.mistakes ? c.mistakes.map((m) => `✗ ${m.wrong}  →  ✓ ${m.right}\n   ${m.note}`).join("\n\n") + "\n\n" : "";
+  const proof = c.proof ? `${c.proof}\n\n` : "";
+  return `${c.intro}\n\n${mistakes}${proof}${c.gift ? `Your free A1 story: ${c.gift.url}\n\n` : ""}${c.cta}: ${c.href}\n\n—\nGerman with Marvin · reply to reach your teacher.\nUnsubscribe: ${unsub}`;
 }
 
 export async function sendTrialStage(stage: TrialStage, to: string, userId: string, fullName?: string | null): Promise<boolean> {
