@@ -68,9 +68,13 @@ export async function POST(req: Request) {
         // Gutschrift (onConflict). Ein echter späterer Increase bekommt einen
         // neuen Schlüssel und funktioniert normal.
         const opKey = `inc_${subId}_${newQty}_${Math.floor(Date.now() / 30000)}`;
+        // payment_behavior "error_if_incomplete": kann die anteilige Rechnung nicht
+        // sofort eingezogen werden (Karte abgelehnt / SCA nötig), wirft Stripe einen
+        // Fehler -> der Code unten (Gutschrift) läuft NICHT, es gibt keine
+        // unbezahlten Stunden und die Stundenzahl bleibt unverändert.
         await stripe.subscriptions.update(
           subId,
-          { items: [{ id: itemId, quantity: newQty }], proration_behavior: "always_invoice" },
+          { items: [{ id: itemId, quantity: newQty }], proration_behavior: "always_invoice", payment_behavior: "error_if_incomplete" },
           { idempotencyKey: opKey },
         );
         // Guthaben-Delta sofort gutschreiben (die Proration-Rechnung wird im
