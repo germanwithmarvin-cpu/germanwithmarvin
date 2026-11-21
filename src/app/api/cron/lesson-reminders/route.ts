@@ -22,9 +22,11 @@ function json(d: unknown, s = 200) { return new Response(JSON.stringify(d), { st
 export async function GET(req: Request) {
   const secret = process.env.CRON_SECRET;
   if (!secret) return json({ error: "CRON_SECRET not configured" }, 500);
-  const url = new URL(req.url);
   const auth = req.headers.get("authorization");
-  const ok = auth === `Bearer ${secret}` || url.searchParams.get("secret") === secret;
+  // Nur per Header (Vercel-Cron schickt Authorization). Secret NICHT aus der
+  // URL lesen — Query-Strings landen in Request-Logs/Referer. Manueller Test:
+  // -H "x-cron-secret: <CRON_SECRET>".
+  const ok = auth === `Bearer ${secret}` || req.headers.get("x-cron-secret") === secret;
   if (!ok) return json({ error: "Unauthorized" }, 401);
 
   const db = admin();

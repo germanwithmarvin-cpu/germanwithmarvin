@@ -13,7 +13,13 @@ export async function GET(req: Request) {
   const type = url.searchParams.get("type") as EmailOtpType | null;
   const code = url.searchParams.get("code");
   const nextParam = url.searchParams.get("next") || "/dashboard";
-  const dest = new URL(nextParam.startsWith("/") ? nextParam : "/dashboard", url.origin);
+  // Open-Redirect-sicher: gegen die EIGENE Origin pruefen, nicht nur auf "/".
+  // startsWith("/") liesse "//evil.com" und "/\evil.com" durch -> landen
+  // cross-origin. Nur same-origin-Ziele erlauben, sonst aufs Dashboard.
+  const cand = new URL(nextParam, url.origin);
+  const dest = cand.origin === url.origin
+    ? new URL(cand.pathname + cand.search + cand.hash, url.origin)
+    : new URL("/dashboard", url.origin);
 
   const supabase = await createClient();
 
