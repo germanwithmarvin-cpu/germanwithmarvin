@@ -106,3 +106,55 @@ export function lessonMonthlyPrice(hours: number): number {
 export function lessonPriceLabel(hours: number): string {
   return `$${lessonMonthlyPrice(hours).toFixed(2)}`;
 }
+
+// ---- B1-Gruppenkurs (Live) + Probestunde -----------------------------------
+// Live-Gruppenkurs zur B1-Prüfungsvorbereitung. Einmalzahlung in EUR über Stripe
+// (Managed Payments / Merchant of Record – Stripe führt die USt ab). ALLE Werte
+// hier zentral und vorläufig: jederzeit OHNE Code-Änderung anpassbar.
+// Die zwei Stripe-Price-IDs legst du in Stripe an (EUR-Einmalpreise: 250 € und
+// Gründerpreis 199 €) und trägst sie unten ein.
+export const GROUP_COURSE = {
+  slug: "b1-exam-prep",
+  name: "B1 Exam Prep – Live Group Course",
+  stripePriceId: "",        // regulär 250 € (einmalig) – Stripe-Price-ID eintragen
+  founderPriceId: "",       // Gründerpreis 199 € (einmalig, erste Runde) – Stripe-Price-ID eintragen
+  priceEur: 250,
+  founderPriceEur: 199,
+  founderActive: true,      // true = Gründerpreis ist der aktuell gültige Preis
+  currency: "EUR",
+  weeks: 8,
+  sessionsPerWeek: 2,
+  totalSessions: 16,
+  durationMin: 60,
+  minSeats: 4,              // darunter findet die Runde nicht statt (Geld zurück)
+  maxSeats: 10,
+  days: ["Sat", "Sun"] as const,
+  time: "10:00",            // Startzeit (lokale Zeit in `timezone`)
+  endTime: "11:00",
+  timezone: "Europe/Berlin",
+  startDate: "2027-01-16",  // ISO-Datum, Samstag
+  appAccessDays: 70,        // Kurskauf schaltet zusätzlich das Selbstlern-Abo so viele Tage frei (8 Wochen + Puffer)
+  meetLink: "",             // wiederkehrender Zoom/Google-Meet-Link (du trägst ihn ein)
+};
+
+// Kostenlose Live-Probestunde (Gruppen-Schnupperstunde) zur FESTEN Zeit.
+export const PROBESTUNDE = {
+  weekday: "Sun",           // fester Wochentag
+  time: "10:00",            // feste Uhrzeit (lokale Zeit in `timezone`)
+  durationMin: 45,
+  timezone: "Europe/Berlin",
+  meetLink: "",             // Zoom/Meet-Link der Probestunde (du trägst ihn ein)
+};
+
+// EUR-Preis hübsch, z. B. "€250" / "€199".
+export function eurLabel(amount: number): string {
+  return `€${amount % 1 === 0 ? amount : amount.toFixed(2)}`;
+}
+
+// Aktuell gültiger Kurspreis + passende Stripe-Price-ID (Gründerpreis, solange aktiv).
+export function groupCoursePrice(): number {
+  return GROUP_COURSE.founderActive ? GROUP_COURSE.founderPriceEur : GROUP_COURSE.priceEur;
+}
+export function groupCoursePriceId(): string {
+  return GROUP_COURSE.founderActive ? GROUP_COURSE.founderPriceId : GROUP_COURSE.stripePriceId;
+}

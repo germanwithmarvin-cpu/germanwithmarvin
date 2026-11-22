@@ -30,6 +30,8 @@ export function buildLessonIcs(opts: {
   alarmsMinutes?: number[]; // Erinnerungen vor Beginn, Standard 60 + 10 Min
   sequence?: number; // Revisionsnummer: muss bei Änderungen (Verschiebung) STEIGEN,
                      // damit Kalender-Clients den Termin aktualisieren statt zu duplizieren.
+  rrule?: string; // optionale Wiederholungsregel (z. B. "FREQ=WEEKLY;BYDAY=SA,SU;COUNT=16")
+                  // für wiederkehrende Kurstermine aus EINEM VEVENT.
 }): string {
   const alarms = opts.alarmsMinutes ?? [60, 10];
   const lines: string[] = [
@@ -46,6 +48,7 @@ export function buildLessonIcs(opts: {
     `DTEND:${toICSDate(opts.endISO)}`,
     `SUMMARY:${esc(opts.summary)}`,
   ];
+  if (opts.rrule) lines.push(`RRULE:${opts.rrule}`);
   if (opts.description) lines.push(`DESCRIPTION:${esc(opts.description)}`);
   if (opts.location) {
     lines.push(`LOCATION:${esc(opts.location)}`);

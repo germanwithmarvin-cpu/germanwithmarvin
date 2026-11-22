@@ -3,9 +3,11 @@ import Link from "next/link";
 import VideoPlayer from "@/components/VideoPlayer";
 import PublicNav from "@/components/PublicNav";
 import SocialLinks from "@/components/SocialLinks";
-import { SITE, priceLabel, APP_YEARLY_PER_MONTH, TAX_NOTE } from "@/lib/config";
+import { SITE, priceLabel, APP_YEARLY_PER_MONTH, TAX_NOTE, GROUP_COURSE, groupCoursePrice, eurLabel } from "@/lib/config";
 import { REVIEWS, PREPLY_STATS } from "@/lib/reviews";
 import { SHOTS, TEACHERS, PREPLY_BADGES } from "@/lib/landing";
+import { B1_COPY } from "@/lib/b1course";
+import B1EmailForm from "@/components/B1EmailForm";
 
 // Wen die Seite anspricht — Positionierung über die Zielgruppe, nicht Features.
 const AUDIENCES = [
@@ -292,6 +294,27 @@ export default function Home() {
             <Link href="/online-german-lessons" className="inline-block rounded-xl border-2 border-[#8A3030] text-[#8A3030] px-8 py-4 text-lg font-semibold hover:bg-[#8A3030]/5 transition">
               See 1-on-1 lessons →
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* B1-Live-Gruppenkurs (neuer Funnel) — Abo- und 1:1-Bereiche bleiben unangetastet */}
+      <section id="b1-course" className="scroll-mt-6">
+        <div className="max-w-4xl mx-auto px-6 py-14">
+          <div className="rounded-3xl bg-[#8A3030] text-white p-8 sm:p-10 text-center">
+            <span className="inline-block text-xs tracking-[0.3em] text-[#E3A12F] uppercase font-semibold mb-3">{B1_COPY.home.eyebrow}</span>
+            <h2 className="text-2xl sm:text-3xl font-bold">{B1_COPY.home.h1}</h2>
+            <p className="mt-3 text-white/85 max-w-xl mx-auto">{B1_COPY.home.sub}</p>
+            <div className="mt-4 text-white/80 text-sm">
+              {GROUP_COURSE.weeks} weeks · {GROUP_COURSE.totalSessions} live sessions · max {GROUP_COURSE.maxSeats} people · from {eurLabel(groupCoursePrice())}
+            </div>
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
+              <Link href="/b1-course" className="inline-block rounded-xl bg-[#E3A12F] text-[#3b2116] px-7 py-3.5 font-bold hover:brightness-105 transition">{B1_COPY.home.courseCta} →</Link>
+              <Link href="/b1-test" className="inline-block rounded-xl border-2 border-white/60 text-white px-7 py-3.5 font-semibold hover:bg-white/10 transition">{B1_COPY.home.testCta}</Link>
+            </div>
+          </div>
+          <div className="max-w-xl mx-auto mt-6">
+            <B1EmailForm source="home" />
           </div>
         </div>
       </section>

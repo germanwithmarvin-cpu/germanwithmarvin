@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { LESSON } from "@/lib/config";
 import { syncStudentGoogleEvents } from "@/lib/google";
+import { sendGroupCourseConfirmation } from "@/lib/groupCourseEmails";
 
 // Stripe meldet hierher: bezahlt / gekündigt / Zahlung fehlgeschlagen.
 // Zwei Abos laufen über diesen Endpunkt:
@@ -170,6 +171,35 @@ export async function POST(req: Request) {
             // stripe_invoice_id (onConflict, ignoreDuplicates) auf eine einzige Zeile.
             const firstInvoice = typeof sub.latest_invoice === "string" ? sub.latest_invoice : sub.latest_invoice?.id;
             await grantLessonCredits(userId, teacherId, subQuantity(sub), firstInvoice ?? `${sub.id}_initial`);
+          }
+        } else if (s.metadata?.kind === "group_course") {
+          // B1-Live-Gruppenkurs (Einmalzahlung EUR). WICHTIG: dieser Zweig MUSS vor
+          // dem generischen `s.mode === "payment"` stehen, sonst würde der Kurskauf
+          // dort fälschlich 365 Tage App-Zugang auslösen. Idempotent über die
+          // Session-ID (course_enrollments.stripe_session_id ist UNIQUE).
+          const db = admin();
+          const { data: existing } = await db.from("course_enrollments").select("id").eq("stripe_session_id", s.id).maybeSingle();
+          if (!existing) {
+            const userId = s.client_reference_id ?? s.metadata?.user_id ?? null;
+            const email = s.customer_details?.email ?? s.customer_email ?? null;
+            const name = s.customer_details?.name ?? null;
+            const days = Number(s.metadata?.grant_days ?? 70) || 70;
+            await db.from("course_enrollments").insert({
+              user_id: userId,
+              course_id: s.metadata?.course_id ?? "b1-exam-prep",
+              email: email ? email.toLowerCase() : null,
+              stripe_session_id: s.id,
+              amount_total: s.amount_total ?? null,
+              currency: s.currency ?? null,
+              status: "active",
+            });
+            // Kurs enthält das Selbstlern-Abo für die Laufzeit → befristeter Zugang.
+            if (userId) {
+              const until = new Date(Date.now() + days * 86400000).toISOString();
+              await db.from("profiles").update({ access_scope: "full", access_expires_at: until }).eq("id", userId);
+            }
+            if (email) { try { await sendGroupCourseConfirmation({ to: email, name }); } catch { /* best effort */ } }
+            await recordReferral(s);
           }
         } else if (s.mode === "payment") {
           // Einmalzahlung fürs Jahr (einmaliger Stripe-Preis): Zugang 365 Tage ab

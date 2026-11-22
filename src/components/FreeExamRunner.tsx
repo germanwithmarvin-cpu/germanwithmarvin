@@ -4,13 +4,14 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { getFreePaperByLevel, checkExamItem, type ExamFull, type ExamModule } from "@/lib/exams";
 import { getAttribution } from "@/lib/attribution";
+import { B1_COPY } from "@/lib/b1course";
 
 // Öffentlicher Prüfungs-Runner OHNE Login (/free-exam/[level]). Lesen + Hören
 // werden sofort lokal ausgewertet; der Schreibteil wird NICHT anonym per KI
 // korrigiert, sondern ist der Umwandlungspunkt: „Gratis-Account anlegen →
 // Schreibkorrektur + Lernplan". Helles Marketing-Theme (wie /level-test).
 
-type Phase = "loading" | "coming" | "intro" | "running" | "result";
+type Phase = "loading" | "coming" | "intro" | "running" | "gate" | "result";
 const MOD: Record<ExamModule, string> = { reading: "📖 Lesen (Reading)", listening: "🎧 Hören (Listening)", writing: "✍️ Schreiben (Writing)" };
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 const REG = (level: string) => `/register?src=free-exam&level=${encodeURIComponent(level)}`;
@@ -19,13 +20,18 @@ function fbq(event: string) {
   try { (window as unknown as { fbq?: (...a: unknown[]) => void }).fbq?.("track", event); } catch { /* kein Pixel */ }
 }
 
-export default function FreeExamRunner({ level }: { level: string }) {
+export default function FreeExamRunner({ level, emailGate }: { level: string; emailGate?: { source: string } }) {
   const [phase, setPhase] = useState<Phase>("loading");
   const [full, setFull] = useState<ExamFull | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [left, setLeft] = useState(0);
   const [result, setResult] = useState<Record<ExamModule, [number, number]> | null>(null);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+  // E-Mail-Gate (nur wenn emailGate gesetzt ist, z. B. auf /b1-test)
+  const [gateEmail, setGateEmail] = useState("");
+  const [gateConsent, setGateConsent] = useState(false);
+  const [gateBusy, setGateBusy] = useState(false);
+  const [gateErr, setGateErr] = useState<string | null>(null);
 
   const wKey = `free-exam-writing-${level}`;
 
@@ -82,8 +88,14 @@ export default function FreeExamRunner({ level }: { level: string }) {
       }
     }
     setResult(score);
-    setPhase("result");
-    fbq("Lead");
+    if (emailGate) {
+      // Gated (z. B. /b1-test): erst E-Mail, dann Ergebnis. Das "Lead"-Event
+      // feuert später bei der E-Mail-Bestätigung (/b1-confirmed), nicht hier.
+      setPhase("gate");
+    } else {
+      setPhase("result");
+      fbq("Lead");
+    }
     try {
       const a = getAttribution();
       fetch("/api/level-test-done", {
@@ -92,6 +104,26 @@ export default function FreeExamRunner({ level }: { level: string }) {
         keepalive: true,
       }).catch(() => {});
     } catch { /* Metrik best effort */ }
+    window.scrollTo({ top: 0 });
+  }
+
+  async function submitGate() {
+    setGateErr(null);
+    const email = gateEmail.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { setGateErr("Please enter a valid email."); return; }
+    if (!gateConsent) { setGateErr("Please tick the box to continue."); return; }
+    setGateBusy(true);
+    const got = result ? result.reading[0] + result.listening[0] : 0;
+    const max = result ? result.reading[1] + result.listening[1] : 0;
+    const pct = max ? Math.round((got / max) * 100) : 0;
+    try {
+      await fetch("/api/b1/subscribe", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, consent: true, source: emailGate?.source ?? "b1-test", test_result: `${level} ${pct}%`, consent_text: B1_COPY.test.gateConsent }),
+      });
+    } catch { /* best effort — das Ergebnis wird so oder so gezeigt */ }
+    setGateBusy(false);
+    setPhase("result");
     window.scrollTo({ top: 0 });
   }
 
@@ -134,6 +166,29 @@ export default function FreeExamRunner({ level }: { level: string }) {
     </div>,
   );
 
+  if (phase === "gate") return shell(
+    <div className="space-y-5 max-w-md mx-auto">
+      <div className="text-center space-y-2">
+        <span className="inline-block text-xs tracking-[0.3em] text-[#E3A12F] uppercase font-semibold">{B1_COPY.test.gateEyebrow}</span>
+        <h1 className="text-2xl font-bold text-[#8A3030]">{B1_COPY.test.gateH1}</h1>
+        <p className="text-[#3B2922]/80 text-sm">{B1_COPY.test.gateSub}</p>
+      </div>
+      <div className="rounded-2xl bg-white/70 border border-[#E3A12F]/30 p-5 space-y-3">
+        <input type="email" value={gateEmail} onChange={(e) => setGateEmail(e.target.value)} placeholder="you@example.com" autoComplete="email"
+          className="w-full rounded-xl px-4 py-3 outline-none bg-white border-2 border-[#E3A12F]/40 focus:border-[#E3A12F] text-[#3B2922]" />
+        <label className="flex items-start gap-2 text-xs text-[#3B2922]/75">
+          <input type="checkbox" checked={gateConsent} onChange={(e) => setGateConsent(e.target.checked)} className="mt-0.5" />
+          <span>{B1_COPY.test.gateConsent}</span>
+        </label>
+        {gateErr && <p className="text-sm text-[#8A3030]">{gateErr}</p>}
+        <button onClick={submitGate} disabled={gateBusy} className="w-full py-3 rounded-xl bg-[#8A3030] text-white font-bold hover:brightness-110 disabled:opacity-50">
+          {gateBusy ? B1_COPY.test.gateSending : B1_COPY.test.gateButton}
+        </button>
+        <p className="text-center text-[11px] text-[#3B2922]/55">{B1_COPY.test.gatePrivacyPrefix} <Link href="/datenschutz" className="underline">{B1_COPY.test.gatePrivacyLink}</Link>.</p>
+      </div>
+    </div>,
+  );
+
   if (phase === "result" && result) {
     const auto: [number, number] = [result.reading[0] + result.listening[0], result.reading[1] + result.listening[1]];
     const pct = auto[1] ? Math.round((auto[0] / auto[1]) * 100) : 0;
@@ -170,14 +225,29 @@ export default function FreeExamRunner({ level }: { level: string }) {
           </div>
         )}
 
-        <div className="rounded-xl bg-white/70 border border-[#E3A12F]/30 p-4 text-sm text-[#3B2922]/85">
-          <b className="text-[#8A3030]">Ready for the Speaking part?</b> Practise it live in a{" "}
-          <Link href="/online-german-lessons" className="text-[#8A3030] underline underline-offset-2 font-semibold">1-on-1 lesson</Link>.
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Link href="/free-exam" className="px-5 py-2.5 rounded-xl border border-[#8A3030] text-[#8A3030] font-semibold hover:bg-[#8A3030]/5">Try another level</Link>
-          <Link href="/level-test" className="px-5 py-2.5 rounded-xl border border-[#8A3030] text-[#8A3030] font-semibold hover:bg-[#8A3030]/5">Free level test</Link>
-        </div>
+        {emailGate ? (
+          <>
+            <div className="rounded-xl bg-white/70 border border-[#E3A12F]/30 p-4 text-sm text-[#3B2922]/85">
+              {pct >= 60 ? B1_COPY.test.resultAtB1 : B1_COPY.test.resultBelowB1}
+            </div>
+            <div className="rounded-2xl bg-[#FBF2DA] border border-[#E3A12F]/40 p-6 text-center space-y-3">
+              <div className="text-lg font-bold text-[#8A3030]">Your next step</div>
+              <Link href="/b1-course" className="block w-full px-6 py-3.5 rounded-xl bg-[#8A3030] text-white font-bold hover:brightness-110">{B1_COPY.test.resultCourseCta} →</Link>
+              <Link href="/b1-course#trial" className="inline-block text-[#8A3030] underline underline-offset-2 font-semibold text-sm">{B1_COPY.test.resultTrialLessonCta}</Link>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="rounded-xl bg-white/70 border border-[#E3A12F]/30 p-4 text-sm text-[#3B2922]/85">
+              <b className="text-[#8A3030]">Ready for the Speaking part?</b> Practise it live in a{" "}
+              <Link href="/online-german-lessons" className="text-[#8A3030] underline underline-offset-2 font-semibold">1-on-1 lesson</Link>.
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Link href="/free-exam" className="px-5 py-2.5 rounded-xl border border-[#8A3030] text-[#8A3030] font-semibold hover:bg-[#8A3030]/5">Try another level</Link>
+              <Link href="/level-test" className="px-5 py-2.5 rounded-xl border border-[#8A3030] text-[#8A3030] font-semibold hover:bg-[#8A3030]/5">Free level test</Link>
+            </div>
+          </>
+        )}
       </div>,
     );
   }

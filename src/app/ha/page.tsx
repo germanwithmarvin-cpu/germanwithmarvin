@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { SITE } from "@/lib/config";
 import PublicNav from "@/components/PublicNav";
 import SocialLinks from "@/components/SocialLinks";
+import LessonCtaLink from "@/components/LessonCtaLink";
 import { TEACHERS } from "@/lib/landing";
 
 export const metadata: Metadata = {
@@ -51,7 +52,7 @@ function Stars() {
 
 export default function HaPage() {
   return (
-    <div className="bg-[#FFF1D2] text-[#3B2922] min-h-screen">
+    <div className="bg-[#FFF1D2] text-[#3B2922] min-h-screen pb-20 sm:pb-0">
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto w-full">
         <Link href="/" className="flex items-center">
@@ -72,9 +73,9 @@ export default function HaPage() {
             <span className="font-semibold text-[#3B2922]"> explained in your own language</span> until it clicks.
           </p>
 
-          <Link href="/register?intent=lesson&t=2" className="mt-8 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
+          <LessonCtaLink href="/register?intent=lesson&t=2" source="ha" className="mt-8 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
             Start with a free 30-min trial
-          </Link>
+          </LessonCtaLink>
           <p className="mt-3 text-sm text-[#3B2922]/70">No payment, no card — just create a free account and claim your free lesson with <span className="font-semibold">Ha</span>.</p>
 
           <div className="mt-5 flex flex-wrap gap-x-4 gap-y-1 text-sm text-[#3B2922]/70">
@@ -195,15 +196,22 @@ export default function HaPage() {
         <div className="bg-[#FBF2DA] rounded-2xl p-8 sm:p-10 text-center shadow-md border border-[#E3A12F]/40">
           <h2 className="text-2xl font-bold">Your first lesson is free</h2>
           <p className="mt-2 text-sm text-[#3B2922]/70">Try a free 30-minute trial with Ha — no payment, no card. After that, lessons are ${PRICE} each.</p>
-          <Link href="/register?intent=lesson&t=2" className="mt-6 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition">
+          <LessonCtaLink href="/register?intent=lesson&t=2" source="ha" className="mt-6 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition">
             Claim your free 30-min trial
-          </Link>
+          </LessonCtaLink>
           <p className="text-xs text-[#3B2922]/55 mt-4">
             Looking for exam prep with the founder?{" "}
             <Link href="/online-german-lessons" className="text-[#8A3030] underline underline-offset-4 font-semibold">See all teachers →</Link>
           </p>
         </div>
       </section>
+
+      {/* Sticky Mobile-CTA — damit „free trial" immer erreichbar ist */}
+      <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 p-3 bg-[#FFF1D2]/95 backdrop-blur border-t border-[#E3A12F]/30">
+        <LessonCtaLink href="/register?intent=lesson&t=2" source="ha" className="block w-full text-center rounded-xl bg-[#8A3030] text-white py-3 font-bold">
+          Claim your free 30-min trial
+        </LessonCtaLink>
+      </div>
 
       {/* Footer */}
       <footer className="bg-[#F7DEAD] border-t border-black/5 py-8 text-center text-sm text-[#3B2922]/70">

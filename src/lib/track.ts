@@ -48,3 +48,21 @@ export function trackPurchase(opts: { value: number; currency?: string }): void 
     }
   } catch { /* Tracking darf die Erfolgsseite nie stören */ }
 }
+
+// Meta „Lead" — qualifizierter Interessent (z. B. bestätigte B1-Test-E-Mail).
+// Optional custom data (UTM) zum Matching. Feuert nur, wenn der Pixel geladen ist.
+export function trackLead(data?: Record<string, unknown>): void {
+  try {
+    const w = window as unknown as { fbq?: (...a: unknown[]) => void };
+    if (typeof w.fbq === "function") w.fbq("track", "Lead", data ?? {});
+  } catch { /* Tracking darf nie stören */ }
+}
+
+// Meta „CompleteRegistration" — für den Probestunden-Funnel getrennt vom
+// Konto-Signup (trackSignupConversion), damit beide Funnels unabhängig messbar sind.
+export function trackCompleteRegistration(data?: Record<string, unknown>): void {
+  try {
+    const w = window as unknown as { fbq?: (...a: unknown[]) => void };
+    if (typeof w.fbq === "function") w.fbq("track", "CompleteRegistration", data ?? {});
+  } catch { /* Tracking darf nie stören */ }
+}

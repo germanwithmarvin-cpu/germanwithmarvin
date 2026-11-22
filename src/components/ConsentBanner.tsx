@@ -27,7 +27,12 @@ export default function ConsentBanner() {
 
   if (!show) return null;
 
-  const choose = (granted: boolean) => { applyConsent(granted); setShow(false); };
+  const choose = (granted: boolean) => {
+    applyConsent(granted);
+    // Erst JETZT (bei Zustimmung) den Meta-Pixel laden lassen (opt-in).
+    if (granted) { try { window.dispatchEvent(new Event("gs-consent-granted")); } catch { /* egal */ } }
+    setShow(false);
+  };
 
   return (
     <div

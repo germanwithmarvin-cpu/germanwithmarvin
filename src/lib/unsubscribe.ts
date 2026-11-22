@@ -35,3 +35,16 @@ export function unsubValid(userId: string, token: string): boolean {
 export function unsubUrl(baseUrl: string, userId: string): string {
   return `${baseUrl}/api/unsubscribe?u=${encodeURIComponent(userId)}&t=${unsubToken(userId)}`;
 }
+
+// Generische Variante: HMAC über ein beliebiges Subjekt (z. B. eine E-Mail-Adresse).
+// Für Leads OHNE Konto: Double-Opt-in-Bestätigung und Lead-Abmeldung werden über
+// die (kleingeschriebene) E-Mail signiert. Krypto identisch zu oben.
+export function subjectToken(subject: string): string {
+  return tokenWith(subject.toLowerCase(), secrets()[0]);
+}
+export function subjectValid(subject: string, token: string): boolean {
+  return secrets().some((k) => {
+    const expected = tokenWith(subject.toLowerCase(), k);
+    return token.length === expected.length && token === expected;
+  });
+}
