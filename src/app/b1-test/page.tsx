@@ -20,7 +20,7 @@ export default function B1TestPage() {
   return (
     <div className="bg-[#FFF1D2] text-[#3B2922] min-h-screen flex flex-col">
       <header className="flex items-center justify-center px-6 py-4">
-        <img src="/logo-light.png" alt="German with Marvin" className="h-14 w-auto object-contain" />
+        <img src="/logo-light.webp" alt="German with Marvin" className="h-14 w-auto object-contain" />
       </header>
       <main className="flex-1 w-full">
         <FreeExamRunner level="B1" emailGate={{ source: "b1-test" }} />

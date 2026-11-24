@@ -56,7 +56,7 @@ export default function HaPage() {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto w-full">
         <Link href="/" className="flex items-center">
-          <img src="/logo-light.png" alt="German Simplified" className="h-16 md:h-[125px] w-auto object-contain" />
+          <img src="/logo-light.webp" alt="German Simplified" width={400} height={393} className="h-16 md:h-[125px] w-auto object-contain" />
         </Link>
         <PublicNav ctaLabel="Get started" ctaHref="/register?intent=lesson" />
       </header>
@@ -88,7 +88,7 @@ export default function HaPage() {
         {/* Foto */}
         <div className="flex justify-center lg:justify-end">
           <div className="bg-[#FBF2DA] rounded-3xl p-5 shadow-sm border border-black/5 text-center max-w-xs w-full">
-            <img src={PHOTO} alt="Ha — German teacher" className="w-40 h-40 mx-auto rounded-2xl object-cover shadow-sm" style={{ objectPosition: "center top" }} />
+            <img src={PHOTO} alt="Ha — German teacher" width={160} height={160} loading="lazy" className="w-40 h-40 mx-auto rounded-2xl object-cover shadow-sm" style={{ objectPosition: "center top" }} />
             <div className="mt-4 font-bold text-lg">Ha</div>
             <div className="text-sm text-[#3B2922]/60">Your German teacher</div>
             <div className="mt-3 text-sm text-[#3B2922]/70">🗣 German · English · Vietnamese</div>

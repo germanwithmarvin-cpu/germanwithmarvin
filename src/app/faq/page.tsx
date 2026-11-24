@@ -90,7 +90,7 @@ export default function FAQPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
       <header className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto w-full">
         <Link href="/" className="flex items-center">
-          <img src="/logo-light.png" alt="Marvin Graf — German Simplified" className="h-16 md:h-[90px] w-auto object-contain" />
+          <img src="/logo-light.webp" alt="Marvin Graf — German Simplified" className="h-16 md:h-[90px] w-auto object-contain" />
         </Link>
         <PublicNav ctaLabel="Start free" ctaHref="/register?src=faq" />
       </header>

@@ -43,7 +43,7 @@ export default async function FreeExamLevelPage({ params }: { params: Promise<{ 
     <div className="bg-[#FFF1D2] text-[#3B2922] min-h-screen flex flex-col">
       <header className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto w-full">
         <Link href="/" className="flex items-center">
-          <img src="/logo-light.png" alt="Marvin Graf — German Simplified" className="h-16 md:h-[90px] w-auto object-contain" />
+          <img src="/logo-light.webp" alt="Marvin Graf — German Simplified" className="h-16 md:h-[90px] w-auto object-contain" />
         </Link>
         <PublicNav ctaLabel="Start free" ctaHref="/register?src=free-exam" />
       </header>
