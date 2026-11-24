@@ -48,16 +48,40 @@ export const B1_COPY = {
     eyebrow: "Live group course",
     h1: "Pass your B1 German exam",
     h1accent: "with a clear 8-week plan",
-    sub: "A small live group course for people in Germany who need B1 for citizenship (Einbürgerung) or a residence permit.",
+    sub: "Taught by Marvin himself, built for the B1 exam you need for Einbürgerung or a residence permit — and far more personal than a normal group course.",
     // Nutzenversprechen
     benefitsHeading: "What you get",
     benefits: [
-      "Live classes with Marvin — not just videos",
-      "The real exam format: reading, listening, writing, speaking",
-      "A small group (max 10) so you get attention",
-      "Clear homework and feedback every week",
-      "Speaking practice with other learners at your level",
+      "Live online classes taught by Marvin himself — 16 sessions over 8 weeks (2 per week, 60 min).",
+      "The complete self-study app included free for the whole course (normally $29/month).",
+      "Real practice for your Goethe or telc B1 exam: reading, listening, writing and speaking.",
+      "A small group of max 10 people, so everyone gets real attention.",
+      "Your own weekly homework, with personal written feedback from Marvin.",
     ],
+    // Alleinstellung: individueller als ein normaler Gruppenkurs
+    differentHeading: "More personal than a normal group course",
+    different: [
+      { title: "Taught by Marvin himself", text: "Marvin leads every live class himself — 4+ years teaching German full-time and thousands of 1-on-1 lessons. Not a recording, not a faceless course." },
+      { title: "Your own homework", text: "You get homework made for you, chosen for what you personally need — not one fixed task for the whole group." },
+      { title: "Personal written feedback", text: "After the sessions, Marvin writes you personal feedback on how you are doing and what to practise next." },
+      { title: "Ask your own questions", text: "Bring the questions that matter to you and get answers from Marvin directly." },
+      { title: "It adapts to you", text: "The course follows your needs. It is not a generic telc class where everyone does the same task." },
+      { title: "Small group, real attention", text: "Groups are capped at 10 people, so there is real time and attention for everyone." },
+    ],
+    // Komplette App gratis dabei
+    includedHeading: "Your complete learning platform — included free",
+    includedIntro: "For all 8 weeks of the course, you also get the complete self-study app for free (normally $29/month).",
+    includedItems: [
+      "All video lessons, A1 to B2",
+      "Interactive exercises after every lesson",
+      "Smart flashcard trainer — 2,600+ cards in Marvin's own voice",
+      "Reading stories at your level",
+      "The Word Rocket vocab game",
+      "Grammar topics, one at a time",
+      "Exam trainer with instant AI writing feedback",
+      "Progress statistics",
+    ],
+    includedNote: "It is your whole practice toolkit between classes — the vocab trainer, videos, grammar, stories and more, yours at no extra cost.",
     // Für wen
     forWhoHeading: "Who this is for",
     forWho: [
@@ -100,6 +124,10 @@ export const B1_COPY = {
         a: "A phone or computer with internet. We meet online in a video call.",
       },
       {
+        q: "Is the learning app really included?",
+        a: "Yes. For the 8 weeks of the course you get full, free access to the whole self-study app (normally $29/month) — videos, the flashcard trainer, stories, grammar and the exam trainer.",
+      },
+      {
         q: "What if too few people join?",
         a: "The course needs a minimum group size. If we do not reach it, the round does not start and you get a full refund.",
       },
@@ -136,6 +164,13 @@ export const B1_COPY = {
     eyebrow: "New: live group course",
     h1: "B1 Exam Prep — live, in a small group",
     sub: "Need B1 for Einbürgerung or a residence permit? Join an 8-week live course with Marvin.",
+    // Startseiten-Weiche (zwei klare Wege)
+    forkHeading: "Two ways to learn German",
+    forkSub: "Start on your own in the app, or join Marvin's live B1 course. Pick the one that fits you.",
+    selfPacedTitle: "Start today, learn at your pace",
+    selfPacedText: "Get the full app and learn whenever you want — videos, exercises, flashcards and more. 5 days free, no credit card, cancel anytime. From $19/month.",
+    courseTitle: "Live B1 course with Marvin",
+    courseText: "An 8-week live course for your Einbürgerung or residence B1 exam, taught by Marvin himself in a small group. Your own homework, personal feedback, and the full app included free.",
     courseCta: "See the course",
     testCta: "Try the free B1 test",
     // Dezentes E-Mail-Formular

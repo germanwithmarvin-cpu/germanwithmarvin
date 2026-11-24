@@ -7,22 +7,12 @@ import { SITE, priceLabel, APP_YEARLY_PER_MONTH, TAX_NOTE, GROUP_COURSE, groupCo
 import { REVIEWS, PREPLY_STATS } from "@/lib/reviews";
 import { SHOTS, TEACHERS, PREPLY_BADGES } from "@/lib/landing";
 import { B1_COPY } from "@/lib/b1course";
-import B1EmailForm from "@/components/B1EmailForm";
 
 // Wen die Seite anspricht — Positionierung über die Zielgruppe, nicht Features.
 const AUDIENCES = [
   { icon: "🛫", title: "Moving to Germany", text: "For an Ausbildung, a job or the Chancenkarte — build the German your visa and your new life ask for.", level: "You'll need A1–B1" },
   { icon: "🗣️", title: "Living here, stuck at A2", text: "You get by, but you want to really speak — break through to confident, everyday German.", level: "Push to B1–B2" },
   { icon: "🎓", title: "Preparing for an exam", text: "Goethe or telc coming up? Learn in the exam's format and walk in ready.", level: "A1–B2, exam-ready" },
-];
-
-// Typische Deutsch-Niveaus je Aufenthaltszweck (Quelle: Make it in Germany).
-const VISA_LEVELS = [
-  { purpose: "Opportunity Card (Chancenkarte)", level: "German A1 — or English B2" },
-  { purpose: "Recognition of your qualification", level: "often A2" },
-  { purpose: "Vocational training visa (Ausbildung)", level: "B1" },
-  { purpose: "University place search", level: "usually B2" },
-  { purpose: "Nursing profession licence", level: "B2" },
 ];
 
 const STEPS = [
@@ -64,22 +54,16 @@ export default function Home() {
         <PublicNav />
       </header>
 
-      {/* Hero — Positionierung: Ergebnis & Zielgruppe */}
-      <section className="max-w-6xl mx-auto px-6 pt-6 pb-14 grid lg:grid-cols-[1fr_1.25fr] gap-10 items-center">
+      {/* Hero — ein klarer Blickpunkt, ein Hauptbutton */}
+      <section className="max-w-6xl mx-auto px-6 pt-6 pb-10 grid lg:grid-cols-[1fr_1.1fr] gap-10 items-center">
         <div>
-          <span className="inline-block text-xs tracking-[0.3em] text-[#E3A12F] uppercase font-semibold mb-4">German with Marvin</span>
           <h1 className="text-4xl sm:text-5xl font-bold leading-[1.1]">
             German for your life<br /><span className="text-[#8A3030]">in Germany.</span>
           </h1>
           <p className="mt-5 text-lg text-[#3B2922]/80 max-w-md">
-            From zero to B2, with a real teacher. The structured course that’s taken students from A1 to their
-            B2 certificate — video lessons, flashcards in my own voice, stories and exam practice.
+            Learn German from zero to B2 with a real teacher — video lessons, flashcards in my own voice,
+            stories and exam practice. Start free in two minutes.
           </p>
-          <p className="mt-3 text-[#3B2922]/70 max-w-md">
-            Self-paced from <span className="font-semibold text-[#3B2922]">${APP_YEARLY_PER_MONTH}/month</span>.
-            Add 1-on-1 lessons whenever you need them.
-          </p>
-
           <Link href="/register" className="mt-7 inline-block rounded-xl bg-[#8A3030] text-white px-8 py-4 text-lg font-semibold hover:brightness-110 transition shadow-sm">
             Start your 5-day free trial
           </Link>
@@ -91,37 +75,56 @@ export default function Home() {
               Not sure about your level? Take the free 5-minute test →
             </Link>
           </p>
-
-          <div className="mt-5 flex flex-wrap gap-2">
-            {PREPLY_BADGES.map((b) => (
-              <a key={b} href={SITE.preplyUrl} target="_blank" rel="noreferrer" className="inline-flex items-center rounded-full bg-[#8A3030]/10 border border-[#8A3030]/20 px-3 py-1.5 text-xs font-bold text-[#8A3030] hover:bg-[#8A3030]/15 transition">
-                {b}
-              </a>
-            ))}
-          </div>
-          <p className="mt-3 text-sm flex items-center gap-2 flex-wrap text-[#3B2922]/70">
-            <Stars /> <span className="font-bold text-[#3B2922]">{PREPLY_STATS.rating}</span>
-            <span>· {PREPLY_STATS.lessons.toLocaleString("en-US")} lessons taught · students in {PREPLY_STATS.countries} countries · verified on Preply</span>
-          </p>
         </div>
 
-        {/* Video + schwebende Badges */}
-        <div className="relative">
-          <div className="rounded-2xl bg-[#FBF2DA] p-3 shadow-lg border border-black/5">
-            <VideoPlayer videoId={SITE.introVideoId} title="German with Marvin — how it works" />
-            <p className="text-center text-xs text-[#3B2922]/55 py-2">Watch how it works · 2 min</p>
+        <div className="rounded-2xl bg-[#FBF2DA] p-3 shadow-lg border border-black/5">
+          <VideoPlayer videoId={SITE.introVideoId} title="German with Marvin — how it works" />
+          <p className="text-center text-xs text-[#3B2922]/55 py-2">Watch how it works · 2 min</p>
+        </div>
+      </section>
+
+      {/* Schmale Vertrauenszeile — ein ruhiger Beleg statt einer Wand */}
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-[#3B2922]/70 border-y border-black/5 py-4">
+          <span className="flex items-center gap-1.5"><Stars /> <span className="font-bold text-[#3B2922]">{PREPLY_STATS.rating}</span></span>
+          <span className="text-[#3B2922]/30">·</span>
+          <span>{PREPLY_STATS.lessons.toLocaleString("en-US")} lessons taught</span>
+          <span className="text-[#3B2922]/30 hidden sm:inline">·</span>
+          <span className="hidden sm:inline">students in {PREPLY_STATS.countries} countries</span>
+          {PREPLY_BADGES.slice(0, 1).map((b) => (
+            <span key={b} className="inline-flex items-center rounded-full bg-[#8A3030]/10 border border-[#8A3030]/20 px-3 py-1 text-xs font-bold text-[#8A3030]">{b}</span>
+          ))}
+          <a href={SITE.preplyUrl} target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-[#8A3030]">verified on Preply</a>
+        </div>
+      </div>
+
+      {/* Weiche: zwei klare Wege — Hauptweg Abo, daneben der B1-Kurs */}
+      <section className="max-w-5xl mx-auto px-6 pt-12 pb-6">
+        <div className="text-center max-w-2xl mx-auto mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold">{B1_COPY.home.forkHeading}</h2>
+          <p className="mt-3 text-[#3B2922]/75">{B1_COPY.home.forkSub}</p>
+        </div>
+        <div className="grid md:grid-cols-2 gap-5 items-stretch">
+          {/* A — Hauptweg: Selbstlern-Abo */}
+          <div className="relative bg-[#8A3030] text-white rounded-3xl p-7 shadow-md flex flex-col">
+            <span className="absolute -top-3 left-6 bg-[#E3A12F] text-[#3b2116] text-xs font-bold px-3 py-1 rounded-full">Most popular</span>
+            <h3 className="text-xl font-bold">{B1_COPY.home.selfPacedTitle}</h3>
+            <p className="mt-2 text-white/85 text-sm flex-1">{B1_COPY.home.selfPacedText}</p>
+            <Link href="/register" className="mt-5 inline-block text-center rounded-xl bg-[#E3A12F] text-[#3b2116] px-6 py-3.5 font-bold hover:brightness-105 transition">
+              Start your 5-day free trial →
+            </Link>
           </div>
-          <div className="absolute -right-2 top-6 bg-[#FBF2DA] rounded-xl shadow-md border border-black/5 px-4 py-3 flex items-center gap-2">
-            <span className="text-xl">📊</span>
-            <div className="leading-tight"><div className="font-bold text-sm">A1–B2</div><div className="text-xs text-[#3B2922]/60">All levels</div></div>
-          </div>
-          <div className="absolute -right-2 top-28 bg-[#FBF2DA] rounded-xl shadow-md border border-black/5 px-4 py-3 flex items-center gap-2">
-            <span className="text-xl">🗂️</span>
-            <div className="leading-tight"><div className="font-bold text-sm">2,600+</div><div className="text-xs text-[#3B2922]/60">cards</div></div>
-          </div>
-          <div className="absolute -left-2 bottom-12 bg-[#FBF2DA] rounded-xl shadow-md border border-black/5 px-4 py-3 flex items-center gap-2">
-            <span className="text-xl">👩‍🏫</span>
-            <div className="leading-tight"><div className="font-bold text-sm">1-on-1</div><div className="text-xs text-[#3B2922]/60">from $30/lesson</div></div>
+          {/* B — der B1-Live-Kurs */}
+          <div className="bg-[#FBF2DA] border border-[#E3A12F]/40 rounded-3xl p-7 shadow-sm flex flex-col">
+            <h3 className="text-xl font-bold text-[#8A3030]">{B1_COPY.home.courseTitle}</h3>
+            <p className="mt-2 text-[#3B2922]/80 text-sm flex-1">{B1_COPY.home.courseText}</p>
+            <div className="mt-3 text-xs text-[#3B2922]/60">
+              {GROUP_COURSE.weeks} weeks · {GROUP_COURSE.totalSessions} live sessions · max {GROUP_COURSE.maxSeats} people · from {eurLabel(groupCoursePrice())}
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Link href="/b1-course" className="inline-block rounded-xl bg-[#8A3030] text-white px-6 py-3 font-semibold hover:brightness-110 transition">See the B1 course →</Link>
+              <Link href="/b1-test" className="inline-block rounded-xl border border-[#8A3030] text-[#8A3030] px-6 py-3 font-semibold hover:bg-[#8A3030]/5 transition">Free B1 test</Link>
+            </div>
           </div>
         </div>
       </section>
@@ -146,30 +149,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Warum Niveaus zählen */}
-      <section className="max-w-3xl mx-auto px-6 py-14">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold">Every level is a door</h2>
-          <p className="mt-3 text-[#3B2922]/75">
-            In Germany, your plans often depend on your German level. This course walks you through all of them.
-          </p>
-        </div>
-        <div className="bg-[#FBF2DA] rounded-2xl border border-black/5 shadow-sm overflow-hidden">
-          {VISA_LEVELS.map((v, i) => (
-            <div key={v.purpose} className={`flex items-center justify-between gap-4 px-5 py-4 ${i > 0 ? "border-t border-black/5" : ""}`}>
-              <span className="text-sm text-[#3B2922]/85">{v.purpose}</span>
-              <span className="text-sm font-semibold text-[#8A3030] whitespace-nowrap">{v.level}</span>
-            </div>
-          ))}
-        </div>
-        <p className="mt-3 text-xs text-[#3B2922]/55 text-center">
-          Typical requirements — check your own case. Source:{" "}
-          <a href="https://www.make-it-in-germany.com/en/" target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-[#8A3030]">Make it in Germany</a>.
-        </p>
-      </section>
-
       {/* So funktioniert es */}
-      <section className="bg-[#F7DEAD]">
+      <section className="bg-[#FFF1D2]">
         <div className="max-w-5xl mx-auto px-6 py-14">
           <div className="text-center max-w-2xl mx-auto mb-9">
             <span className="inline-block text-xs tracking-[0.3em] text-[#E3A12F] uppercase font-semibold mb-3">How it works</span>
@@ -188,34 +169,36 @@ export default function Home() {
       </section>
 
       {/* Blick in die App */}
-      <section className="max-w-6xl mx-auto px-6 py-14">
-        <div className="text-center max-w-2xl mx-auto mb-9">
-          <span className="inline-block text-xs tracking-[0.3em] text-[#E3A12F] uppercase font-semibold mb-3">A look inside</span>
-          <h2 className="text-2xl sm:text-3xl font-bold">See exactly how it works</h2>
-          <p className="mt-3 text-[#3B2922]/75">
-            Real screens from the app — a clear path, video lessons, interactive practice, flashcards and a vocab game.
-          </p>
-        </div>
-        <div className="grid md:grid-cols-2 gap-6">
-          {SHOTS.map((s) => (
-            <figure key={s.src} className="bg-[#FBF2DA] rounded-2xl border border-black/5 shadow-sm overflow-hidden">
-              <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-black/5" style={{ background: "rgba(0,0,0,0.03)" }}>
-                <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#E36B6B" }} />
-                <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#E3A12F" }} />
-                <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#5FA45F" }} />
-              </div>
-              <img src={s.src} alt={s.alt} loading="lazy" className="w-full h-auto block" />
-              <figcaption className="px-5 py-4 text-sm">
-                <span className="font-bold">{s.title}</span>{" "}
-                <span className="text-[#3B2922]/70">{s.text}</span>
-              </figcaption>
-            </figure>
-          ))}
+      <section className="bg-[#F7DEAD]">
+        <div className="max-w-6xl mx-auto px-6 py-14">
+          <div className="text-center max-w-2xl mx-auto mb-9">
+            <span className="inline-block text-xs tracking-[0.3em] text-[#E3A12F] uppercase font-semibold mb-3">A look inside</span>
+            <h2 className="text-2xl sm:text-3xl font-bold">See exactly how it works</h2>
+            <p className="mt-3 text-[#3B2922]/75">
+              Real screens from the app — a clear path, video lessons, interactive practice and flashcards.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            {SHOTS.slice(0, 4).map((s) => (
+              <figure key={s.src} className="bg-[#FBF2DA] rounded-2xl border border-black/5 shadow-sm overflow-hidden">
+                <div className="flex items-center gap-1.5 px-4 py-2.5 border-b border-black/5" style={{ background: "rgba(0,0,0,0.03)" }}>
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#E36B6B" }} />
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#E3A12F" }} />
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#5FA45F" }} />
+                </div>
+                <img src={s.src} alt={s.alt} loading="lazy" className="w-full h-auto block" />
+                <figcaption className="px-5 py-4 text-sm">
+                  <span className="font-bold">{s.title}</span>{" "}
+                  <span className="text-[#3B2922]/70">{s.text}</span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Ergebnisse / Reviews */}
-      <section className="bg-[#F7DEAD]">
+      <section className="bg-[#FFF1D2]">
         <div className="max-w-6xl mx-auto px-6 py-14">
           <div className="text-center mb-8">
             <h2 className="text-2xl sm:text-3xl font-bold">What students say about learning with Marvin</h2>
@@ -226,7 +209,7 @@ export default function Home() {
             </p>
           </div>
           <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 [column-fill:_balance]">
-            {REVIEWS.map((r, i) => (
+            {REVIEWS.slice(0, 6).map((r, i) => (
               <div key={i} className="bg-[#FBF2DA] rounded-2xl p-5 mb-4 break-inside-avoid shadow-sm border border-black/5">
                 <Stars />
                 <p className="mt-2 text-sm text-[#3B2922]/90 italic">“{r.text}”</p>
@@ -294,27 +277,6 @@ export default function Home() {
             <Link href="/online-german-lessons" className="inline-block rounded-xl border-2 border-[#8A3030] text-[#8A3030] px-8 py-4 text-lg font-semibold hover:bg-[#8A3030]/5 transition">
               See 1-on-1 lessons →
             </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* B1-Live-Gruppenkurs (neuer Funnel) — Abo- und 1:1-Bereiche bleiben unangetastet */}
-      <section id="b1-course" className="scroll-mt-6">
-        <div className="max-w-4xl mx-auto px-6 py-14">
-          <div className="rounded-3xl bg-[#8A3030] text-white p-8 sm:p-10 text-center">
-            <span className="inline-block text-xs tracking-[0.3em] text-[#E3A12F] uppercase font-semibold mb-3">{B1_COPY.home.eyebrow}</span>
-            <h2 className="text-2xl sm:text-3xl font-bold">{B1_COPY.home.h1}</h2>
-            <p className="mt-3 text-white/85 max-w-xl mx-auto">{B1_COPY.home.sub}</p>
-            <div className="mt-4 text-white/80 text-sm">
-              {GROUP_COURSE.weeks} weeks · {GROUP_COURSE.totalSessions} live sessions · max {GROUP_COURSE.maxSeats} people · from {eurLabel(groupCoursePrice())}
-            </div>
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <Link href="/b1-course" className="inline-block rounded-xl bg-[#E3A12F] text-[#3b2116] px-7 py-3.5 font-bold hover:brightness-105 transition">{B1_COPY.home.courseCta} →</Link>
-              <Link href="/b1-test" className="inline-block rounded-xl border-2 border-white/60 text-white px-7 py-3.5 font-semibold hover:bg-white/10 transition">{B1_COPY.home.testCta}</Link>
-            </div>
-          </div>
-          <div className="max-w-xl mx-auto mt-6">
-            <B1EmailForm source="home" />
           </div>
         </div>
       </section>

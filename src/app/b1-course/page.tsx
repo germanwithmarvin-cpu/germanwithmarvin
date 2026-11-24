@@ -82,6 +82,37 @@ export default async function B1CoursePage() {
           </div>
         </section>
 
+        {/* Warum anders — Alleinstellung */}
+        <section className="max-w-4xl mx-auto px-6 py-12 space-y-6">
+          <h2 className="text-2xl font-bold text-[#8A3030] text-center">{c.differentHeading}</h2>
+          <div className="grid sm:grid-cols-2 gap-4">
+            {c.different.map((d) => (
+              <div key={d.title} className="rounded-2xl bg-white/70 border border-[#E3A12F]/25 p-5">
+                <div className="font-bold text-[#8A3030]">{d.title}</div>
+                <p className="mt-1.5 text-sm text-[#3B2922]/80">{d.text}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Komplette App gratis dabei */}
+        <section className="bg-[#F7DEAD]">
+          <div className="max-w-3xl mx-auto px-6 py-12 space-y-5">
+            <div className="text-center space-y-2">
+              <h2 className="text-2xl font-bold text-[#8A3030]">{c.includedHeading}</h2>
+              <p className="text-[#3B2922]/80">{c.includedIntro}</p>
+            </div>
+            <div className="rounded-2xl bg-[#FBF2DA] border border-[#E3A12F]/40 p-6">
+              <ul className="grid sm:grid-cols-2 gap-x-6 gap-y-2">
+                {c.includedItems.map((it) => (
+                  <li key={it} className="flex gap-2 items-start text-sm"><span className="text-[#2e7d4f] font-bold mt-0.5">✓</span><span>{it}</span></li>
+                ))}
+              </ul>
+            </div>
+            <p className="text-center text-sm text-[#3B2922]/70">{c.includedNote}</p>
+          </div>
+        </section>
+
         {/* For who */}
         <section className="max-w-3xl mx-auto px-6 py-12 space-y-4">
           <h2 className="text-2xl font-bold text-[#8A3030] text-center">{c.forWhoHeading}</h2>
@@ -122,6 +153,7 @@ export default async function B1CoursePage() {
                 <span className="text-4xl font-bold text-[#8A3030]">{eurLabel(price)}</span>
               </div>
               {founder && <div className="text-sm text-[#8A3030] font-semibold">{c.priceFounderNote}</div>}
+              <p className="text-sm text-[#2e7d4f] font-semibold">+ {GROUP_COURSE.weeks} weeks of full app access included (normally $29/month)</p>
               <p className="text-xs text-[#3B2922]/60">{c.taxNote}</p>
               <CourseBuyButton label={`${c.bookButton} →`} className="w-full py-3.5 rounded-xl bg-[#8A3030] text-white font-bold text-lg hover:brightness-110 disabled:opacity-50" />
               {showSeats && <div className="text-sm text-[#8A3030] font-semibold">Only {seatsLeft} {c.seatsLeft}</div>}
@@ -134,12 +166,20 @@ export default async function B1CoursePage() {
         {/* Teacher */}
         <section className="max-w-3xl mx-auto px-6 py-12 space-y-4">
           <h2 className="text-2xl font-bold text-[#8A3030] text-center">{c.teacherHeading}</h2>
-          <div className="rounded-2xl bg-white/70 border border-[#E3A12F]/25 p-6 flex items-center gap-4">
-            <img src="/teachers/marvin.jpg" alt="Marvin Graf" className="w-20 h-20 rounded-full object-cover" />
-            <div>
-              <div className="font-bold text-[#8A3030] text-lg">Marvin Graf</div>
-              <div className="text-sm text-[#3B2922]/70">Teaching German full-time for 4+ years, with thousands of 1-on-1 hours. Levels A1–C1.</div>
+          <div className="rounded-2xl bg-white/70 border border-[#E3A12F]/25 p-6 space-y-4">
+            <div className="flex items-center gap-4">
+              <img src="/teachers/marvin.jpg" alt="Marvin Graf" className="w-20 h-20 rounded-full object-cover" />
+              <div>
+                <div className="font-bold text-[#8A3030] text-lg">Marvin Graf</div>
+                <div className="text-sm text-[#3B2922]/70">Teaching German full-time for 4+ years, with thousands of 1-on-1 hours. Levels A1–C1.</div>
+              </div>
             </div>
+            <div className="flex flex-wrap gap-2">
+              {PREPLY_BADGES.map((b) => (
+                <span key={b} className="text-xs bg-[#8A3030]/10 border border-[#8A3030]/20 rounded-full px-3 py-1 text-[#8A3030] font-semibold">{b}</span>
+              ))}
+            </div>
+            <div className="text-sm text-[#3B2922]/70"><Stars /> {PREPLY_STATS.rating} · {PREPLY_STATS.reviews} reviews · {PREPLY_STATS.lessons.toLocaleString()} lessons taught · verified on Preply</div>
           </div>
         </section>
 
