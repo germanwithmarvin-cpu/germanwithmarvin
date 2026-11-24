@@ -52,7 +52,7 @@ export const B1_COPY = {
     // Nutzenversprechen
     benefitsHeading: "What you get",
     benefits: [
-      "Live online classes taught by Marvin himself — 16 sessions over 8 weeks (2 per week, 60 min).",
+      "Live online classes taught by Marvin himself — 16 sessions over 8 weeks (2 per week, 50 min).",
       "The complete self-study app included free for the whole course (normally $29/month).",
       "Real practice for your Goethe or telc B1 exam: reading, listening, writing and speaking.",
       "A small group of max 10 people, so everyone gets real attention.",

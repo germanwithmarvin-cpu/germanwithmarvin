@@ -119,7 +119,7 @@ export default function Home() {
             <h3 className="text-xl font-bold text-[#8A3030]">{B1_COPY.home.courseTitle}</h3>
             <p className="mt-2 text-[#3B2922]/80 text-sm flex-1">{B1_COPY.home.courseText}</p>
             <div className="mt-3 text-xs text-[#3B2922]/60">
-              {GROUP_COURSE.weeks} weeks · {GROUP_COURSE.totalSessions} live sessions · max {GROUP_COURSE.maxSeats} people · from {eurLabel(groupCoursePrice())}
+              {GROUP_COURSE.weeks} weeks · {GROUP_COURSE.totalSessions} live sessions · max {GROUP_COURSE.maxSeats} people · {eurLabel(groupCoursePrice())}
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
               <Link href="/b1-course" className="inline-block rounded-xl bg-[#8A3030] text-white px-6 py-3 font-semibold hover:brightness-110 transition">See the B1 course →</Link>

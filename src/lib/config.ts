@@ -111,26 +111,26 @@ export function lessonPriceLabel(hours: number): string {
 // Live-Gruppenkurs zur B1-Prüfungsvorbereitung. Einmalzahlung in EUR über Stripe
 // (Managed Payments / Merchant of Record – Stripe führt die USt ab). ALLE Werte
 // hier zentral und vorläufig: jederzeit OHNE Code-Änderung anpassbar.
-// Die zwei Stripe-Price-IDs legst du in Stripe an (EUR-Einmalpreise: 250 € und
-// Gründerpreis 199 €) und trägst sie unten ein.
+// Du legst in Stripe EINEN EUR-Einmalpreis (290 €) an und trägst die Price-ID
+// unten bei stripePriceId ein.
 export const GROUP_COURSE = {
   slug: "b1-exam-prep",
   name: "B1 Exam Prep – Live Group Course",
-  stripePriceId: "",        // regulär 250 € (einmalig) – Stripe-Price-ID eintragen
-  founderPriceId: "",       // Gründerpreis 199 € (einmalig, erste Runde) – Stripe-Price-ID eintragen
-  priceEur: 250,
-  founderPriceEur: 199,
-  founderActive: true,      // true = Gründerpreis ist der aktuell gültige Preis
+  stripePriceId: "",        // 290 € (einmalig) – Stripe-Price-ID eintragen
+  founderPriceId: "",       // ungenutzt – kein reduzierter Preis aktiv
+  priceEur: 290,
+  founderPriceEur: 290,     // ungenutzt, solange founderActive = false
+  founderActive: false,     // kein Gründer-/Reduziertpreis – es gilt immer priceEur
   currency: "EUR",
   weeks: 8,
   sessionsPerWeek: 2,
   totalSessions: 16,
-  durationMin: 60,
+  durationMin: 50,
   minSeats: 4,              // darunter findet die Runde nicht statt (Geld zurück)
   maxSeats: 10,
   days: ["Sat", "Sun"] as const,
   time: "10:00",            // Startzeit (lokale Zeit in `timezone`)
-  endTime: "11:00",
+  endTime: "10:50",
   timezone: "Europe/Berlin",
   startDate: "2027-01-16",  // ISO-Datum, Samstag
   appAccessDays: 70,        // Kurskauf schaltet zusätzlich das Selbstlern-Abo so viele Tage frei (8 Wochen + Puffer)
