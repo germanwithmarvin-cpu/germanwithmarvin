@@ -116,7 +116,7 @@ export function lessonPriceLabel(hours: number): string {
 export const GROUP_COURSE = {
   slug: "b1-exam-prep",
   name: "B1 Exam Prep – Live Group Course",
-  stripePriceId: "",        // 290 € (einmalig) – Stripe-Price-ID eintragen
+  stripePriceId: "price_1UfFXhEsa6rPVhI2iJonB4ya",  // 290 € (einmalig)
   founderPriceId: "",       // ungenutzt – kein reduzierter Preis aktiv
   priceEur: 290,
   founderPriceEur: 290,     // ungenutzt, solange founderActive = false
