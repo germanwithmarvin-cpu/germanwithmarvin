@@ -1,9 +1,9 @@
 // B1-Funnel-Mails: (1) Double-Opt-in-Bestätigung, (2) die 5-stufige Nachfass-Serie.
 // Englisch, einfache Sätze, gleiche Marken-Optik wie die Trial-Mails.
 //
-// WICHTIG: Die Serien-Texte unten sind ENTWÜRFE (Betreff + Zweck). Marvin schreibt
-// den finalen, persönlichen Text selbst. Jede Mail trägt einen 1-Klick-Abmeldelink,
-// signiert über die E-Mail (kein Konto nötig).
+// Die Serien-Texte sind ausgeschrieben (Englisch, einfache Sätze) — Marvin feilt
+// wie gewohnt nach. Jede Mail trägt einen 1-Klick-Abmeldelink, signiert über die
+// E-Mail (kein Konto nötig).
 
 import { SITE } from "@/lib/config";
 import { sendEmail } from "@/lib/mail";
@@ -22,9 +22,10 @@ export const B1_STAGES = [
 
 export type B1Stage = (typeof B1_STAGES)[number]["key"];
 
-type Content = { subject: string; heading: string; intro: string; cta: string; href: string };
+type Content = { subject: string; heading: string; paras: string[]; cta: string; href: string };
 
-// ENTWÜRFE — Betreff + Zweck. Marvin ersetzt `intro` durch seinen eigenen Text.
+// Ausgeschriebene Serientexte (Marvin feilt wie gewohnt nach). `paras` = Absätze;
+// der erste beginnt mit der Begrüßung. Betreff + CTA je Stufe.
 function contentFor(stage: B1Stage, firstName: string): Content {
   const hi = firstName ? `Hi ${firstName},` : "Hi,";
   switch (stage) {
@@ -32,7 +33,12 @@ function contentFor(stage: B1Stage, firstName: string): Content {
       return {
         subject: "Your B1 test result — what it really means",
         heading: "Where you stand for B1",
-        intro: `${hi} thanks for taking the free B1 test. [DRAFT — Marvin: explain their result in simple words and what the B1 exam needs.]`,
+        paras: [
+          `${hi} thanks for taking the free B1 test. It takes a bit of courage to check where you really stand — so, well done.`,
+          `Here is the honest picture. The B1 exam has four parts: reading, listening, writing and speaking. Almost everyone is strong in one or two and weaker in the others. That is completely normal. The exam does not test how clever you are — it tests a few clear skills that you can learn and practise.`,
+          `If you need B1 for your Einbürgerung or your residence permit, here is the good news: with a clear plan and a little guidance, the gap closes faster than you think. I have taken many students all the way to their certificate, including people who felt far from ready at the start.`,
+          `Over the next days I will send you a few short, practical tips for the parts most people find hard — writing and speaking. No long theory, just what really helps in the exam. If you want to see the full plan now, have a look at my 8-week B1 course — a small live group, taught by me.`,
+        ],
         cta: "See the B1 course",
         href: `${BASE_URL}/b1-course`,
       };
@@ -40,7 +46,12 @@ function contentFor(stage: B1Stage, firstName: string): Content {
       return {
         subject: "The B1 writing mistake almost everyone makes ✍️",
         heading: "Fix this in your writing",
-        intro: `${hi} [DRAFT — Marvin: one clear, useful writing tip for the B1 exam (e.g. the formal letter).]`,
+        paras: [
+          `${hi} in the B1 exam you have to write a short letter or email — for example to a friend, or a more formal message like a request or a complaint.`,
+          `Here is the mistake I see most often: people try to write long, "clever" sentences, and then get lost in the grammar. In B1, short and clear wins. Three correct short sentences are worth far more than one long, broken one.`,
+          `A simple recipe that works: start with a greeting, say why you are writing in the very first sentence, give your points one by one, and finish with a polite closing. Use the words you are sure about. The examiner wants to see that you can communicate — not that you can write poetry.`,
+          `One more tip: learn five or six fixed phrases for letters (how to begin and end politely, how to ask for something). You will use them in almost every writing task. Want to test yourself in the real exam format? You can take the free practice test again any time.`,
+        ],
         cta: "Practice with a free test",
         href: `${BASE_URL}/b1-test`,
       };
@@ -48,7 +59,12 @@ function contentFor(stage: B1Stage, firstName: string): Content {
       return {
         subject: "How to pass B1 speaking (even if you're nervous) 🗣️",
         heading: "Speaking: the part most people fear",
-        intro: `${hi} [DRAFT — Marvin: one speaking tip + reassurance; how the course practises speaking.]`,
+        paras: [
+          `${hi} almost everyone is nervous about the speaking part. If that is you, you are in very good company — and it is one of the most learnable parts of all.`,
+          `The secret: the examiner does not expect perfect German. They want to see that you can keep a conversation going. So it is better to say something simple and keep talking than to stop and search for the perfect word.`,
+          `Two things that help a lot. First, learn a few small phrases to buy yourself time, like "Moment, lass mich kurz überlegen…". They sound natural and keep you calm. Second, practise out loud, even when you are alone — saying your answers is not the same as reading them in your head.`,
+          `In my course we practise speaking live, every week, in a small group at your level. You get used to talking — so on exam day it feels normal, not scary.`,
+        ],
         cta: "See how the course works",
         href: `${BASE_URL}/b1-course`,
       };
@@ -56,15 +72,26 @@ function contentFor(stage: B1Stage, firstName: string): Content {
       return {
         subject: "Come to a free live B1 lesson 🎓",
         heading: "Try a free live lesson",
-        intro: `${hi} [DRAFT — Marvin: invite to the free live trial lesson; what they'll get out of it.]`,
+        paras: [
+          `${hi} you have had a few tips from me by email. Now I would like to invite you to something better: a free live B1 lesson with me, online.`,
+          `It is a relaxed group lesson. You can meet me, see exactly how I teach, practise a little, and ask all your questions about the exam and the course. No payment and no account needed.`,
+          `Come and feel for yourself whether this is the right way for you to reach B1. Most people leave the trial lesson calmer about the exam — because they finally have a clear plan.`,
+          `Because it is a live lesson, the number of spots is limited. Save yours below.`,
+        ],
         cta: "Save my free spot",
         href: `${BASE_URL}/b1-course#trial`,
       };
     case "course_offer":
       return {
-        subject: "B1 course — founder price for the first group",
-        heading: "Your place in the B1 group",
-        intro: `${hi} [DRAFT — Marvin: the course offer, founder price, start date and that spots are limited.]`,
+        subject: "Your place in the B1 group",
+        heading: "Join the B1 group course",
+        paras: [
+          `${hi} if you are serious about passing B1 for your Einbürgerung or residence permit, here is the clearest path I can offer you.`,
+          `My B1 Exam Prep is an 8-week live course, taught by me, in a small group of no more than 10 people. We meet twice a week and cover everything the exam tests — reading, listening, writing and speaking — with your own homework and personal feedback from me.`,
+          `You also get my complete learning app included free for the whole course (normally $29/month): video lessons, the flashcard trainer, grammar, reading stories and an exam trainer. It is your practice toolkit between our live classes.`,
+          `The price is a single payment of €290 (plus tax). The group is small on purpose, so places are limited. And it is safe: if too few people join, the course does not start and you get your money back.`,
+          `If you want in, join below. And if you have a question first, just reply to this email — it comes straight to me.`,
+        ],
         cta: "Join the B1 course",
         href: `${BASE_URL}/b1-course`,
       };
@@ -85,8 +112,11 @@ function shell(heading: string, bodyHtml: string, unsub: string): string {
 }
 
 function stageHtml(c: Content, unsub: string): string {
+  const paras = c.paras
+    .map((p) => `<p style="font-size:15px;line-height:1.55;margin:0 0 14px;">${p}</p>`)
+    .join("");
   const body = `
-    <p style="font-size:15px;line-height:1.55;margin:0 0 20px;">${c.intro}</p>
+    ${paras}
     <p style="margin:24px 0;">
       <a href="${c.href}" style="background:#8A3030;color:#ffffff;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:10px;display:inline-block;">${c.cta}</a>
     </p>`;
@@ -94,7 +124,7 @@ function stageHtml(c: Content, unsub: string): string {
 }
 
 function stageText(c: Content, unsub: string): string {
-  return `${c.intro}\n\n${c.cta}: ${c.href}\n\n—\nGerman with Marvin · reply to reach Marvin.\nUnsubscribe: ${unsub}`;
+  return `${c.paras.join("\n\n")}\n\n${c.cta}: ${c.href}\n\n—\nGerman with Marvin · reply to reach Marvin.\nUnsubscribe: ${unsub}`;
 }
 
 function unsubFor(email: string): string {
