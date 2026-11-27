@@ -34,6 +34,11 @@ const REVIEWS = [
   { text: "Calm, clear and so well prepared. After a month with Ha my grammar finally makes sense.", name: "Mariana L.", tag: "B1" },
 ];
 
+// Reviews-Sektion nur zeigen, wenn es ECHTE Bewertungen gibt. Aktuell aus, weil
+// Ha noch keine Schüler hat — es werden KEINE (erfundenen) Bewertungen angezeigt.
+// Sobald echtes Feedback da ist: die obigen Platzhalter ersetzen und auf true setzen.
+const SHOW_REVIEWS = false;
+
 const whyHa = [
   { icon: "🌱", title: "Made for beginners", text: "No pressure, no judgement. Ha starts exactly where you are and builds up step by step." },
   { icon: "🗣", title: "Explained in your language", text: "Stuck on a grammar point? Ha explains it in clear English until it makes sense — then back to German." },
@@ -155,7 +160,8 @@ export default function HaPage() {
         </div>
       </section>
 
-      {/* Reviews (Platzhalter) */}
+      {/* Reviews — nur echte Bewertungen; aktuell keine (Ha hat noch keine Schüler) */}
+      {SHOW_REVIEWS && (
       <section className="max-w-6xl mx-auto px-6 py-14">
         <div className="text-center mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold">What Ha’s students say</h2>
@@ -171,6 +177,7 @@ export default function HaPage() {
           ))}
         </div>
       </section>
+      )}
 
       {/* How it works */}
       <section className="bg-[#F7DEAD]">

@@ -134,7 +134,7 @@ export const GROUP_COURSE = {
   timezone: "Europe/Berlin",
   startDate: "2027-01-16",  // ISO-Datum, Samstag
   appAccessDays: 70,        // Kurskauf schaltet zusätzlich das Selbstlern-Abo so viele Tage frei (8 Wochen + Puffer)
-  meetLink: "",             // wiederkehrender Zoom/Google-Meet-Link (du trägst ihn ein)
+  meetLink: "",             // wiederkehrender Google-Meet-Link (du trägst ihn ein – Workspace-Abo vorhanden)
 };
 
 // Kostenlose Live-Probestunde (Gruppen-Schnupperstunde) zur FESTEN Zeit.
@@ -143,7 +143,7 @@ export const PROBESTUNDE = {
   time: "10:00",            // feste Uhrzeit (lokale Zeit in `timezone`)
   durationMin: 45,
   timezone: "Europe/Berlin",
-  meetLink: "",             // Zoom/Meet-Link der Probestunde (du trägst ihn ein)
+  meetLink: "",             // Google-Meet-Link der Probestunde (du trägst ihn ein)
 };
 
 // EUR-Preis hübsch, z. B. "€250" / "€199".
