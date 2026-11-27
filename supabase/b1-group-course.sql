@@ -53,6 +53,10 @@ create table if not exists public.b1_email_log (
   sent_at timestamptz not null default now(),
   primary key (email, stage)
 );
+-- RLS an (wie bei den Geschwister-Tabellen): sonst waere das Log ueber die
+-- anon-API lesbar -> Lead-Mailadressen + Marketing-Stufe wuerden leaken.
+-- Der Cron schreibt per service_role (umgeht RLS), liest per SECURITY-DEFINER-RPC.
+alter table public.b1_email_log enable row level security;
 
 -- Kandidaten fuer die 5-Mail-Serie:
 --   * status = 'confirmed' (Double-Opt-in abgeschlossen)
