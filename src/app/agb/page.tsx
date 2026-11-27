@@ -71,8 +71,9 @@ function TermsEN() {
       <Section title="5. Term & cancellation">
         <p>
           The subscription runs monthly and can be cancelled at any time with effect from the end of the
-          current billing period. After cancellation your access ends when the paid period expires. To cancel,
-          contact {SITE.contactEmail} or use the cancellation link in your Stripe receipt.
+          current billing period. After cancellation your access ends when the paid period expires. To cancel, use the
+          cancellation button in your profile (&quot;Verträge hier kündigen&quot;), contact {SITE.contactEmail}, or use
+          the cancellation link in your Stripe receipt.
         </p>
       </Section>
       <Section title="6. Right of withdrawal (consumers in the EU)">
@@ -241,8 +242,9 @@ function TermsDE() {
       <Section title="5. Laufzeit & Kündigung">
         <p>
           Das Abo läuft monatlich und ist jederzeit zum Ende des laufenden Abrechnungszeitraums kündbar. Nach
-          der Kündigung endet dein Zugang mit Ablauf der bezahlten Periode. Kündigung per Nachricht an{" "}
-          {SITE.contactEmail} oder über den Link in deiner Stripe-Quittung.
+          der Kündigung endet dein Zugang mit Ablauf der bezahlten Periode. Zum Kündigen nutze den Kündigungsbutton in
+          deinem Profil (&quot;Verträge hier kündigen&quot;), eine Nachricht an{" "}
+          {SITE.contactEmail} oder den Link in deiner Stripe-Quittung.
         </p>
       </Section>
       <Section title="6. Widerrufsrecht (Verbraucher in der EU)">

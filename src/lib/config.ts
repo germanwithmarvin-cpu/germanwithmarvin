@@ -78,7 +78,7 @@ export function discountPriceLabel(): string {
 
 // Preise sind netto; Stripe schlägt an der Kasse standortabhängig Steuer (VAT/
 // Sales Tax) auf. Kurzer, rechtssicherer Hinweis überall an den Preisen.
-export const TAX_NOTE = "plus applicable tax";
+export const TAX_NOTE = "net — VAT/sales tax added at checkout based on your country";
 export const TAX_NOTE_LONG =
   "Prices shown exclude tax. Applicable VAT/sales tax is added at checkout based on your location.";
 

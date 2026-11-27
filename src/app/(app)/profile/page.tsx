@@ -15,6 +15,7 @@ import { getDeckProgress } from "@/lib/study";
 import { getAccess, type AccessTier } from "@/lib/access";
 import { LEVELS } from "@/lib/types";
 import { createClient } from "@/lib/supabase/client";
+import { SITE } from "@/lib/config";
 
 // Rang anhand gelernter Karten – kleine spielerische Stufe im Profilkopf.
 const RANKS: [number, string, string][] = [
@@ -55,6 +56,11 @@ export default function ProfilePage() {
   const [pw2, setPw2] = useState("");
   const [pwBusy, setPwBusy] = useState(false);
   const [pwMsg, setPwMsg] = useState<string | null>(null);
+
+  // Kündigung (§312k BGB)
+  const [cancelStage, setCancelStage] = useState<"idle" | "confirm" | "done">("idle");
+  const [cancelBusy, setCancelBusy] = useState(false);
+  const [cancelMsg, setCancelMsg] = useState<string | null>(null);
 
   useEffect(() => {
     getMyProfile().then((p) => { setProfile(p); setName(p?.fullName ?? ""); });
@@ -125,6 +131,24 @@ export default function ProfilePage() {
   async function signOut() {
     await createClient().auth.signOut();
     router.push("/login");
+  }
+
+  async function cancelSubscription() {
+    setCancelBusy(true); setCancelMsg(null);
+    try {
+      const res = await fetch("/api/cancel-subscription", { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) { setCancelMsg(data.error || `Something went wrong. Please email ${SITE.contactEmail}.`); setCancelBusy(false); return; }
+      setCancelMsg(
+        data.cancelled === 0
+          ? "You have no active auto-renewing subscription to cancel. One-time plans and access codes simply expire on their own."
+          : "✓ Done. Your subscription will not renew — you keep full access until the end of the current paid period. We've emailed you a confirmation.",
+      );
+      setCancelStage("done");
+    } catch {
+      setCancelMsg(`Network error. Please try again or email ${SITE.contactEmail}.`);
+    }
+    setCancelBusy(false);
   }
 
   const pct = lessonsTotal ? Math.round((lessonsDone / lessonsTotal) * 100) : 0;
@@ -345,6 +369,37 @@ export default function ProfilePage() {
 
         <div>
           <button onClick={signOut} className="btn-outline px-4 py-2 text-sm">← Sign out</button>
+        </div>
+
+        {/* Kündigung (§312k BGB) — bewusst dezent ganz unten */}
+        <div className="pt-4 mt-2 border-t border-gold/10">
+          {cancelStage === "idle" && (
+            <button
+              onClick={() => { setCancelStage("confirm"); setCancelMsg(null); }}
+              className="text-xs text-cream-dim/70 hover:text-cream-dim underline underline-offset-2"
+            >
+              Verträge hier kündigen
+            </button>
+          )}
+          {cancelStage === "confirm" && (
+            <div className="card p-4 max-w-md">
+              <div className="text-sm font-medium mb-1">Cancel your subscription</div>
+              <p className="text-xs text-cream-dim mb-3">
+                This cancels your auto-renewing subscription at the end of the current paid period. You keep full
+                access until then; the current period is not refunded.
+              </p>
+              <div className="flex items-center gap-3">
+                <button onClick={cancelSubscription} disabled={cancelBusy} className="btn-outline px-4 py-1.5 text-sm disabled:opacity-50">
+                  {cancelBusy ? "Cancelling…" : "Jetzt kündigen"}
+                </button>
+                <button onClick={() => setCancelStage("idle")} className="text-xs text-cream-dim hover:text-cream">Keep subscription</button>
+              </div>
+              {cancelMsg && <p className="text-xs mt-3 text-red-700">{cancelMsg}</p>}
+            </div>
+          )}
+          {cancelStage === "done" && cancelMsg && (
+            <p className="text-xs text-cream-dim max-w-md">{cancelMsg}</p>
+          )}
         </div>
       </section>
     </div>
